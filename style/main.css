@@ -1,0 +1,151 @@
+body
+{
+	font-family: "PT Serif rev=3";
+}
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .card-header, .nav
+{
+    font-family: "PT Serif rev=3";
+}
+
+.hidden
+{
+	display: none !important;
+}
+.bebug_container
+{
+	position: absolute;
+	right: 0;
+	top: 100px;
+	width: 280px;
+	height: 600px;
+	overflow: auto;
+	border: 1px solid #eeeeee;
+}
+.data
+{
+	width: 100%;
+}
+.bg-rank
+{
+	background-color: rgb(186, 216, 240) !important;
+}
+.bg-money
+{
+	background-color: rgb(175, 202, 173) !important;
+}
+.btn-group-xs>.btn, .btn-xs {
+    --bs-btn-padding-y: 0.10rem !important;
+    --bs-btn-padding-x: 0.2rem !important;
+    --bs-btn-font-size: 0.7rem !important;
+    --bs-btn-border-radius: 0.25rem !important;
+}
+
+.progress-bar
+{
+	width: 1px;
+	transition: width 5s !important;
+}
+.avatar
+{
+	background-position: center; /* Center the image */
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-color: #fff; /* Center the image */
+	vertical-align: middle;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	display: inline-block;
+}
+.avatar-sm
+{
+	background-position: center; /* Center the image */
+	background-repeat: no-repeat; /* Do not repeat the image */
+	background-size: cover; /* Resize the background image to cover the entire container */
+	background-color: #fff; /* Center the image */
+	vertical-align: middle;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	display: inline-block;
+}
+.first
+{
+	background-image: url('/images/1st.png');
+}
+.second
+{
+	background-image: url('/images/2nd.png');
+}
+.third
+{
+	background-image: url('/images/3rd.png');
+}
+.barnes
+{
+	background-image: url('/images/barnes.png');
+}
+.base_blue
+{
+	background-image: url('/images/base_blue.png');
+}
+.base_drkgreen
+{
+	background-image: url('/images/base_drkgreen.png');
+}
+.base_green
+{
+	background-image: url('/images/base_green.png');
+}
+.base_orange
+{
+	background-image: url('/images/base_orange.png');
+}
+.base_pink
+{
+	background-image: url('/images/base_pink.png');
+}
+.base_purple
+{
+	background-image: url('/images/base_purple.png');
+}
+.base_red
+{
+	background-image: url('/images/base_red.png');
+}
+.base_sucker
+{
+	background-image: url('/images/base_sucker.png');
+}
+.deadpool
+{
+	background-image: url('/images/deadpool.png');
+}
+.gamora
+{
+	background-image: url('/images/gamora.png');
+}
+.horseman
+{
+	background-image: url('images/horseman.png');
+}
+.ironman
+{
+	background-image: url('/images/ironman.png');
+}
+.leia
+{
+	background-image: url('/images/leia.png');
+}
+.loser
+{
+	background-image: url('/images/loser.png');
+}
+.spiderman
+{
+	background-image: url('images/spiderman.png');
+}
+.thor
+{
+	background-image: url('/images/thor.png');
+}
