@@ -4,11 +4,11 @@ class DBSettings
 {
 	public $DBDRIVER = "mysql";
 	#public $DBHOST = "localhost";
-	public $DBHOST = "localhost";
-	public $DBNAME = "chicks";
-	public $DBUSER = "web";
+	public $DBHOST = "192.168.1.246";
+	public $DBNAME = "freedom";
+	public $DBUSER = "railside_app_001";
 	#public $DBUSER = "root";
-	public $DBPASS = "ChickenD!nner";
+	public $DBPASS = "R@ilside001";
 	#public $DBPASS = "cLDsNBVE4R6w";
 
 	public $conn;

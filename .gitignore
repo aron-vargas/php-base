@@ -1,3 +1,4 @@
 vendor/
 phpqrcode/
 js/DataTabkes-1.12.1/
+include/classes/DBSettings.php
