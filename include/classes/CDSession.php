@@ -10,7 +10,8 @@ class CDSession
 	public function __construct()
 	{
 		$this->user = new User();
-		$this->controller = new CDController();
+		$ControllerClass = (isset($_SESSION["Controller"])) ? $_SESSION["Controller"] : "CDController";
+		$this->controller = new $ControllerClass();
 	}
 
 	public function End()

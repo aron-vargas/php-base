@@ -9,7 +9,6 @@ syslog(LOG_DEBUG, "Autoload LoadClass registered");
 $dbh = DBConnection();
 syslog(LOG_DEBUG, "Database connection established");
 
-
 $session = new CDSession();
 syslog(LOG_DEBUG, "CDSession created");
 

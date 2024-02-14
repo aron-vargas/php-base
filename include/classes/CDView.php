@@ -10,6 +10,8 @@ class CDView
 	public $css = array();
 	public $js = array();
 
+	public $model;
+
 	private $debug = false;
 
 	public function __construct($model = null)
@@ -26,6 +28,8 @@ class CDView
 		$this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
 		$this->js['datatable'] = "<script type='text/javascript' src='js/datatables.min.js'></script>";
 		$this->js['imgpicker'] = "<script type='text/javascript' src='js/image-picker.min.js'></script>";
+
+		$this->model = $model;
 	}
 
 	public function render_header()
@@ -47,6 +51,7 @@ class CDView
 				include ("debug.php");
 			echo "</div>\n";
 		}
+		
 		include($this->template);
 	}
 

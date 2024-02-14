@@ -6,13 +6,16 @@ class CDController
 	private $target = "home";
 	private $target_pkey;
 
-	public $model;
-	public $view;
+	private $model;
+	private $view;
 
 	public function __construct()
 	{
-		$this->model = new CDModel();
-		$this->view = new CDView();
+		$ModelClass = isset($_SESSION["APP-Model"]) ? $_SESSION["APP-Model"] : "CDModel";
+		$ViewClass = isset($_SESSION["APP-View"]) ? $_SESSION["APP-View"] : "CDView";
+		
+		$this->model = new $ModelClass();
+		$this->view = new $ViewClass($this->model);
 	}
 
 	public function process($req)
