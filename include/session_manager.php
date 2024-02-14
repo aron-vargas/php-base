@@ -1,12 +1,20 @@
 <?php
+syslog(LOG_DEBUG, "Session Start");
+
 # Setup auto load
 // Or, using an anonymous function
 spl_autoload_register('LoadClass');
+syslog(LOG_DEBUG, "Autoload LoadClass registered");
 
 $dbh = DBConnection();
+syslog(LOG_DEBUG, "Database connection established");
+
 
 $session = new CDSession();
+syslog(LOG_DEBUG, "CDSession created");
+
 $session->validate();
+syslog(LOG_DEBUG, "CDSession Validated with: " . ($session->auth) ? "Authorized" : "No Authorization");
 
 function DBConnection()
 {
@@ -18,7 +26,11 @@ function DBConnection()
     }
     catch (Exception $exp)
     {
-        $error = "Unable to make a database connection!";
+        global $error;
+        $error = "<h2>Unable to make a database connection!</h2>";
+        $error .= "<div class='error-info'>{$exp->getMessage()}</div>";
+	    $error .= "<div class='error-info text-small'>{$exp->getTraceAsString()}</div>";
+
         include("include/templates/error_page.php");
         exit();
     }

@@ -6,7 +6,7 @@ class DBSettings
 	#public $DBHOST = "localhost";
 	public $DBHOST = "192.168.1.246";
 	public $DBNAME = "freedom";
-	public $DBUSER = "railside_app_001";
+	public $DBUSER = "railside_app_01";
 	#public $DBUSER = "root";
 	public $DBPASS = "R@ilside001";
 	#public $DBPASS = "cLDsNBVE4R6w";

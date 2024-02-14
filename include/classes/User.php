@@ -3,8 +3,9 @@
 class User extends BaseClass
 {
 	public $pkey;                   # integer
+    public $key_name = "user_id";   # string
 	protected $db_table = "user";   # string
-	public $type;                   # string
+	public $user_type;                   # string
 	public $user_name;              # string
 	public $first_name;             # string
 	public $last_name;              # string
@@ -35,7 +36,7 @@ class User extends BaseClass
 		$this->SetFieldArray();
 
 		$this->pkey = $user_id;
-		$this->type = $type;
+		$this->user_type = $type;
 		$this->profile = new UserProfile($user_id);
 		$this->bets = array();
 		$this->Load();
@@ -48,7 +49,7 @@ class User extends BaseClass
 		$valid = false;
 
 		# First try username
-		$sth = $dbh->prepare("SELECT pkey, password FROM user WHERE status != 'INACTIVE' AND LOWER(user_name) = ?");
+		$sth = $dbh->prepare("SELECT user_id, password FROM user WHERE status != 'INACTIVE' AND LOWER(user_name) = ?");
 		$sth->bindValue(1, strtolower(trim($user_name)), PDO::PARAM_STR);
 		$sth->execute();
 		$data = $sth->fetch(PDO::FETCH_OBJ);
@@ -56,7 +57,7 @@ class User extends BaseClass
 		# Then try email
 		if (empty($data) && $user_name)
 		{
-			$sth = $dbh->prepare("SELECT pkey, password FROM user WHERE status != 'INACTIVE' AND LOWER(email) = ?");
+			$sth = $dbh->prepare("SELECT user_id, password FROM user WHERE status != 'INACTIVE' AND LOWER(email) = ?");
 			$sth->bindValue(1, strtolower(trim($user_name)), PDO::PARAM_STR);
 			$sth->execute();
 			$data = $sth->fetch(PDO::FETCH_OBJ);
@@ -64,9 +65,9 @@ class User extends BaseClass
 
 		if (!empty($data))
 		{
-			if (!empty($password) && md5($password) == $data->password)
+			if (!empty($password) && password_verify($password, $data->password))
 			{
-				$session->user = new User($data->pkey);
+				$session->user = new User($data->user_id);
 				$valid = true;
 			}
 		}
@@ -83,7 +84,7 @@ class User extends BaseClass
 				if ($key == 'db_table')
 					continue;
 				else if ($key == 'password')
-				  $this->password = md5($val);
+				  $this->password = password_hash($val, PASSWORD_BCRYPT);
 				else if (@property_exists($this, $key))
 					$this->{$key} = $val;
 			}
@@ -112,7 +113,7 @@ class User extends BaseClass
 		else
 			$order_by = "ORDER BY first_name, last_name";
 
-		$sth = $dbh->query("SELECT * FROM user WHERE pkey > 1 $order_by");
+		$sth = $dbh->query("SELECT * FROM user WHERE user_id > 1 $order_by");
 		$list = $sth->fetchAll(PDO::FETCH_OBJ);
 
 		return $list;
@@ -127,14 +128,14 @@ class User extends BaseClass
 		foreach($user_list as $usr)
 		{
 			if ($options == User::$USER_NICKNAME)
-				$text = "{$usr->nickname}";
+				$text = "{$usr->nick_name}";
 			else
 				$text = "{$usr->first_name} {$usr->last_name}";
 
-			$sel = ($selected == $usr->pkey) ? " selected" : "";
+			$sel = ($selected == $usr->user_id) ? " selected" : "";
 
 			if ($usr->status == User::$STATUS_ACTIVE || $sel)
-				$option_list .= "<option value='{$usr->pkey}'{$sel}>$text</option>";
+				$option_list .= "<option value='{$usr->user_id}'{$sel}>$text</option>";
 		}
 
 		return $option_list;
@@ -143,11 +144,11 @@ class User extends BaseClass
 	private function SetFieldArray()
 	{
 		$i = 0;
-		$this->field_array[$i++] = new DBField('type', PDO::PARAM_STR, false, 32);
+		$this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 32);
 		$this->field_array[$i++] = new DBField('user_name', PDO::PARAM_STR, false, 32);
 		$this->field_array[$i++] = new DBField('first_name', PDO::PARAM_STR, false, 64);
 		$this->field_array[$i++] = new DBField('last_name', PDO::PARAM_STR, false, 64);
-		$this->field_array[$i++] = new DBField('nickname', PDO::PARAM_STR, false, 45);
+		$this->field_array[$i++] = new DBField('nick_name', PDO::PARAM_STR, false, 45);
 		$this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
 		$this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 32);
 		$this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 32);

@@ -3,7 +3,7 @@
 
 ?>
 <style>
-.form-signin 
+.form-signin
 {
 	max-width: 600px;
 	padding: 15px;
@@ -21,7 +21,7 @@
 		<input type='hidden' name='act' value='Create'>
 		<input type='hidden' name='target' value='User'>
 		<input type='hidden' name='avatar' value='base_sucker'>
-		<h4>Sign In</h4>
+		<h4>Register</h4>
 		<div class="mb-4">
 			<label class="form-label" for="user_name" style="margin-left: 0px;">Username</label>
 			<input type="text" id="user_name" name="user_name" class="form-control" placeholder="Username or email address" value="<?php echo $user_name; ?>">

@@ -1,15 +1,95 @@
 body
 {
 	font-family: "PT Serif rev=3";
+    min-height: 800px;
 }
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .card-header, .nav
 {
-    font-family: "PT Serif rev=3";
+    /*font-family: "PT Serif rev=3";*/
+    font-family: Arial,Helvetica,sans-serif;
+}
+
+.code {
+    color: #333;
+    position: relative;
+    overflow: hidden;
+}
+h2.fader
+{
+    text-align: left;
+    color: #ccc;
+    font: 11px monaco, mono-space;
+    padding-left: 30px;
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+.container
+{
+    font-family: Arial,Helvetica,sans-serif;
+}
+.text-bg-dark .bg-dark
+{
+    background-color: #2a2722 !important;
+}
+
+.font-sm
+{
+    font-size: 12px;
+}
+
+.font-md
+{
+    font-size: 18px;
+}
+
+.carousel
+{
+    height: 350px;
+    width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carousel .carousel-inner
+{
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .hidden
 {
 	display: none !important;
+}
+.nomatch
+{
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 800px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-image: url('/images/meadow.png');
+    opacity: 0.75;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nomatch .msg
+{
+    position: absolute;
+    display: block;
+    top: 100px;
+    margin: 0 auto;
+    padding: 30px;
+    width: 600px;
+    border: 2px solid #AAA;
+    border-radius: 10px;
+    background-color: white;
+    font-size: small;
 }
 .bebug_container
 {
@@ -148,4 +228,28 @@ body
 .thor
 {
 	background-image: url('/images/thor.png');
+}
+
+.footer
+{
+    background-color: #202020;
+    color:silver;
+}
+.round-logo
+{
+    background-color: white;
+    padding: 10px;
+    border: 1px solid silver;
+    border-radius: 50%;
+}
+.navbar .round-logo
+{
+    background-color: #fcf7e7;
+    height: 40px;
+}
+
+.footer .round-logo
+{
+    background-color: white;
+    height: 80px;
 }
