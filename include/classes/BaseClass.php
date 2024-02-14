@@ -3,6 +3,7 @@
 class BaseClass
 {
     public $pkey;
+    public $key_name = "pkey";
     protected $db_table;
     protected $field_array = array();
 
@@ -70,7 +71,7 @@ class BaseClass
 
         $field = trim($field);
 
-        $sth = $dbh->prepare("UPDATE {$this->db_table} SET {$field} = ? WHERE pkey = ?");
+        $sth = $dbh->prepare("UPDATE {$this->db_table} SET {$field} = ? WHERE {$this->key_name} = ?");
         $sth->bindValue(1, $value, $val_type);
         $sth->bindValue(2, $this->pkey, PDO::PARAM_INT);
         $sth->execute();
@@ -82,7 +83,7 @@ class BaseClass
     {
         global $dbh;
 
-        $sth = $dbh->query("SELECT * FROM {$this->db_table} WHERE pkey = {$this->pkey}");
+        $sth = $dbh->query("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = {$this->pkey}");
         $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
         $sth->execute();
     }
@@ -126,7 +127,7 @@ class BaseClass
         # remove trailing ','
         $fields = substr($fields, 0, -1);
 
-        $sth = $dbh->prepare("UPDATE {$this->db_table} SET {$fields} WHERE pkey = ?");
+        $sth = $dbh->prepare("UPDATE {$this->db_table} SET {$fields} WHERE {$this->key_name} = ?");
         $this->BindValues($sth);
         $sth->execute();
     }
@@ -137,7 +138,7 @@ class BaseClass
 
         if ($this->pkey)
         {
-            $sth = $dbh->prepare("SELECT * FROM {$this->db_table} WHERE pkey = ?");
+            $sth = $dbh->prepare("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = ?");
             $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
             $sth->execute();
             $rec = $sth->fetch(PDO::FETCH_ASSOC);

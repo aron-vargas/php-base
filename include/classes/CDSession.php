@@ -26,14 +26,14 @@ class CDSession
 			$sth->execute();
 		}
 
-		if (isset($_COOKIE["PHPSESSID"]))
+		if (isset($_COOKIE["CDSESSIONID"]))
 		{
 			$sth = $dbh->prepare("DELETE FROM user_session WHERE session_id = ?");
-			$sth->bindValue(1, $_COOKIE["PHPSESSID"], PDO::PARAM_STR);
+			$sth->bindValue(1, $_COOKIE["CDSESSIONID"], PDO::PARAM_STR);
 			$sth->execute();
 		}
 
-		setcookie('PHPSESSID', false);
+		setcookie('CDSESSIONID', false);
 		session_destroy();
 		unset($_SESSION);
 		unset($_COOKIE);
@@ -45,16 +45,16 @@ class CDSession
 		global $dbh;
 
 		$session_id = sha1($this->user->pkey . time() . rand(1, 1000));
-		setcookie("PHPSESSID", $session_id);
+		setcookie("CDSESSIONID", $session_id);
 
 		$sth = $dbh->prepare("DELETE FROM user_session WHERE user_id = ?");
 		$sth->bindValue(1, $this->user->pkey, PDO::PARAM_INT);
 		$sth->execute();
 
-		$sth = $dbh->prepare("INSERT INTO user_session (session_id, user_id, type, timestamp) VALUES (?,?,?,?)");
+		$sth = $dbh->prepare("INSERT INTO user_session (session_id, user_id, session_type, timestamp) VALUES (?,?,?,?)");
 		$sth->bindValue(1, $session_id, PDO::PARAM_STR);
 		$sth->bindValue(2, $this->user->pkey, PDO::PARAM_INT);
-		$sth->bindValue(3, $this->user->type, PDO::PARAM_INT);
+		$sth->bindValue(3, $this->user->user_type, PDO::PARAM_INT);
 		$sth->bindValue(4, time(), PDO::PARAM_INT);
 		$sth->execute();
 	}
@@ -65,9 +65,9 @@ class CDSession
 
 		$this->auth = false;
 
-		if (isset($_COOKIE["PHPSESSID"]))
+		if (isset($_COOKIE["CDSESSIONID"]))
 		{
-			if ($this->Load($_COOKIE["PHPSESSID"]))
+			if ($this->Load($_COOKIE["CDSESSIONID"]))
 			{
 				$this->auth = true;
 			}
@@ -105,7 +105,7 @@ class CDSession
 		$valid = false;
 		$oneday = time() - 86400; # 1 Day old
 
-		$sth = $dbh->prepare("SELECT user_id, type, timestamp FROM user_session WHERE session_id = ?");
+		$sth = $dbh->prepare("SELECT user_id, session_type, timestamp FROM user_session WHERE session_id = ?");
 		$sth->bindValue(1, $session_id, PDO::PARAM_INT);
 		$sth->execute();
 
@@ -113,14 +113,14 @@ class CDSession
 		{
 			if ($data->timestamp > $oneday)
 			{
-				$this->user = new User($data->user_id, $data->type);
+				$this->user = new User($data->user_id, $data->session_type);
 				$valid = true;
 
-				//echo "<div style='font-size: 8pt'>{$session_id}, ($data->user_id) + ($data->type) </div>";
+				//echo "<div style='font-size: 8pt'>{$session_id}, ($data->user_id) + ($data->session_type) </div>";
 			}
 			else
 			{
-				$this->controller->view->message = "Session not found or is expired. [{$_COOKIE["PHPSESSID"]}] Please login.";
+				$this->controller->view->message = "Session not found or is expired. [$session_id] Please login.";
 			}
 		}
 

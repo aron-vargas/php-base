@@ -7,22 +7,24 @@ try
 	require("include/session_manager.php");
 
 	$session->controller->process($_REQUEST);
+
+    # Show the stuff
+    $session->controller->view->render_header();
+    $session->controller->view->render_body();
 }
 catch (PDOException $exp)
 {
-	if ($session->controller->view->Empty())
-		$session->controller->view->SetView("error.php");
-
-	$session->controller->view->message = $exp->getMessage();
-	$session->controller->view->message .= $exp->getTraceAsString();
+	$error_message = $exp->getMessage();
+	$error_message .= $exp->getTraceAsString();
+    syslog(LOG_ERR, $error_message);
+    include("include/templates/error.php");
 }
 catch (Exception $exp)
 {
-	if ($session->controller->view->Empty())
-		$session->controller->view->SetView("error.php");
-
-	$session->controller->view->message = $exp->getMessage();
+    echo "<h3>Exception</h3>";
+	$error_message = $exp->getMessage();
+    syslog(LOG_ERR, $session->controller->view->message);
+    include("include/templates/error.php");
 }
 
-# Show the stuff
-$session->controller->view->render();
+$session->controller->view->render_footer();

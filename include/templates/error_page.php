@@ -2,18 +2,21 @@
 global $exp, $error;
 
 if ($exp)
+{
     $message = $exp->message();
+    $message .= $exp->getTraceAsString();
+}
 else if (isset($error))
-    $message = $error;
+{
+    if (is_string($error))
+        $message = $error;
+    else
+        $message = print_r($error, true);
+}
 else
     $message = "An unknow error has occured!";
 
-echo "
-<div class='error'>
-    <div class='error_msg'>$message</div>
-</div>";
-?>
-
+echo <<<END
 <!DOCTYPE html>
 <html>
     <head>
@@ -25,3 +28,4 @@ echo "
         </div>
     </body>
 </html>
+END;

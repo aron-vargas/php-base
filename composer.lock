@@ -4,8 +4,47 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e573a359eb14b5fd12dbf3167471c4be",
+    "content-hash": "baddd2c3e1d03557d4ec39728e3f02cd",
     "packages": [
+        {
+            "name": "components/font-awesome",
+            "version": "6.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/components/font-awesome.git",
+                "reference": "736b79de49acc07e77fdc377d2265ede6f10d3d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/components/font-awesome/zipball/736b79de49acc07e77fdc377d2265ede6f10d3d9",
+                "reference": "736b79de49acc07e77fdc377d2265ede6f10d3d9",
+                "shasum": ""
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "styles": [
+                        "css/all.css"
+                    ],
+                    "files": [
+                        "css/all.min.css",
+                        "webfonts/*"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC-BY-4.0",
+                "MIT",
+                "OFL-1.1"
+            ],
+            "description": "Font Awesome, the iconic SVG, font, and CSS framework.",
+            "support": {
+                "issues": "https://github.com/components/font-awesome/issues",
+                "source": "https://github.com/components/font-awesome/tree/6.5.1"
+            },
+            "time": "2023-12-11T15:51:37+00:00"
+        },
         {
             "name": "components/jquery",
             "version": "v3.7.1",

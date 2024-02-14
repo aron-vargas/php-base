@@ -8,22 +8,22 @@ $tr = "";
 $sth = $dbh->query("SELECT
 	u.*
 FROM user u
-WHERE pkey > 1
-ORDER BY u.pkey DESC");
+WHERE user_id > 1
+ORDER BY u.user_id DESC");
 while ($row = $sth->fetch(PDO::FETCH_OBJ))
 {
-	$num = $row->pkey - 1;
+	$num = $row->user_id;
 
 	$tr .= "<tr>
 		<td class='text-right'>{$num}</td>
-		<td class='text-left'>{$row->user_name}<span class='rounded-circle avatar-sm float-start {$row->avatar}'>&nbsp;</span></td>
+		<td class='text-left'>{$row->user_name}<span class='rounded-circle avatar-sm float-start base_blue'>&nbsp;</span></td>
 		<td class='text-left'>{$row->first_name} {$row->last_name}</td>
-		<td class='text-left'>{$row->nickname}</td>
+		<td class='text-left'>{$row->nick_name}</td>
 		<td class='text-left'>{$row->email}</td>
 		<td class='text-left'>{$row->phone}</td>
 		<td class='text-left'>{$row->status}</td>
 		<td class='text-right{$protected}'>{$row->permissions}</td>
-		<td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='index.php?act=edit&target=User&pkey={$row->pkey}&v=user_edit'>Edit</a></td>
+		<td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='index.php?act=edit&target=User&pkey={$row->user_id}&v=user_edit'>Edit</a></td>
 	</tr>";
 }
 ?>
