@@ -1,5 +1,5 @@
 <?php
-	$user_name = (isset($_REQUEST['user_name'])) ? BaseClass::Clean($_REQUEST['user_name']) : "";
+	$user_name = (isset($_REQUEST['user_name'])) ? CDModel::Clean($_REQUEST['user_name']) : "";
 
 ?>
 <style>

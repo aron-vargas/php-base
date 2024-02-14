@@ -39,6 +39,12 @@ function LoadClass($class)
 {
     if (file_exists("include/{$class}.php"))
         include_once "include/{$class}.php";
-    else if (file_exists("include/classes/{$class}.php"))
-        include_once "include/classes/{$class}.php";
+    else if (file_exists("include/components/{$class}.php"))
+        include_once "include/components/{$class}.php";
+    else if (file_exists("include/models/{$class}.php"))
+        include_once "include/models/{$class}.php";
+    else if (file_exists("include/views/{$class}.php"))
+        include_once "include/views/{$class}.php";
+    else if (file_exists("include/controlers/{$class}.php"))
+        include_once "include/controlers/{$class}.php";
 }

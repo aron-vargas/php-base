@@ -6,6 +6,9 @@ class Home extends CDController
     private $target = "home";
     private $target_pkey;
 
+    /**
+     * Create a new instance
+     */
     public function __construct()
     {
         # TODO: Define this method
@@ -16,13 +19,13 @@ class Home extends CDController
         # Perform the action
         if (isset($req['act']))
         {
-            $action = strtolower(BaseClass::Clean($req['act']));
+            $action = strtolower(CDModel::Clean($req['act']));
 
             if (isset($req['target']))
-               $ClassName = BaseClass::Clean($req['target']);
+               $ClassName = CDModel::Clean($req['target']);
 
             if (isset($req['pkey']))
-                $this->target_pkey = BaseClass::Clean($req['pkey']);
+                $this->target_pkey = CDModel::Clean($req['pkey']);
         }
     }
 }

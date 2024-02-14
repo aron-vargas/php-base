@@ -1,6 +1,6 @@
 <?php
 
-class User extends BaseClass
+class User extends CDModel
 {
 	public $pkey;                   # integer
     public $key_name = "user_id";   # string
@@ -31,6 +31,11 @@ class User extends BaseClass
 	static public $USER_NICKNAME = 1;
 	static public $USER_FULLNAME = 0;
 
+    /**
+     * Create a new instance
+     * @param integer
+     * @param string
+     */
 	public function __construct($user_id = null, $type = 'SYSTEM')
 	{
 		$this->SetFieldArray();
@@ -215,7 +220,7 @@ class User extends BaseClass
 			{
 				$valid = false;
 				$session->controller->view->message .= "<div>This username already exist.</div><div>Login <a href='login.php'>here</a> or select another username.</div>";
-				$session->controller->view->SetView('include/templates/register_form.php');
+				$session->controller->view->Set('include/templates/register_form.php');
 			}
 		}
 

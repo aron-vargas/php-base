@@ -1,6 +1,6 @@
 <?php
 
-class Bet extends BaseClass
+class Bet extends CDModel
 {
 	public $pkey;                   # integer
 	protected $db_table = "bet";   # string

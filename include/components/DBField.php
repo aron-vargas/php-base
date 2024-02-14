@@ -9,6 +9,13 @@ class DBField
 
     public $max_length;
 
+    /**
+     * Create a new instance
+     * @param string
+     * @param integer
+     * @param boolean
+     * @param integer
+     */
     public function __construct($name = 'pkey', $type = PDO::PARAM_INT, $nullable = true, $max_length = 0)
     {
         $this->name = $name;

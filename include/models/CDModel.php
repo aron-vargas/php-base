@@ -1,12 +1,21 @@
 <?php
 
-class BaseClass
+class CDModel
 {
     public $pkey;
     public $key_name = "pkey";
     protected $db_table;
     protected $field_array = array();
 
+    public $ClassName = "CDModel";
+
+    public $edit_view = "include/templates/login_form.php";
+	public $display_view = "include/templates/home.php";
+
+    /**
+     * Create a new instance
+     * @param mixed
+     */
     public function __construct($id = null)
     {
         $this->pkey = $id;
@@ -14,6 +23,10 @@ class BaseClass
         $this->Load();
     }
 
+    /**
+     * Set the field values in the PDO Statement
+     * @param PDOStatement
+     */
     public function BindValues(&$sth)
     {
         $i = 1;
@@ -30,31 +43,27 @@ class BaseClass
         return $i;
     }
 
+    /**
+     * Strip HTML tags and trim whitestpace
+     * @param mixed
+     */
     static public function Clean($param)
     {
         return strip_tags(trim($param));
     }
 
-    public function Copy($assoc)
+    /**
+     * Add a new rocord
+     */
+    public function Create()
     {
-        if (is_array($assoc))
-        {
-            foreach($assoc AS $key => $val)
-            {
-                if ($key == 'db_table')
-                    continue;
-                else if (@property_exists($this, $key))
-                    $this->{$key} = $val;
-            }
-        }
+        $this->db_insert();
     }
 
     /**
-     * @param string
-     * @param mixed
-     * @throws PDOException
+     * Change a field value
      */
-    public function change($field, $value)
+    public function Change($field, $value)
     {
         global $dbh;
 
@@ -79,7 +88,28 @@ class BaseClass
         $this->{$field} = $value;
     }
 
-    public function delete()
+    /**
+     * Copy attributes from array
+     * @param array
+     */
+    public function Copy($assoc)
+    {
+        if (is_array($assoc))
+        {
+            foreach($assoc AS $key => $val)
+            {
+                if ($key == 'db_table')
+                    continue;
+                else if (@property_exists($this, $key))
+                    $this->{$key} = $val;
+            }
+        }
+    }
+
+    /**
+     * "Delete" the record
+     */
+    public function Delete()
     {
         global $dbh;
 
@@ -88,6 +118,71 @@ class BaseClass
         $sth->execute();
     }
 
+    /**
+     * Set attribute values from DB record
+     */
+    public function Load()
+    {
+        global $dbh;
+
+        if ($this->pkey)
+        {
+            $sth = $dbh->prepare("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = ?");
+            $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
+            $sth->execute();
+            $rec = $sth->fetch(PDO::FETCH_ASSOC);
+            $this->Copy($rec);
+        }
+    }
+
+    /**
+     * Update DB record
+     */
+    public function Save()
+    {
+        if ($this->pkey)
+            $this->db_update();
+        else
+            $this->db_insert();
+    }
+
+    /**
+     * Define the field array
+     */
+    private function SetFieldArray()
+    {
+        $this->field_array = array();
+    }
+
+    /**
+     * Check validity of this record
+     */
+    public function Validate() {}
+
+    /**
+     * Return attribute value
+     * @param DBField
+     * @return mixed
+     */
+    public function Val($db_field)
+    {
+        $val = null;
+
+        if (@property_exists($this, $db_field->name))
+        {
+            $val =  $this->{$db_field->name};
+
+            if ($db_field->max_length)
+                $val = substr($val, 0, $db_field->max_length);
+        }
+
+        return $val;
+    }
+
+    /**
+     * Perform database insert
+     * @return mixed
+     */
     public function db_insert()
     {
         global $dbh;
@@ -114,6 +209,10 @@ class BaseClass
         return $this->pkey;
     }
 
+    /**
+     * Perform database update
+     * @return integer
+     */
     public function db_update()
     {
         global $dbh;
@@ -128,41 +227,9 @@ class BaseClass
         $fields = substr($fields, 0, -1);
 
         $sth = $dbh->prepare("UPDATE {$this->db_table} SET {$fields} WHERE {$this->key_name} = ?");
-        $this->BindValues($sth);
+        $i = $this->BindValues($sth);
         $sth->execute();
-    }
 
-    public function Load()
-    {
-        global $dbh;
-
-        if ($this->pkey)
-        {
-            $sth = $dbh->prepare("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = ?");
-            $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
-            $sth->execute();
-            $rec = $sth->fetch(PDO::FETCH_ASSOC);
-            $this->Copy($rec);
-        }
-    }
-
-    private function SetFieldArray()
-    {
-        $this->field_array = array();
-    }
-
-    public function Val($db_field)
-    {
-        $val = null;
-
-        if (@property_exists($this, $db_field->name))
-        {
-            $val =  $this->{$db_field->name};
-
-            if ($db_field->max_length)
-                $val = substr($val, 0, $db_field->max_length);
-        }
-
-        return $val;
+        return $i;
     }
 }

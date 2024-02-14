@@ -1,34 +1,28 @@
 <?php
 session_start();
+$_SESSION["APP-Controler"] = "CDControler";
+$_SESSION["APP-Model"] = "CalendarModel";
+$_SESSION["APP-View"] = "CalendarView";
 
 try
 {
-	global $session;
-    $_SESSION["APP-Controler"] = "CDControler";
-    $_SESSION["APP-Model"] = "CalendarModel";
-    $_SESSION["APP-View"] = "CalendarView";
+	global $session, $controller;
 	require("include/session_manager.php");
 
-    $session->controller->view = new CalendarView();
-	$session->controller->process($_REQUEST);
+	$controller->process($_REQUEST);
 
     # Show the stuff
-    $session->controller->view->render_header();
-    $session->controller->view->render_body();
+    $controller->view->render();
 }
 catch (PDOException $exp)
 {
-	$error_message = $exp->getMessage();
-	$error_message .= $exp->getTraceAsString();
-    syslog(LOG_ERR, $error_message);
-    include("include/templates/error.php");
+    // Change the view and process the exception
+	$controller->HandleException($exp);
+    $controller->view->render();
 }
 catch (Exception $exp)
 {
-    echo "<h3>Exception</h3>";
-	$error_message = $exp->getMessage();
-    syslog(LOG_ERR, $session->controller->view->message);
-    include("include/templates/error.php");
+    // Change the view and process the exception
+    $controller->HandleException($exp);
+    $controller->view->render();
 }
-
-$session->controller->view->render_footer();

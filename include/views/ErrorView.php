@@ -4,12 +4,16 @@ class ErrorView extends CDView
 {
     public $errors = array();
 
+    /**
+     * Create a new instance
+     * @param CDModel
+     */
     public function __construct($model = null)
     {
         parent::__construct($model);
     }
 
-    public function HandleException($exp)
+    public function AddException($exp)
     {
         $this->errors[] = $exp->getMessage();
         $this->errors[] = $exp->getTraceAsString();
@@ -23,8 +27,9 @@ class ErrorView extends CDView
         </div>";
     }
 
-    public function render_body()
+    public function render_footer()
     {
+        // Add all the errors
         foreach($this->errors AS $msg)
         {
             $error_message .= self::WrapError($msg);
@@ -42,5 +47,8 @@ class ErrorView extends CDView
                 <div>try looking at our <a href=\"/help\">Help Center</a> if you need a hand.</div>
             </div>
         </div>";
+
+        // Add the normal footer template
+        include($this->footer);
     }
 }

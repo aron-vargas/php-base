@@ -1,11 +1,8 @@
 <?php
 session_start();
 
-global $session;
+global $session, $controller;
 require("include/session_manager.php");
-require_once("phpqrcode/qrlib.php");
 
-include($session->controller->view->header);
-$session->controller->view->menu();
-include("include/templates/showqrcode.php");
-include($session->controller->view->footer);
+$controller->SetTemplate("include/templates/showqrcode.php");
+$controller->view->render();

@@ -13,7 +13,10 @@ class DBSettings
 
 	public $conn;
 
-	public function __construct()
+    /**
+     * Create a new instance
+     */
+    public function __construct()
 	{
 		$DNS = "{$this->DBDRIVER}:host={$this->DBHOST};dbname={$this->DBNAME}";
 		$this->conn = new PDO($DNS, $this->DBUSER, $this->DBPASS);

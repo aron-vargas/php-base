@@ -1,6 +1,6 @@
 <?php
 
-class Result extends BaseClass
+class Result extends CDModel
 {
 	public $pkey;                   # integer
 	protected $db_table = "result";   # string
@@ -17,6 +17,10 @@ class Result extends BaseClass
 	static public $TYPE_PLACE = "PLACE";
 	static public $TYPE_SHOW = "SHOW";
 
+    /**
+     * Create a new instance
+     * @param integer
+     */
 	public function __construct($id = null)
 	{
 		$this->SetFieldArray();

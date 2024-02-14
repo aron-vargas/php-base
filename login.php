@@ -1,24 +1,25 @@
 <?php
 session_start();
+$_SESSION["APP-Controler"] = "CDControler";
+$_SESSION["APP-Model"] = "CDModel";
+$_SESSION["APP-View"] = "CDView";
 
 try
 {
-	global $session;
+	global $session, $controller;
 	require("include/session_manager.php");
 
+    // Close any previous session
 	$session->End();
 
-	$session->controller->view->SetView('include/templates/login_form.php');
+	$controller->SetTemplate('include/templates/login_form.php');
+
+    # Show the stuff
+    $controller->view->render();
 }
 catch (Exception $exp)
 {
-	if ($session->controller->view->Empty())
-		$session->controller->view->SetView("error.php");
-
-	$session->controller->view->message = $exp->getMessage();
+    // Change the view and process the exception
+    $controller->HandleException($exp);
+    $controller->view->render();
 }
-
-
-echo "</pre>";
-# Show the stuff
-$session->controller->view->render();

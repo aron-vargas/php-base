@@ -3,15 +3,16 @@
 class CDSession
 {
 	public $user;
-	public $controller;
 
 	public $auth = false;
 
+    /**
+     * Create a new instance
+     */
 	public function __construct()
 	{
 		$this->user = new User();
-		$ControllerClass = (isset($_SESSION["Controller"])) ? $_SESSION["Controller"] : "CDController";
-		$this->controller = new $ControllerClass();
+        $this->Init();
 	}
 
 	public function End()
@@ -40,6 +41,13 @@ class CDSession
 		unset($_COOKIE);
 	}
 
+    public function Init()
+    {
+        global $controller;
+
+        $ControllerClass = (isset($_SESSION["Controller"])) ? $_SESSION["Controller"] : "CDController";
+		$controller = new $ControllerClass();
+    }
 
 	public function Insert()
 	{
@@ -62,7 +70,7 @@ class CDSession
 
 	public function validate()
 	{
-		global $session;
+		global $session, $controller;
 
 		$this->auth = false;
 
@@ -75,7 +83,7 @@ class CDSession
 			else
 			{
 				$session->End();
-				$this->controller->view->SetView("include/templates/login_form.php");
+				$controller->SetTemplate("include/templates/login_form.php");
 			}
 		}
 		else if (isset($_REQUEST['login']) && isset($_REQUEST['user_name']) && isset($_REQUEST['password']))
@@ -87,21 +95,16 @@ class CDSession
 			}
 			else
 			{
-				$this->controller->view->message = "Invalid login credentials. Please try again.";
-				$this->controller->view->SetView("include/templates/login_form.php");
+				$controller->AddMsg("Invalid login credentials. Please try again.");
+				$controller->SetTemplate("include/templates/login_form.php");
 			}
 		}
-
-	  //  if (!$this->auth)
-	  //  {
-	  //      throw new Exception($this->controller->view->message);
-	  //  }
 
 		return $this->auth;
 	}
 	public function Load($session_id)
 	{
-		global $dbh;
+		global $dbh, $controller;
 
 		$valid = false;
 		$oneday = time() - 86400; # 1 Day old
@@ -116,12 +119,10 @@ class CDSession
 			{
 				$this->user = new User($data->user_id, $data->session_type);
 				$valid = true;
-
-				//echo "<div style='font-size: 8pt'>{$session_id}, ($data->user_id) + ($data->session_type) </div>";
 			}
 			else
 			{
-				$this->controller->view->message = "Session not found or is expired. [$session_id] Please login.";
+				$controller->AddMsg("Session not found or is expired. [$session_id] Please login.");
 			}
 		}
 
