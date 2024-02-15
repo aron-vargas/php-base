@@ -47,6 +47,46 @@ class User extends CDModel
 		$this->Load();
 	}
 
+	/**
+	 * Perform requestion action
+	 * @param string
+	 * @param mixed
+	 */
+	public function ActionHandler($action, $req)
+    {
+		global $session;
+
+        if ($action == 'save')
+        {
+            $this->Copy($req);
+            $this->Save();
+        }
+        else if ($action == 'create')
+        {
+            $this->Copy($req);
+            if ($this->Validate())
+            {
+                $this->Create();
+
+                // Auto login
+        	    $session->user = $this;
+            	$session->Insert();
+            }
+        }
+        else if ($action == 'change')
+        {
+            $field = (isset($req['field'])) ? $req['field'] : null;
+            $value = (isset($req['value'])) ? trim($req['value']) : null;
+
+            $this->Change($field, $value);
+            $session->user->Load();
+        }
+        else if ($action == 'delete')
+        {
+            $this->Delete();
+        }
+    }
+
 	public function authenticate($user_name, $password)
 	{
 		global $session, $dbh;

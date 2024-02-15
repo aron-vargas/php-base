@@ -24,6 +24,39 @@ class CDModel
     }
 
     /**
+	 * Perform requestion action
+	 * @param string
+	 * @param mixed
+	 */
+    public function ActionHandler($action, $req)
+    {
+        if ($action == 'save')
+        {
+            $this->Copy($req);
+            $this->Save();
+        }
+        else if ($action == 'create')
+        {
+            $this->Copy($req);
+            if ($this->Validate())
+            {
+                $this->Create();
+            }
+        }
+        else if ($action == 'change')
+        {
+            $field = (isset($req['field'])) ? $req['field'] : null;
+            $value = (isset($req['value'])) ? trim($req['value']) : null;
+
+            $this->Change($field, $value);
+        }
+        else if ($action == 'delete')
+        {
+            $this->Delete();
+        }
+    }
+
+    /**
      * Set the field values in the PDO Statement
      * @param PDOStatement
      */

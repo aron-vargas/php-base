@@ -1,0 +1,68 @@
+.cal-days
+{
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0%;
+}
+
+.cal-header, .week
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex: 1 1 0%;
+}
+
+.hdr-cell
+{
+    text-align: center;
+}
+
+.hdr-cell, .mv-cell, .wv-cell, .dv-cell
+{
+    flex: 1 1 14.25%;
+    position: relative;
+}
+.mv-cell, .wv-cell, .dv-cell
+{
+    height: 100px;
+    border: 1px solid silver;
+}
+
+.today
+{
+    background-color: #c6d4f3;
+}
+
+.selected
+{
+    border: 2px solid blue;
+}
+
+.holiday
+{
+    background-color: rgb(202, 243, 228);
+}
+
+.weekend
+{
+    background-color: #f1f1f1;
+}
+
+.prev, .next
+{
+    opacity: 50%;
+    background-color: #dddddd;
+}
+
+.cell-num
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 1rem;
+    padding: 2px;
+    background-color: rgb(239, 246, 255);
+/*    border-right: 1px solid silver; */
+/*    border-bottom: 1px solid silver; */
+}

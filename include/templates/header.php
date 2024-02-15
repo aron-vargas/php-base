@@ -6,13 +6,13 @@
 		<meta name="description" content="Download Bootstrap to get the compiled CSS and JavaScript, source code, or include it with your favorite package managers like npm, RubyGems, and more.">
 		<meta name="author" content="Aron Vargas">
 <?php
-	global $session;
+	global $controller;
 
-	foreach($session->controller->view->css as $link)
+	foreach($controller->view->css as $link)
 		echo "$link\n";
 
 	
-	foreach($session->controller->view->js as $script)
+	foreach($controller->view->js as $script)
 		echo "$script\n";
 ?>
 	</head>

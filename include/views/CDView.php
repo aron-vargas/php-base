@@ -11,16 +11,12 @@ class CDView
     private $footer_rendered = false;
 
 	private $message = array();
-	private $css = array();
-	private $js = array();
+	public $css = array();
+	public $js = array();
 
 	private $model;
 
 	private $debug = false;
-
-    public $start_hour = 8;     # integer hour (25-hour format)
-    public $end_hour = 17;      # integer hour (25-hour format)
-    public $time_slot = 900;    # integer in seconds: (900 = 15 minutes * 60 seconds)
 
     /**
      * Create a new instance

@@ -6,27 +6,27 @@ $_SESSION["APP-View"] = "CDView";
 
 try
 {
-	global $session;
+	global $session, $controller;
 	require("include/session_manager.php");
 
     # Process the request
-	$session->controller->process($_REQUEST);
+	$controller->process($_REQUEST);
 
     # Determine the view
-    $session->controller->SetTemplate($_REQUEST);
+    $controller->SetTemplate($_REQUEST);
 
     # Show the stuff
-    $session->controller->view->render();
+    $controller->view->render();
 }
 catch (PDOException $exp)
 {
     // Change the view and process the exception
-    $session->controller->HandleException($exp);
-    $session->controller->view->render();
+    $controller->HandleException($exp);
+    $controller->view->render();
 }
 catch (Exception $exp)
 {
     // Change the view and process the exception
-    $session->controller->HandleException($exp);
-    $session->controller->view->render();
+    $controller->HandleException($exp);
+    $controller->view->render();
 }

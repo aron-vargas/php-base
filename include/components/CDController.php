@@ -55,38 +55,7 @@ class CDController
 		{
 			$action = strtolower(CDModel::Clean($req['act']));
 
-			if ($action == 'save')
-			{
-				$this->model->Copy($req);
-				$this->model->Save();
-			}
-			else if ($action == 'create')
-			{
-				$this->model->Copy($req);
-				if ($this->model->Validate())
-				{
-					$this->model->Create();
-
-					if ($ClassName == 'User')
-					{
-						// Auto login
-						$session->user = $this->model;
-						$session->Insert();
-					}
-				}
-			}
-			else if ($action == 'change')
-			{
-				$field = (isset($req['field'])) ? $req['field'] : null;
-				$value = (isset($req['value'])) ? trim($req['value']) : null;
-
-				$this->model->Change($field, $value);
-				$session->user->Load();
-			}
-			else if ($action == 'delete')
-			{
-				$this->model->Delete();
-			}
+			$this->model->ActionHandler($action, $req);
 		}
 	}
 
@@ -94,18 +63,21 @@ class CDController
 	{
 		global $session;
 
-        # Change the view based on "act" parameter
-        $action = strtolower(CDModel::Clean($req['act']));
+		if (isset($req['act']))
+		{
+	        # Change the view based on "act" parameter
+    	    $action = strtolower(CDModel::Clean($req['act']));
 
-        if ($action == 'edit')
-        {
-            $this->view->Set($this->model->edit_view);
-        }
-        else if ($action == 'view')
-        {
-            $this->view->Set($this->model->display_view);
-        }
-
+			if ($action == 'edit')
+			{
+				$this->view->Set($this->model->edit_view);
+			}
+			else if ($action == 'view')
+			{
+				$this->view->Set($this->model->display_view);
+			}
+		}
+		
 		# Change the view based on "v" parameter
 		if (isset($req['v']))
 		{
