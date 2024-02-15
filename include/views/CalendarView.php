@@ -45,13 +45,13 @@ class CalendarView extends CDView
 
         if ($this->model->view == "m")
         {
-            if ($datetime < $this->model->view_start_date) $class_list .= "prev";
-            if ($datetime > $this->model->view_last_date) $class_list .= "next";
+            if ($datetime < $this->model->view_start_date) $class_list .= " prev";
+            if ($datetime > $this->model->view_last_date) $class_list .= " next";
         }
         else
         {
-            if (date("h", $datetime) < $this->model->work_start) $class_list .= "prev";
-            if (date("h", $datetime) > $this->model->work_end) $class_list .= "next";
+            if (date("h", $datetime) < $this->model->work_start) $class_list .= " prev";
+            if (date("h", $datetime) > $this->model->work_end) $class_list .= " next";
         }
         $class_list .= ($this->model->isSelected($this->model->sel_date, $datetime)) ?" selected" : "";
 
@@ -185,35 +185,52 @@ CAL;
     {
         // create day cells
         $calendar_day_cells = "
-        <div id='wv-gutter'>
-            <div class='cal-header'>
-                <div class='hrd'>&nbsp;</div>
-                <div class'cell-num'>{&nbsp;}</div>
+        <div class='cal-days'>
+            <div id='wv-gutter'>
+                <div class='cal-header'>
+                    <div class='hrd'>&nbsp;</div>
+                    <div class'cell-num'>&nbsp;</div>
+                </div>
+                {$this->TimeCells($this->model->sel_date, "wv-cell gutter")}
             </div>
-            {$this->TimeCells($this->model->sel_date, "wv-cell gutter")}
         </div>";
 
+        echo "<div> Start: ";
+        echo date("Y-m-d", $this->model->cal_start_date);
+        echo "End: ";
+        echo date("Y-m-d", $this->model->cal_end_date);
+        echo "</div>";
+
+        echo "<div> Start: ";
+        echo date("Y-m-d", $this->model->view_start_date);
+        echo "End: ";
+        echo date("Y-m-d", $this->model->view_last_date);
+        echo "</div>";
+
         // Add Cells for this week
-        for($datetime = $this->model->view_start_date; $datetime < $this->model->view_end_date; $datetime += ONE_DAY)
+        $datetime = $this->model->cal_start_date;
+        while($datetime <= $this->model->cal_end_date)
         {
             $day_text = date("D", $datetime);
             $day_num = date("j", $datetime);
             $class_list = $this->ClassList("wv-cell", $datetime);
 
-            $calendar_day_cells .= "<div id='cell-{$datetime}' class='{$class_list}'>
-                <div class='cal-header'>
-                    <div class='hrd'>{$day_text}</div>
-                    <div class'cell-num'>{$day_num}</div>
+            $calendar_day_cells .= "<div class='cal-days'>
+                <div id='cell-{$datetime}' class='{$class_list}'>
+                    <div class='hrd text-center'>{$day_text}</div>
+                    <div class='text-center'>{$day_num}</div>
+                    {$this->TimeCells($datetime, "wv-cell")}
+                
                 </div>
-                {$this->TimeCells($datetime, "wv-cell")}
             </div>";
+            $datetime += ONE_DAY;
         }
 
         return <<<CAL
 <div class='cal'>
     {$this->Navigation()}
     <div class='cal-cont'>
-        <div class="cal-days">
+        <div class="week">
             $calendar_day_cells
         </div>
         <div class='new-item'>
@@ -284,8 +301,9 @@ CAL;
     private function TimeCells($datetime, $base_class)
     {
         $hr = $this->model->start_hour;
-        $start = strtotime("$hr:00", $datetime);
-        $end = strtotime("{$this->end_hour}}:00", $datetime);
+        $start = strtotime("{$hr}:00", $datetime);
+        $hr = $this->model->end_hour;
+        $end = strtotime("{$hr}:00", $datetime);
 
         $cells = "";
         for($time = $start; $time < $end; $time += $this->time_slot)
@@ -301,9 +319,9 @@ CAL;
 
     private function GutterCells($datetime, $base_class)
     {
-        $hr = $this->start_hour;
+        $hr = $this->model->start_hour;
         $start = strtotime("$hr:00", $datetime);
-        $end = strtotime("{$this->end_hour}}:00", $datetime);
+        $end = strtotime("{$this->model->end_hour}}:00", $datetime);
 
         $cells = "";
         for($time = $start; $time < $end; $time += $this->time_slot)
@@ -318,20 +336,21 @@ CAL;
 
     public function ViewOptions($sel_view = "m")
     {
-        if (empty($sel_view)) $sel_view = $this->view;
+        if (empty($sel_view)) $sel_view = $this->model->view;
 
-        $opt_ary = json_decode("[
-            { 'val': 'm', 'text': 'Month' },
-            { 'val': 'w', 'text': 'Week' },
-            { 'val': 'ww', 'text': 'WorkWeek' },
-            { 'val': 'd', 'tex5': 'Day' }
-        ]");
+        $opt_ary = json_decode('
+        [
+            {"val": "m", "text": "Month"},
+            {"val": "w", "text": "Week"},
+            {"val": "ww", "text": "WorkWeek"},
+            {"val": "d", "text": "Day"}
+        ]');
 
         $options = "";
         foreach($opt_ary as $opt)
         {
             $sel = ($opt->val == $sel_view) ? " selected" : "";
-            $options .= "<options value='{$opt->val}'{$sel}>{$opt->text}</options>";
+            $options .= "<option value='{$opt->val}'{$sel}>{$opt->text}</option>";
         }
 
         return $options;

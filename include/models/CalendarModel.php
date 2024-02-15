@@ -157,7 +157,8 @@ class CalendarModel extends CDModel
         }
         else if ($this->view == "w")
         {
-            $this->view_start_date = strtotime("Sunday", $this->sel_date);
+            $day = date("w", $this->sel_date);
+            $this->view_start_date = strtotime("-{$day} Days", $this->sel_date);
             $this->cal_start_date = $this->view_start_date;
 
             $this->view_last_date = strtotime("Saturday", $this->sel_date);
@@ -165,7 +166,8 @@ class CalendarModel extends CDModel
         }
         else if ($this->view == "ww")
         {
-            $this->view_start_date = strtotime("Mondy", $this->sel_date);
+            $day = date("w", $this->sel_date) - 1;
+            $this->view_start_date = strtotime("-{$day} Days", $this->sel_date);
             $this->cal_start_date = $this->view_start_date;
 
             $this->view_last_date = strtotime("Friday", $this->sel_date);
