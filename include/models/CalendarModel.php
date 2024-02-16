@@ -73,29 +73,29 @@ class CalendarModel extends CDModel
         }
         else if ($action == 'today')
         {
-            $this->sel_date = strtotime('today');
+            $this->_cal->sel_date = strtotime('today');
         }
         else if ($action == 'prev')
         {
             if ($this->_cal->view == 'm')
                 $this->_cal->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
             else if ($this->_cal->view == "w")
-                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
             else if ($this->_cal->view == "ww")
-                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
             else if ($this->_cal->view == "d")
-                $this->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
         }
         else if ($action == 'next')
         {
             if ($this->_cal->view == 'm')
-                $this->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("+1 Month", $this->_cal->sel_date);
             else if ($this->_cal->view == "w")
-                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
             else if ($this->_cal->view == "ww")
-                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
             else if ($this->_cal->view == "d")
-                $this->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
+                $this->_cal->sel_date = strtotime("+1 Day", $this->_cal->sel_date);
         }
         else if ($action == 'set_view')
         {

@@ -133,9 +133,8 @@ class CDView
 
 		if ($session->user->pkey)
 		{
-			$buttons = "
-			<div class='float-end'>
-				<span class=''>
+			$buttons = "<div class='float-end'>
+				<span class='pe-2'>
 					<a href='index.php?v=avatar'><span class='rounded-circle avatar {$session->user->avatar}'>&nbsp;</span></a>
 					<a href='index.php?act=edit&target=User&pkey={$session->user->pkey}'>{$session->user->first_name} {$session->user->last_name}</a>
 				</span>
@@ -151,21 +150,22 @@ class CDView
 			</div>";
 		}
 
-		$home_class = (strstr($this->template, "home") === false) ? "text-white" : "active";
-        $membership_class = (strstr($this->template, "membership") === false) ? "text-white" : "active";
-		$about_class = (strstr($this->template, "about") === false) ? "text-white" : "active";
-		$calendar_class = (strstr($this->template, "calendar") === false) ? "text-white" : "active";
+		$home_class = (strstr($this->template, "home") === false) ? "" : "active";
+        $membership_class = (strstr($this->template, "membership") === false) ? "" : "active";
+		$about_class = (strstr($this->template, "about") === false) ? "" : "active";
+		$calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
 
 		echo "
-		<header class='text-bg-dark'>
-			<nav class='navbar navbar-default navbar-fixed-top bg-dark'>
-				<div class='container d-flex flex-wrap'>
-					<span class='px-4'>
+		<header>
+            <nav class='navbar navbar-default navbar-fixed-top'>
+				<div class='container'>
+                    {$buttons}
+					<span class='navbar-brand px-4'>
 						<img class='round-logo' src='images/logo.png' height='40'/>
-					</span>
-                    <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbar-menu' aria-controls='navbar-menu' aria-expanded='false' aria-label='Show Menu'>
-                        <span class='navbar-toggler-icon'></span>
-                    </button>
+                        <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbar-menu' aria-controls='navbar-menu' aria-expanded='false' aria-label='Show Menu'>
+                            <span class='navbar-toggler-icon'></span>
+                        </button>
+                    </span>
                     <div class='collapse navbar-collapse' id='navbar-menu'>
                         <div class='navbar-nav me-auto'>
 						    <a href='index.php?v=home' class='nav-link px-2 $home_class'>Home</a>
@@ -174,7 +174,6 @@ class CDView
                             <a href='index.php?v=about' class='nav-link px-2 $about_class'>About</a>
                         </div>
 					</div>
-					{$buttons}
 				</div>
 			</nav>";
 
