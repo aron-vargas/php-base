@@ -115,20 +115,20 @@ class CalendarModel extends CDModel
         $view_last_date = strtotime(date("Y-m-{$end}", $sel_date));
         $cal_end_date = strtotime("Saturday",  $view_last_date);
 
-        $defaults = (object)array(
-            "sel_date" => $sel_date,
-            "today" => $sel_date,
-            "view_start_date" => $view_start_date,
-            "view_last_date" => $view_last_date,
-            "cal_start_date" => $cal_start_date,
-            "cal_end_date" => $cal_end_date,
-            "view" => "m",
-            "start_hour" => 6,
-            "end_hour" => 20,
-            "work_start" => 8,
-            "work_end" => 18,
-            "time_slot" => 900
-        );
+        $defaults = json_decode("{
+            \"sel_date\": $sel_date,
+            \"today\": $sel_date,
+            \"view_start_date\": $view_start_date,
+            \"view_last_date\": $view_last_date,
+            \"cal_start_date\": $cal_start_date,
+            \"cal_end_date\": $cal_end_date,
+            \"view\": \"m\",
+            \"start_hour\": 6,
+            \"end_hour\": 20,
+            \"work_start\": 8,
+            \"work_end\": 18,
+            \"time_slot\": 900
+        }");
 
         return $defaults;
     }

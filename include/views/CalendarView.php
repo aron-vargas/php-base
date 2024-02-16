@@ -25,7 +25,7 @@ class CalendarView extends CDView
 		$this->css['fa'] = "<link rel='stylesheet' type='text/css' href='vendor/components/font-awesome/css/all.css' media='all'>";
 		$this->css['cal'] = "<link rel='stylesheet' type='text/css' href='style/calendar.css' media='all'>";
 
-		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.min.js'></script>";
+		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>";
 		$this->js['jquery'] = "<script type='text/javascript' src='vendor/components/jquery/jquery.min.js'></script>";
 		$this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
 		$this->js['cal'] = "<script type='text/javascript' src='js/calendar.js'></script>";
@@ -77,10 +77,10 @@ class CalendarView extends CDView
     {
         return <<<JS
 <script type="text/javascript">
-var strart = {$start};
+var start = {$start};
 var end = {$end};
-SetEvents(start, end);
-SetTasks(start, end);
+//SetEvents(start, end);
+//SetTasks(start, end);
 </script>
 JS;
     }
@@ -93,7 +93,7 @@ JS;
 
         return <<<NAV
         <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
+            <div class="container-fluid">
                 <div class="nav-item">
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#left-nav" aria-controls="left-nav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -130,9 +130,9 @@ JS;
                         {$view_options}
                     </select>
                 </div>
-        </div>
-    </nav>
-    <div class='left-nav'></div>
+            </div>
+        </nav>
+        <div class='left-nav'></div>
 NAV;
     }
 

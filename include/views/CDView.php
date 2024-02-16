@@ -31,7 +31,7 @@ class CDView
         $this->css['fa'] = "<link rel='stylesheet' type='text/css' href='vendor/components/font-awesome/css/all.css' media='all'>";
 		$this->css['imgpicker'] = "<link rel='stylesheet' type='text/css' href='style/image-picker.css'/>";
 
-		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.min.js'></script>";
+		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>";
 		$this->js['jquery'] = "<script type='text/javascript' src='vendor/components/jquery/jquery.min.js'></script>";
 		$this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
 		$this->js['datatable'] = "<script type='text/javascript' src='js/datatables.min.js'></script>";
@@ -155,27 +155,24 @@ class CDView
 		$about_class = (strstr($this->template, "about") === false) ? "" : "active";
 		$calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
 
-		echo "
+		echo <<<END
 		<header>
             <nav class='navbar navbar-default navbar-fixed-top'>
-				<div class='container'>
-                    {$buttons}
-					<span class='navbar-brand px-4'>
-						<img class='round-logo' src='images/logo.png' height='40'/>
-                        <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbar-menu' aria-controls='navbar-menu' aria-expanded='false' aria-label='Show Menu'>
-                            <span class='navbar-toggler-icon'></span>
-                        </button>
-                    </span>
-                    <div class='collapse navbar-collapse' id='navbar-menu'>
-                        <div class='navbar-nav me-auto'>
-						    <a href='index.php?v=home' class='nav-link px-2 $home_class'>Home</a>
-						    <a href='index.php?v=membership' class='nav-link px-2 $membership_class'>Membership</a>
-						    <a href='calendar.php' class='nav-link px-2 $calendar_class'>Events</a>
-                            <a href='index.php?v=about' class='nav-link px-2 $about_class'>About</a>
-                        </div>
-					</div>
-				</div>
-			</nav>";
+				<span class='navbar-brand px-4'>
+					<img class='round-logo' src='images/logo.png' height='40'/>
+				    <button class='btn btn-default' type='button' id='navbar-btn' data-bs-toggle='dropdown' aria-expanded='false'> 
+  						<span class='navbar-toggler-icon'></span>
+					</button>
+					<ul id='navbar-menu' class='dropdown-menu' aria-labelledby='navbar-btn'>
+						<li><a href='index.php?v=home' class='nav-link px-2 $home_class'>Home</a></li>
+						<li><a href='index.php?v=membership' class='nav-link px-2 $membership_class'>Membership</a></li>
+						<li><a href='calendar.php' class='nav-link px-2 $calendar_class'>Events</a></li>
+						<li><a href='index.php?v=about' class='nav-link px-2 $about_class'>About</a></li>
+					</ul>
+				</span>
+				{$buttons}
+			</nav>
+END;
 
 		if ($session->auth)
 		{
