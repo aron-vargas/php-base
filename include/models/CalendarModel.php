@@ -5,20 +5,10 @@ define('ONE_DAY', 86400);
 class CalendarModel extends CDModel
 {
     public $pkey;                   # integer
-    public $key_name = "event_id";   # string
-	protected $db_table = "event";   # string
+    public $key_name = "event_id";  # string
+	protected $db_table = "event";  # string
 
-    public $sel_date;    # unix timestamp
-    public $today;    # unix timestamp
-    public $view_start_date;     # unix timestamp
-    public $view_last_date;      # unix timestamp
-    public $cal_start_date;      # unix timestamp
-    public $cal_end_date;        # unix timestamp
-    public $view;                # string  "m,w,ww,d",
-    public $start_hour;          # integer
-    public $end_hour;            # integer
-    public $work_start;          # integer
-    public $work_end;            # integer
+    private $_cal;                   # Object : calendar settings
 
     /**
      * Create a new instanace
@@ -30,15 +20,12 @@ class CalendarModel extends CDModel
         // Initialize
         if (!isset($_SESSION["cal"]))
         {
-            $this->sel_date = strtotime("today");
-            $defaults = $this->GetDefaults($this->sel_date);
+            $sel_date = strtotime("today");
+            $defaults = $this->GetDefaults($sel_date);
             $_SESSION["cal"] = $defaults;
-            $this->Copy($defaults);
         }
-        else
-        {
-            $this->Copy($_SESSION["cal"]);
-        }
+
+        $this->_cal = $_SESSION["cal"];
     }
 
     /**
@@ -78,36 +65,42 @@ class CalendarModel extends CDModel
             $event = new CalEvent($pkey);
             $event->Delete();
         }
+        else if ($action == 'reset')
+        {
+            $sel_date = strtotime("today");
+            $_SESSION['cal'] = $this->GetDefaults($sel_date);
+            $this->_cal = $_SESSION['cal'];
+        }
         else if ($action == 'today')
         {
             $this->sel_date = strtotime('today');
         }
         else if ($action == 'prev')
         {
-            if ($this->view == 'm')
-                $this->sel_date = strtotime("-1 Month", $this->sel_date);
-            else if ($this->view == "w")
-                $this->sel_date = strtotime("-1 Week", $this->sel_date);
-            else if ($this->view == "ww")
-                $this->sel_date = strtotime("-1 Week", $this->sel_date);
-            else if ($this->view == "d")
-                $this->sel_date = strtotime("-1 Day", $this->sel_date);
+            if ($this->_cal->view == 'm')
+                $this->_cal->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
+            else if ($this->_cal->view == "w")
+                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+            else if ($this->_cal->view == "ww")
+                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+            else if ($this->_cal->view == "d")
+                $this->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
         }
         else if ($action == 'next')
         {
-            if ($this->view == 'm')
-                $this->sel_date = strtotime("-1 Month", $this->sel_date);
-            else if ($this->view == "w")
-                $this->sel_date = strtotime("-1 Week", $this->sel_date);
-            else if ($this->view == "ww")
-                $this->sel_date = strtotime("-1 Week", $this->sel_date);
-            else if ($this->view == "d")
-                $this->sel_date = strtotime("-1 Day", $this->sel_date);
+            if ($this->_cal->view == 'm')
+                $this->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
+            else if ($this->_cal->view == "w")
+                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+            else if ($this->_cal->view == "ww")
+                $this->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+            else if ($this->_cal->view == "d")
+                $this->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
         }
         else if ($action == 'set_view')
         {
             if (isset($req['view']))
-                $this->view = self::Clean($req['view']);
+                $this->_cal->view = self::Clean($req['view']);
         }
 
         $this->InitDates();
@@ -122,7 +115,7 @@ class CalendarModel extends CDModel
         $view_last_date = strtotime(date("Y-m-{$end}", $sel_date));
         $cal_end_date = strtotime("Saturday",  $view_last_date);
 
-        $defaults = array(
+        $defaults = (object)array(
             "sel_date" => $sel_date,
             "today" => $sel_date,
             "view_start_date" => $view_start_date,
@@ -134,6 +127,7 @@ class CalendarModel extends CDModel
             "end_hour" => 20,
             "work_start" => 8,
             "work_end" => 18,
+            "time_slot" => 900
         );
 
         return $defaults;
@@ -145,47 +139,41 @@ class CalendarModel extends CDModel
     private function InitDates()
     {
         // Initialize the session settings
-        if ($this->view == 'm')
+        if ($_SESSION['cal']->view == 'm')
         {
-            $this->view_start_date = strtotime(date("Y-m-01", $this->sel_date));
-            $day = date("w", $this->view_start_date);
-            $this->cal_start_date = strtotime("-{$day} Days", $this->view_start_date);
+            $_SESSION['cal']->view_start_date = strtotime(date("Y-m-01", $_SESSION['cal']->sel_date));
+            $day = date("w", $_SESSION['cal']->view_start_date);
+            $_SESSION['cal']->cal_start_date = strtotime("-{$day} Days", $_SESSION['cal']->view_start_date);
 
-            $end = date("t", $this->sel_date);
-            $this->view_last_date = strtotime(date("Y-m-{$end}", $this->sel_date));
-            $this->cal_end_date = strtotime("Saturday",  $this->view_last_date);
+            $end = date("t", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->view_last_date = strtotime(date("Y-m-{$end}", $_SESSION['cal']->sel_date));
+            $_SESSION['cal']->cal_end_date = strtotime("Saturday",  $_SESSION['cal']->view_last_date);
         }
-        else if ($this->view == "w")
+        else if ($_SESSION['cal']->view == "w")
         {
-            $day = date("w", $this->sel_date);
-            $this->view_start_date = strtotime("-{$day} Days", $this->sel_date);
-            $this->cal_start_date = $this->view_start_date;
+            $day = date("w", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->view_start_date = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->cal_start_date = $_SESSION['cal']->view_start_date;
 
-            $this->view_last_date = strtotime("Saturday", $this->sel_date);
-            $this->cal_end_date = $this->view_last_date;
+            $_SESSION['cal']->view_last_date = strtotime("Saturday", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->cal_end_date = $_SESSION['cal']->view_last_date;
         }
-        else if ($this->view == "ww")
+        else if ($_SESSION['cal']->view == "ww")
         {
-            $day = date("w", $this->sel_date) - 1;
-            $this->view_start_date = strtotime("-{$day} Days", $this->sel_date);
-            $this->cal_start_date = $this->view_start_date;
+            $day = date("w", $_SESSION['cal']->sel_date) - 1;
+            $_SESSION['cal']->view_start_date = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->cal_start_date = $_SESSION['cal']->view_start_date;
 
-            $this->view_last_date = strtotime("Friday", $this->sel_date);
-            $this->cal_end_date = $this->view_last_date;
+            $_SESSION['cal']->view_last_date = strtotime("Friday", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->cal_end_date = $_SESSION['cal']->view_last_date;
         }
-        else if ($this->view == "d")
+        else if ($_SESSION['cal']->view == "d")
         {
-            $this->view_start_date = strtotime("00:00:00", $this->sel_date);
-            $this->cal_start_date = $this->view_start_date;
+            $_SESSION['cal']->view_start_date = strtotime("00:00:00", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->cal_start_date = $_SESSION['cal']->view_start_date;
 
-            $this->view_last_date = strtotime("23:59:59", $this->sel_date);
-            $this->cal_end_date = $this->view_last_date;
-        }
-
-        // Copy new values into the session
-        foreach(array_keys($_SESSION["cal"]) AS $key)
-        {
-            $_SESSION["cal"][$key] = $this->{$key};
+            $_SESSION['cal']->view_last_date = strtotime("23:59:59", $_SESSION['cal']->sel_date);
+            $_SESSION['cal']->cal_end_date = $_SESSION['cal']->view_last_date;
         }
     }
 
