@@ -1,4 +1,50 @@
 {
     "exit_on_error": false,
-    "use_db": false
+    "use_db": false,
+    "pages": [
+        {
+            "name": "home",
+            "text": "Home",
+            "href": "index.php?v=home",
+            "children": [
+                { "name": "home-child1", "text": "home-child-1", "href": "index.php?v=home&child1"},
+                { "name": "home-child2", "text": "home-child-2", "href": "index.php?v=home&child2"},
+                { "name": "home-child3", "text": "home-child-3", "href": "index.php?v=home$child3"}
+            ]
+        },
+        {
+            "name": "membership",
+            "text": "Membership",
+            "href": "index.php?v=membership",
+            "children": [
+                { "name": "member-child1", "text": "member-child-1", "href": "index.php?v=member&child1"},
+                { "name": "member-child2", "text": "member-child-2", "href": "index.php?v=member&child2"},
+                {
+                    "name": "member-child3",
+                    "text": "member-child-3",
+                    "href": "index.php?v=member&child3",
+                    "children": [
+                        { "name": "member-child3-child1", "text": "member-child3-child1", "href": "index.php?v=member&child3&child1"},
+                        { "name": "member-child3-child2", "text": "member-child3-child2", "href": "index.php?v=member&child3&child2"}
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "events",
+            "text": "Events",
+            "href": "calendar.php"
+        }
+        ,
+        {
+            "name": "about",
+            "text": "About",
+            "href": "index.php?v=about",
+            "children": [
+                { "name": "about-child1", "text": "about-child-1", "href": "index.php?v=about&child1"},
+                { "name": "about-child2", "text": "about-child-2", "href": "index.php?v=about&child2"},
+                { "name": "about-child3", "text": "about-child-3", "href": "index.php?v=about&child3"}
+            ]
+        }
+    ]
 }

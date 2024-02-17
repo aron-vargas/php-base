@@ -31,7 +31,7 @@ class CDView
         $this->css['fa'] = "<link rel='stylesheet' type='text/css' href='vendor/components/font-awesome/css/all.css' media='all'>";
 		$this->css['imgpicker'] = "<link rel='stylesheet' type='text/css' href='style/image-picker.css'/>";
 
-		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>";
+		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.min.js'></script>";
 		$this->js['jquery'] = "<script type='text/javascript' src='vendor/components/jquery/jquery.min.js'></script>";
 		$this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
 		$this->js['datatable'] = "<script type='text/javascript' src='js/datatables.min.js'></script>";
@@ -129,23 +129,27 @@ class CDView
 
 	public function menu()
 	{
-		global $session;
+		$session = $_SESSION['APPSESSION'];
 
 		if ($session->user->pkey)
 		{
 			$buttons = "<div class='float-end'>
 				<span class='pe-2'>
-					<a href='index.php?v=avatar'><span class='rounded-circle avatar {$session->user->avatar}'>&nbsp;</span></a>
-					<a href='index.php?act=edit&target=User&pkey={$session->user->pkey}'>{$session->user->first_name} {$session->user->last_name}</a>
+					<a href='index.php?v=avatar'>
+                        <span class='rounded-circle avatar {$session->user->avatar}'>&nbsp;</span>
+                    </a>
+					<a href='index.php?act=edit&target=User&pkey={$session->user->pkey}'>
+                        {$session->user->first_name} {$session->user->last_name}
+                    </a>
 				</span>
-				<a class='btn btn-outline-light me-2' href='logout.php'>Logout</a>
+				<a class='btn btn-light me-2' href='logout.php'>Logout</a>
 			</div>";
 		}
 		else
 		{
 			$buttons = "
 			<div class='float-end'>
-				<a class='btn btn-outline-light me-2' href='login.php'>Login</a>
+				<a class='btn btn-light me-2' href='login.php'>Login</a>
 				<a class='btn btn-warning' href='index.php?v=register'>Register</a>
 			</div>";
 		}
@@ -155,24 +159,39 @@ class CDView
 		$about_class = (strstr($this->template, "about") === false) ? "" : "active";
 		$calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
 
-		echo <<<END
+        # Get the menu from "mega_menu.php"
+        # This uses the pages defined in config.json
+        $menu = include("include/templates/mega_menu.php");
+
+		echo <<<HEADER
 		<header>
-            <nav class='navbar navbar-default navbar-fixed-top'>
-				<span class='navbar-brand px-4'>
-					<img class='round-logo' src='images/logo.png' height='40'/>
-				    <button class='btn btn-default' type='button' id='navbar-btn' data-bs-toggle='dropdown' aria-expanded='false'> 
-  						<span class='navbar-toggler-icon'></span>
-					</button>
-					<ul id='navbar-menu' class='dropdown-menu' aria-labelledby='navbar-btn'>
-						<li><a href='index.php?v=home' class='nav-link px-2 $home_class'>Home</a></li>
-						<li><a href='index.php?v=membership' class='nav-link px-2 $membership_class'>Membership</a></li>
-						<li><a href='calendar.php' class='nav-link px-2 $calendar_class'>Events</a></li>
-						<li><a href='index.php?v=about' class='nav-link px-2 $about_class'>About</a></li>
-					</ul>
-				</span>
-				{$buttons}
+            <nav class='navbar navbar-default navbar-fixed-top navbar-dark bg-dark'>
+                <span class='navbar-brand ms-5'>
+                    <div class="nav-item dropdown">
+                        <button
+                            id="menu-dd-btn"
+                            class="btn btn-light"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#nav_menu"
+                            aria-expanded="false"
+                            aria-controls="nav_menu">
+                            <i class='fa fa-bars'></i>
+                        </button>
+                        <div id='nav_menu' class="dropdown-menu" aria-labelledby="menu-dd-btn">
+                            {$menu}
+                        </div>
+                    </div>
+                </span>
+                <span class='navbar-brand p2 me-auto'>
+                    <img class='round-logo' src='images/logo.png' height='40'/>
+                </span>
+                <span class='p2 ms-auto me-5'>
+                    {$buttons}
+                </span>
 			</nav>
-END;
+        </header>
+HEADER;
 
 		if ($session->auth)
 		{

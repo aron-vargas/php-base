@@ -1,11 +1,9 @@
 <?php
-	global $session, $dbh;
-
-	$usr = $session->user;
+	$usr = $_SESSION['APPSESSION']->user;
 
 echo "
 <style>
-.form-signin 
+.form-signin
 {
 	max-width: 820px;
 	padding: 15px;

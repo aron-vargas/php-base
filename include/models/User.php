@@ -54,7 +54,7 @@ class User extends CDModel
 	 */
 	public function ActionHandler($action, $req)
     {
-		global $session;
+		$session = $_SESSION['APPSESSION'];
 
         if ($action == 'save')
         {
@@ -89,33 +89,37 @@ class User extends CDModel
 
 	public function authenticate($user_name, $password)
 	{
-		global $session, $dbh;
+		$session = $_SESSION['APPSESSION'];
+        $dbh = $session->dbh;
 
 		$valid = false;
 
-		# First try username
-		$sth = $dbh->prepare("SELECT user_id, password FROM user WHERE status != 'INACTIVE' AND LOWER(user_name) = ?");
-		$sth->bindValue(1, strtolower(trim($user_name)), PDO::PARAM_STR);
-		$sth->execute();
-		$data = $sth->fetch(PDO::FETCH_OBJ);
+        if ($dbh)
+        {
+            # First try username
+            $sth = $dbh->prepare("SELECT user_id, password FROM user WHERE status != 'INACTIVE' AND LOWER(user_name) = ?");
+            $sth->bindValue(1, strtolower(trim($user_name)), PDO::PARAM_STR);
+            $sth->execute();
+            $data = $sth->fetch(PDO::FETCH_OBJ);
 
-		# Then try email
-		if (empty($data) && $user_name)
-		{
-			$sth = $dbh->prepare("SELECT user_id, password FROM user WHERE status != 'INACTIVE' AND LOWER(email) = ?");
-			$sth->bindValue(1, strtolower(trim($user_name)), PDO::PARAM_STR);
-			$sth->execute();
-			$data = $sth->fetch(PDO::FETCH_OBJ);
-		}
+            # Then try email
+            if (empty($data) && $user_name)
+            {
+                $sth = $dbh->prepare("SELECT user_id, password FROM user WHERE status != 'INACTIVE' AND LOWER(email) = ?");
+                $sth->bindValue(1, strtolower(trim($user_name)), PDO::PARAM_STR);
+                $sth->execute();
+                $data = $sth->fetch(PDO::FETCH_OBJ);
+            }
 
-		if (!empty($data))
-		{
-			if (!empty($password) && password_verify($password, $data->password))
-			{
-				$session->user = new User($data->user_id);
-				$valid = true;
-			}
-		}
+            if (!empty($data))
+            {
+                if (!empty($password) && password_verify($password, $data->password))
+                {
+                    $session->user = new User($data->user_id);
+                    $valid = true;
+                }
+            }
+        }
 
 		return $valid;
 	}
@@ -151,15 +155,20 @@ class User extends CDModel
 
 	static public function GetAll($options = 0)
 	{
-		global $dbh;
+		$dbh = $_SESSION['APPSESSION']->dbh;
 
-		if ($options == self::$USER_NICKNAME)
-			$order_by = "ORDER BY nickname";
-		else
-			$order_by = "ORDER BY first_name, last_name";
+        if ($dbh)
+        {
+            if ($options == self::$USER_NICKNAME)
+                $order_by = "ORDER BY nickname";
+            else
+                $order_by = "ORDER BY first_name, last_name";
 
-		$sth = $dbh->query("SELECT * FROM user WHERE user_id > 1 $order_by");
-		$list = $sth->fetchAll(PDO::FETCH_OBJ);
+            $sth = $dbh->query("SELECT * FROM user WHERE user_id > 1 $order_by");
+            $list = $sth->fetchAll(PDO::FETCH_OBJ);
+        }
+        else
+            $list = null;
 
 		return $list;
 	}
@@ -226,7 +235,8 @@ class User extends CDModel
 
 	public function Validate()
 	{
-		global $session, $dbh;
+        $session = $_SESSION['APPSESSION'];
+        $dbh = $session->dbh;
 
 		$valid = true;
 
@@ -248,6 +258,12 @@ class User extends CDModel
 		{
 			$this->nickname = $this->user_name;
 		}
+
+        if (empty($dbh))
+        {
+			$session->controller->view->message .= "<div>Cannot verfiy request at this time.</div>";
+            return false;
+        }
 
 		if ($this->user_name)
 		{

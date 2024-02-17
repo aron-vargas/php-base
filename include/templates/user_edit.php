@@ -1,7 +1,5 @@
 <?php
-	global $session, $dbh;
-
-	$usr = $session->controller->model;
+	$usr = $_SESSION['APPSESSION']->user;
 
 echo "
 <style>

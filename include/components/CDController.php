@@ -12,11 +12,8 @@ class CDController
     /**
      * Create a new instance
      */
-    public function __construct()
+    public function __construct($ModelClass = "CDModel", $ViewClass = "CDView")
 	{
-		$ModelClass = isset($_SESSION["APP-Model"]) ? $_SESSION["APP-Model"] : "CDModel";
-		$ViewClass = isset($_SESSION["APP-View"]) ? $_SESSION["APP-View"] : "CDView";
-
 		$this->model = new $ModelClass();
 		$this->view = new $ViewClass($this->model);
 	}
@@ -39,8 +36,6 @@ class CDController
 
 	public function process($req)
 	{
-		global $session;
-
 		$pkey = (isset($req['pkey'])) ? (int)$req['pkey'] :  null;
 
 		# Change the model based on target
@@ -61,8 +56,6 @@ class CDController
 
     public function SetTemplate($req)
 	{
-		global $session;
-
 		if (isset($req['act']))
 		{
 	        # Change the view based on "act" parameter
@@ -77,7 +70,7 @@ class CDController
 				$this->view->Set($this->model->display_view);
 			}
 		}
-		
+
 		# Change the view based on "v" parameter
 		if (isset($req['v']))
 		{
@@ -111,6 +104,10 @@ class CDController
 		{
             $ClassName = CDModel::Clean($req['view']);
             $this->view = new $ClassName($this->model);
+        }
+        else if (is_string($req) && file_exists($req))
+        {
+            $this->view->Set($req);
         }
 	}
 

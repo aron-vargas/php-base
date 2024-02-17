@@ -186,7 +186,7 @@ class CalendarModel extends CDModel
 
     public function isHoliday($timestamp)
     {
-        global $dbh;
+        $dbh = $_SESSION['APPSESSION']->dbh;
 
         $is_holiday = false;
 

@@ -113,18 +113,14 @@ h2.fader
 {
 	background-color: rgb(175, 202, 173) !important;
 }
-.btn-group-xs>.btn, .btn-xs {
+.btn-group-xs>.btn, .btn-xs
+{
     --bs-btn-padding-y: 0.10rem !important;
     --bs-btn-padding-x: 0.2rem !important;
     --bs-btn-font-size: 0.7rem !important;
     --bs-btn-border-radius: 0.25rem !important;
 }
 
-.progress-bar
-{
-	width: 1px;
-	transition: width 5s !important;
-}
 .avatar
 {
 	background-position: center; /* Center the image */
@@ -248,8 +244,56 @@ h2.fader
     height: 40px;
 }
 
+.mega_menu, .mega_menu.navbar-nav
+{
+    padding: 8px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 15px;
+}
+.mega_menu .menu-item
+{
+    flex: 1 0 auto;
+    font-weight: bold;
+}
+
+.mega_menu .nav-link
+{
+    color: #202020;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 2px;
+    -background-color: white;
+}
+.mega_menu .menu-item .nav-link, .mega_menu .menu-item .nav-link.active
+{
+    color: #202020;
+}
+.mega_menu .nav-link.active
+{
+    color: #202020;
+    font-weight: bold;
+    background-color: #eeeeee;
+    border-bottom: 2px solid red;
+}
+.mega_menu .nav-link:hover
+{
+    background-color: #e6e3da;
+    border-bottom: 2px solid red;
+}
+.submenu
+{
+    margin-left: 1rem;
+    background-color: transparent;
+}
+.submenu .nav-link
+{
+    font-weight: normal;
+    -background-color: #fdfdfd;
+}
+
 .footer .round-logo
 {
-    background-color: white;
+    -background-color: white;
     height: 80px;
 }

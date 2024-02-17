@@ -30,7 +30,7 @@ class Result extends CDModel
 
 	public function Delete()
 	{
-		global $dbh;
+		$dbh = $_SESSION['APPSESSION']->dbh;
 
 		$sth = $dbh->prepare("DELETE FROM result WHERE pkey = ?");
 		$sth->bindValue(1, $this->pkey, PDO::PARAM_STR);

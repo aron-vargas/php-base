@@ -98,7 +98,7 @@ class CDModel
      */
     public function Change($field, $value)
     {
-        global $dbh;
+        $dbh = $_SESSION['APPSESSION']->dbh;
 
         if (is_int($value))
             $val_type = PDO::PARAM_INT;
@@ -144,7 +144,7 @@ class CDModel
      */
     public function Delete()
     {
-        global $dbh;
+        $dbh = $_SESSION['APPSESSION']->dbh;
 
         $sth = $dbh->query("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = {$this->pkey}");
         $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
@@ -156,10 +156,10 @@ class CDModel
      */
     public function Load()
     {
-        global $dbh;
-
         if ($this->pkey)
         {
+            $dbh = $_SESSION['APPSESSION']->dbh;
+
             $sth = $dbh->prepare("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = ?");
             $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
             $sth->execute();
@@ -218,7 +218,7 @@ class CDModel
      */
     public function db_insert()
     {
-        global $dbh;
+        $dbh = $_SESSION['APPSESSION']->dbh;
 
         $fields = "";
         $holders = "";
@@ -248,7 +248,7 @@ class CDModel
      */
     public function db_update()
     {
-        global $dbh;
+        $dbh = $_SESSION['APPSESSION']->dbh;
 
         $fields = "";
         foreach($this->field_array as $field)

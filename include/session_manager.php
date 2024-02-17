@@ -1,52 +1,23 @@
 <?php
-$config = json_decode(file_get_contents("include/config.json"));
-syslog(LOG_DEBUG, "Session Start");
-
 # Setup auto load
 // Or, using an anonymous function
 spl_autoload_register('LoadClass');
 syslog(LOG_DEBUG, "Autoload LoadClass registered");
 
+# Create a CDSession
+session_start();
 $session = new CDSession();
 syslog(LOG_DEBUG, "CDSession created");
 
-$dbh = null;
-if ($config->use_db)
+if ($session->config->use_db)
 {
-    $dbh = DBConnection();
-    syslog(LOG_DEBUG, "Database connection established");
+    $session->dbh = self::DBConnection();
+    syslog(LOG_DEBUG, "Connected to Database");
 }
 
+# Validate the session
 $session->validate();
 syslog(LOG_DEBUG, "CDSession Validated with: " . ($session->auth) ? "Authorized" : "No Authorization");
-
-function DBConnection()
-{
-    try
-    {
-        $DB = new DBSettings();
-        return $DB->conn;
-
-    }
-    catch (Exception $exp)
-    {
-        global $config, $controller, $error;
-
-        $error = "<h2>Unable to make a database connection!</h2>";
-        $error .= "<div class='error-info'>{$exp->getMessage()}</div>";
-	    $error .= "<div class='error-info text-small'>{$exp->getTraceAsString()}</div>";
-
-        if ($config->exit_on_error)
-        {
-            include("include/templates/error_page.php");
-            exit();
-        }
-        else
-        {
-            $controller->AddMsg($error);
-        }
-    }
-}
 
 function LoadClass($class)
 {

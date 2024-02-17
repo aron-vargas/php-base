@@ -1,5 +1,7 @@
 <?php
-global $session, $dbh;
+
+$session = $_SESSION['APPSESSION'];
+$dbh = $session->dbh;
 
 $is_admin = $session->user->isAdmin();
 $protected = ($is_admin) ? "" : " hidden";
