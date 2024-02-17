@@ -75,6 +75,13 @@ class CalendarModel extends CDModel
         {
             $this->_cal->sel_date = strtotime('today');
         }
+        else if ($action == 'sel')
+        {
+            if (isset($req['date']))
+            {
+                $this->_cal->sel_date = self::Clean($req['date']);
+            }
+        }
         else if ($action == 'prev')
         {
             if ($this->_cal->view == 'm')

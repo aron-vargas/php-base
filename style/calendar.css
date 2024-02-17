@@ -9,66 +9,23 @@
     position: relative;
     width: 100%;
 }
-.cal-cont
-{
-    position: relative;
-    height: calc(100% - 140px);
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-.flexcol
-{
-    display: flex;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    flex-direction: column;
-}
-.flex
-{
-    display: flex;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-}
-.ffill
-{
-    flex: 1 0 auto;
-}
 .cal-days
 {
     position: relative;
     overflow: hidden;
-    flex: 1 0 0;
 }
-
-.cal-header
-{
-    position: relative;
-    overflow: hidden;
-    flex: 1 0 0;
-}
-
 .week-hdr
 {
-    position: relative;
-    overflow: hidden;
     border-bottom: 1px solid silver;
-    display: flex;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    flex: 1 0 auto;
     overflow-y: scroll;
 }
 .week
 {
-    position: relative;
-    overflow: hidden;
     border-bottom: 1px solid silver;
 }
 .time-cont
 {
     overflow: hidden;
-    align-items: stretch;
 }
 .scroll-y
 {
@@ -79,11 +36,6 @@
 .scroll-cont
 {
     min-width: 100%;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    flex: none;
-    display: inline-flex;
-    vertical-align: top;
     overflow: hidden;
     position: relative;
 }
@@ -91,47 +43,42 @@
 .hdr-cell
 {
     text-align: center;
-    flex: 1 1 auto;
     border-right: 1px solid white;
     border-bottom: 1px solid white;
     background-color: aliceblue;
-    min-height: 2rem;
+    -min-height: 2rem;
 }
 .hdr-cell-text
 {
-    height: 2rem;
+    -height: 2rem;
 }
 
 .hdr-cell, .mv-cell, .wv-cell, .dv-cell
 {
     position: relative;
-    -webkit-box-flex: 1;
-    -moz-box-flex: 1;
-    flex: 1 1 auto;
 }
 .mv-cell
 {
+    min-height: 80px;
     border-right: 1px solid silver;
-    _flex: 1 1 0%;
 }
 .gutter
 {
     font-size: 12px;
     color: #b1b1b1;
-    flex: 0 1 auto;
     width: 60px;
 }
 .wv-cell
 {
     border-right: 1px solid silver;
     border-bottom: 1px solid silver;
-    height: 48px;
+    -height: 48px;
 }
 .dv-cell
 {
     border-right: 1px solid silver;
     border-bottom: 1px solid silver;
-    height: 48px;
+    -height: 48px;
 }
 
 .today
@@ -171,6 +118,12 @@
 /*    border-right: 1px solid silver; */
 /*    border-bottom: 1px solid silver; */
 }
+.full-num
+{
+    padding: 2px;
+    text-align: center;
+    vertical-align: middle;
+}
 
 .new-item
 {
@@ -178,4 +131,17 @@
     right: 0;
     bottom: 0;
     margin: 10px;
+}
+.cal.small
+{
+    font-size: 12px;
+}
+.cal .col
+{
+    padding: 0 1px;
+    flex: 1 1 0;
+}
+.small .col
+{
+    border: 1px solid #dedede;
 }
