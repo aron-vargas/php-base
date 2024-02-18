@@ -20,9 +20,8 @@ class CalendarModel extends CDModel
         // Initialize
         if (!isset($_SESSION["cal"]))
         {
-            $sel_date = strtotime("today");
-            $defaults = $this->GetDefaults($sel_date);
-            $_SESSION["cal"] = $defaults;
+            $_SESSION["cal"] = $this->GetDefaults(strtotime("today"));
+            $this->InitDates();
         }
 
         $this->_cal = $_SESSION["cal"];
@@ -113,22 +112,24 @@ class CalendarModel extends CDModel
         $this->InitDates();
     }
 
+    /**
+     * Set the cal data structure
+     * @param integer
+     * @return StdClass
+     */
     private function GetDefaults($sel_date)
     {
-        $view_start_date = strtotime(date("Y-m-01", $sel_date));
-        $cal_start_date = strtotime("Sunday", $view_start_date);
-
-        $end = date("t", $sel_date);
-        $view_last_date = strtotime(date("Y-m-{$end}", $sel_date));
-        $cal_end_date = strtotime("Saturday",  $view_last_date);
-
-        $defaults = json_decode("{
+        return json_decode("{
             \"sel_date\": $sel_date,
             \"today\": $sel_date,
-            \"view_start_date\": $view_start_date,
-            \"view_last_date\": $view_last_date,
-            \"cal_start_date\": $cal_start_date,
-            \"cal_end_date\": $cal_end_date,
+            \"month_start\": $sel_date,
+            \"month_first\": $sel_date,
+            \"month_last\": $sel_date,
+            \"month_end\": $sel_date,
+            \"week_start\": $sel_date,
+            \"week_end\": $sel_date,
+            \"work_week_start\": $sel_date,
+            \"work_week_end\": $sel_date,
             \"view\": \"m\",
             \"start_hour\": 6,
             \"end_hour\": 20,
@@ -136,8 +137,6 @@ class CalendarModel extends CDModel
             \"work_end\": 18,
             \"time_slot\": 900
         }");
-
-        return $defaults;
     }
 
     /**
@@ -146,42 +145,21 @@ class CalendarModel extends CDModel
     private function InitDates()
     {
         // Initialize the session settings
-        if ($_SESSION['cal']->view == 'm')
-        {
-            $_SESSION['cal']->view_start_date = strtotime(date("Y-m-01", $_SESSION['cal']->sel_date));
-            $day = date("w", $_SESSION['cal']->view_start_date);
-            $_SESSION['cal']->cal_start_date = strtotime("-{$day} Days", $_SESSION['cal']->view_start_date);
+        $_SESSION['cal']->month_first = strtotime(date("Y-m-01", $_SESSION['cal']->sel_date));
+        $day = date("w", $_SESSION['cal']->month_first);
+        $_SESSION['cal']->month_start = strtotime("-{$day} Days", $_SESSION['cal']->month_first);
 
-            $end = date("t", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->view_last_date = strtotime(date("Y-m-{$end}", $_SESSION['cal']->sel_date));
-            $_SESSION['cal']->cal_end_date = strtotime("Saturday",  $_SESSION['cal']->view_last_date);
-        }
-        else if ($_SESSION['cal']->view == "w")
-        {
-            $day = date("w", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->view_start_date = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->cal_start_date = $_SESSION['cal']->view_start_date;
+        $end = date("t", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->month_last = strtotime(date("Y-m-{$end}", $_SESSION['cal']->sel_date));
+        $_SESSION['cal']->month_end = strtotime("Saturday",  $_SESSION['cal']->month_last);
 
-            $_SESSION['cal']->view_last_date = strtotime("Saturday", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->cal_end_date = $_SESSION['cal']->view_last_date;
-        }
-        else if ($_SESSION['cal']->view == "ww")
-        {
-            $day = date("w", $_SESSION['cal']->sel_date) - 1;
-            $_SESSION['cal']->view_start_date = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->cal_start_date = $_SESSION['cal']->view_start_date;
+        $day = date("w", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->week_start = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->week_end = strtotime("Saturday", $_SESSION['cal']->sel_date);
 
-            $_SESSION['cal']->view_last_date = strtotime("Friday", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->cal_end_date = $_SESSION['cal']->view_last_date;
-        }
-        else if ($_SESSION['cal']->view == "d")
-        {
-            $_SESSION['cal']->view_start_date = strtotime("00:00:00", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->cal_start_date = $_SESSION['cal']->view_start_date;
-
-            $_SESSION['cal']->view_last_date = strtotime("23:59:59", $_SESSION['cal']->sel_date);
-            $_SESSION['cal']->cal_end_date = $_SESSION['cal']->view_last_date;
-        }
+        $day = date("w", $_SESSION['cal']->sel_date) - 1;
+        $_SESSION['cal']->work_week_start = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->work_week_end = strtotime("Friday", $_SESSION['cal']->work_week_start);
     }
 
     public function isWeekend($timestamp)

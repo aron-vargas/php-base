@@ -41,8 +41,8 @@ class CalendarView extends CDView
         if ($this->model->isHoliday($datetime)) $class_list[] = "holiday";
         if ($this->model->isToday($datetime)) $class_list[] = "today";
 
-        if ($datetime < $this->_cal->view_start_date) $class_list[] = "prev";
-        if ($datetime > $this->_cal->view_last_date) $class_list[] = "next";
+        if ($datetime < $this->_cal->month_first) $class_list[] = "prev";
+        if ($datetime > $this->_cal->month_last) $class_list[] = "next";
 
         if ($this->model->isSelected($this->_cal->sel_date, $datetime)) $class_list[] = "selected";
 
@@ -65,7 +65,7 @@ class CalendarView extends CDView
         else
             echo $this->MonthView();
 
-        echo $this->EventJS($this->_cal->view_start_date, $this->_cal->view_last_date);
+        echo $this->EventJS($this->_cal->month_first, $this->_cal->month_end);
 	}
 
     public function render_footer()
@@ -94,51 +94,54 @@ JS;
         return <<<NAV
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
-                <div class="nav-item">
-                    <button 
-                        class="btn btn-outline-dark" 
-                        type="button" data-bs-toggle="collapse" 
-                        data-bs-target="#left-nav" 
-                        aria-controls="left-nav" 
-                        aria-expanded="false" 
+                <div class="col col-md-3 me-auto">
+                    <button
+                        class="btn btn-primary"
+                        type="button" data-bs-toggle="collapse"
+                        data-bs-target="#left-nav"
+                        aria-controls="left-nav"
+                        aria-expanded="false"
                         aria-label="Toggle navigation">
-                        <i class="fa fa-bars"></i>
+                        <i class='fa fa-calendar-minus'></i>
                     </button>
+                    <span class='h3 text-primary mx-3'>Calendar Events</span>
                 </div>
-                <div class="nav-item">
-                    <div class='h4'><i class='fa fa-calendar'></i> Calendar</div>
+                <div class="col col-md-4 mx-auto text-center">
+                    <a class="mx-2 col btn btn-light" href="?act=today">Today</a>
+                    <a class="mx-2 col btn btn-light" href="?act=prev"><i class='fa fa-caret-left'></i></a>
+                    <span class='col nav-text h4'>{$selected_month} {$selected_year}</span>
+                    <a class="mx-2 col btn btn-light" href="?act=next"><i class='fa fa-caret-right'></i></a>
+                    <span class="mx-2 col dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="view-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                            View
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="view-btn">
+                            $view_options
+                        </ul>
+                    </span>
                 </div>
-                <div class="nav-item">
-                    <a class="button btn btn-sm btn-outline" href="?act=today">Today</a>
+                <div class="col col-md-3 ms-auto">
+                    <div class="collapse" id="search">
+                        <input class='form-control' name="seach" placeholder="Search Events" />
+                    </div>
                 </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="?act=prev">&lt;</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="?act=next">&gt;</a>
-                </div>
-                <div class="nav-item">
-                    <span class='nav-text'>{$selected_month} {$selected_year}</span>
-                </div>
-                <div class="nav-item">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#search" aria-controls="search" aria-expanded="false" aria-label="Search">
+                <div class="col col-md-2 ms-auto text-end">
+                    <button
+                        class="btn btn-light me-2"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#search"
+                        aria-controls="search"
+                        aria-expanded="false"
+                        aria-label="Search">
                         <i class='fa fa-search'></i>
                     </button>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="?v=support">?</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="?v=settings"><i class='fa fa-gear'></i></a>
-                </div>
-                <div class="nav-item">
-                    <select class='view-select'>
-                        {$view_options}
-                    </select>
+                    <a class="btn btn-light me-2" href="?v=support"><i class="fa fa-circle-question"></i></a>
+                    <a class="btn btn-light me-2" href="?v=settings"><i class='fa fa-gear'></i></a>
                 </div>
             </div>
         </nav>
-        <div id='left-nav' class='collapse show col col-md-2'>
+        <div id='left-nav' class='collapse col col-md-2'>
             {$this->SelectCal()}
             <div class='card'>
                 <div class='card-body'>
@@ -153,49 +156,30 @@ NAV;
     private function DayView()
     {
         // Add Cells for this week
-        $day_text = date("D", $this->_cal->sel_date);
+        $day_text = date("l", $this->_cal->sel_date);
         $day_num = date("j", $this->_cal->sel_date);
-        $class_list = $this->ClassList("wv-cell", $this->_cal->sel_date);
+        $class_list = $this->ClassList("flexcol", $this->_cal->sel_date);
 
         return <<<CAL
 <div class='cal'>
     {$this->Navigation()}
     <div class='cal-cont'>
-        <div class='flexcol' style="height: 100%;">
-            <div class="week-hdr">
-                <div class='gutter'>
-                    <div class='hdr-cell'>
-                        <div class='hdr-cell-text'>&nbsp;</div>
-                        <div class='hdr-cell-text'>&nbsp;</div>
-                    </div>
+        <div class="row g-0">
+            <div class='col gutter'>&nbsp;</div>
+            <div class='col hdr-cell'>{$day_text}<br />{$day_num}</div>
+        </div>
+        <div class='scroll-cont'>
+            <div class='scroll-y'>
+                <div class='col gutter'>
+                    {$this->GutterCells(0, "dv-cell")}
                 </div>
-                <div class='cal-header'>
-                    <div class='hdr-cell'>
-                        <div class='hdr-cell-text'>{$day_text}</div>
-                        <div class='hdr-cell-text'>{$day_num}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="week">
-                <div class='scroll-y'>
-                    <div class='flex'>
-                        <div class='gutter'>
-                            {$this->GutterCells(0, "dv-cell")}
-                        </div>
-                        <div class='cal-days flexcol'>
-                            <div id='cell-{$this->_cal->sel_date}' class='{$class_list}'>
-                                {$this->TimeCells($this->_cal->sel_date, "dv-cell")}
-                            </div>
-                        </div>
+                <div class='col cal-days'>
+                    <div id='cell-{$this->_cal->sel_date}' class='{$class_list}'>
+                        {$this->TimeCells($this->_cal->sel_date, "dv-cell")}
                     </div>
                 </div>
             </div>
         </div>
-        <div class='new-item'>
-            <select id='new-item-sel' onChange='ShowNewItemDialog(this)'>
-                <option value='event'>New Event</option>
-                <option value='event'>New Task</option>
-            </select>
         </div>
     </div>
 </div>
@@ -205,38 +189,27 @@ CAL;
     private function WeekView()
     {
         // create day cells
-        $calendar_hdr_cells = "
-        <div class='gutter'>
-            <div class='hdr-cell'>
-                <div class='hdr-cell-text'>&nbsp;</div>
-                <div class='hdr-cell-text'>&nbsp;</div>
-            </div>
-        </div>";
+        $calendar_hdr_cells = "<div class='col gutter'>&nbsp;</div>";
 
         $calendar_day_cells = "
-
-            <div class='gutter'>
+            <div class='col gutter'>
                 {$this->GutterCells(0, "wv-cell")}
             </div>
         ";
 
         // Add Cells for this week
-        $datetime = $this->_cal->cal_start_date;
-        while($datetime <= $this->_cal->cal_end_date)
+        $datetime = ($this->_cal->view == "ww") ? $this->_cal->work_week_start : $this->_cal->week_start;
+        $end_date = ($this->_cal->view == "ww") ? $this->_cal->work_week_end : $this->_cal->week_end;
+        while($datetime <= $end_date)
         {
             $day_text = date("D", $datetime);
             $day_num = date("j", $datetime);
+
+            $class_list = $this->ClassList("hdr-cell", $datetime);
+            $calendar_hdr_cells .= "<div class='col $class_list'>{$day_text}<br/>{$day_num}</div>";
+
             $class_list = $this->ClassList("flexcol", $datetime);
-
-            $calendar_hdr_cells .= "
-            <div class='cal-header'>
-                <div class='hdr-cell'>
-                    <div class='hdr-cell-text'>{$day_text}</div>
-                    <div class='hdr-cell-text'>{$day_num}</div>
-                </div>
-            </div>";
-
-            $calendar_day_cells .= "<div class='cal-days'>
+            $calendar_day_cells .= "<div class='col cal-days'>
                 <div id='cell-{$datetime}' class='$class_list'>
                     {$this->TimeCells($datetime, "wv-cell")}
                 </div>
@@ -248,79 +221,13 @@ CAL;
 <div class='cal'>
     {$this->Navigation()}
     <div class='cal-cont'>
-        <div class='flexcol' style="height: 100%;">
-            <div class="week-hdr">
-                $calendar_hdr_cells
-            </div>
-            <div class="week">
-                <div class='scroll-y'>
-                    <div class='flex'>
-                        $calendar_day_cells
-                    </div>
-                </div>
-            </div>
+        <div class="row row-hdr g-0">
+            $calendar_hdr_cells
         </div>
-        <div class='new-item'>
-            <select id='new-item-sel' onChange='ShowNewItemDialog(this)'>
-                <option value='event'>New Event</option>
-                <option value='event'>New Task</option>
-            </select>
-        </div>
-    </div>
-</div>
-CAL;
-    }
-
-    private function _MonthView()
-    {
-        // create day cells
-        $calendar_day_cells = "";
-        $datetime = $this->_cal->cal_start_date;
-
-        // Add Cells for this month
-        // Including left-over days from the previous month
-        // and remainder for the next
-        while($datetime <= $this->_cal->cal_end_date)
-        {
-            $calendar_day_cells .= "<div class='week flex ffill'>";
-            for($i = 0; $i < 7; $i++)
-            {
-                $day_num = date("j", $datetime);
-                $class_list = $this->ClassList("mv-cell", $datetime);
-
-                $calendar_day_cells .= "<div class='cal-days flex'>
-                    <div class='{$class_list}'>
-                        <div class='cell-num'>{$day_num}</div>
-                        <div id='cell-{$datetime}' class='event_list'></div>
-                    </div>
-                </div>";
-
-                $datetime += ONE_DAY;
-            }
-            $calendar_day_cells .= "</div>";
-        }
-
-        return <<<CAL
-<div class='cal'>
-    {$this->Navigation()}
-    <div class='cal-cont'>
-        <div class='flexcol' style='height: 100%'>
-            <div class="week flex">
-                <div class='cal-header'><div class='hdr-cell weekend'>Sun</div></div>
-                <div class='cal-header'><div class='hdr-cell'>Mon</div></div>
-                <div class='cal-header'><div class='hdr-cell'>Tues</div></div>
-                <div class='cal-header'><div class='hdr-cell'>Wed</div></div>
-                <div class='cal-header'><div class='hdr-cell'>Thu</div></div>
-                <div class='cal-header'><div class='hdr-cell'>Fri</div></div>
-                <div class='cal-header'><div class='hdr-cell weekend'>Sat</div></div>
+        <div class='scroll-cont'>
+            <div class='scroll-y'>
+                $calendar_day_cells
             </div>
-            $calendar_day_cells
-        </div>
-        <div class='new-item'>
-            <select id='new-item-sel' onChange='ShowNewItemDialog(this)'>
-                <option value='event'>New Event</option>
-                <option value='event'>New Task</option>
-            </select>
         </div>
     </div>
 </div>
@@ -331,14 +238,14 @@ CAL;
     {
         // create day cells
         $calendar_day_cells = "";
-        $datetime = $this->_cal->cal_start_date;
+        $datetime = $this->_cal->month_start;
 
         // Add Cells for this month
         // Including left-over days from the previous month
         // and remainder for the next
-        while($datetime <= $this->_cal->cal_end_date)
+        while($datetime <= $this->_cal->month_end)
         {
-            $calendar_day_cells .= "<div class='row'>";
+            $calendar_day_cells .= "<div class='row g-0'>";
             for($i = 0; $i < 7; $i++)
             {
                 $day_num = date("j", $datetime);
@@ -347,7 +254,7 @@ CAL;
                 $calendar_day_cells .= "<div class='col'>
                     <div class='{$class_list}'>
                         <div class='cell-num'>{$day_num}</div>
-                        <div id='cell-{$datetime}' class='event_list'></div>
+                        <div id='cell-{$datetime}' class='cal-days'></div>
                     </div>
                 </div>";
 
@@ -357,27 +264,21 @@ CAL;
         }
 
         return <<<CAL
-<div class='cal'>
-    {$this->Navigation()}
-        <div class='row'>
-            <div class='col hdr-cell weekend'>Sun</div>
-            <div class='col hdr-cell'>Mon</div>
-            <div class='col hdr-cell'>Tues</div>
-            <div class='col hdr-cell'>Wed</div>
-            <div class='col hdr-cell'>Thu</div>
-            <div class='col hdr-cell'>Fri</div>
-            <div class='col hdr-cell weekend'>Sat</div>
+        <div class='cal'>
+            {$this->Navigation()}
+            <div class='cal-cont flexcol stretch'>
+                <div class='row hdr-row g-0'>
+                    <div class='col hdr-cell weekend'>Sun</div>
+                    <div class='col hdr-cell'>Mon</div>
+                    <div class='col hdr-cell'>Tues</div>
+                    <div class='col hdr-cell'>Wed</div>
+                    <div class='col hdr-cell'>Thu</div>
+                    <div class='col hdr-cell'>Fri</div>
+                    <div class='col hdr-cell weekend'>Sat</div>
+                </div>
+                $calendar_day_cells
+            </div>
         </div>
-            $calendar_day_cells
-        </div>
-        <div class='new-item'>
-            <select id='new-item-sel' onChange='ShowNewItemDialog(this)'>
-                <option value='event'>New Event</option>
-                <option value='event'>New Task</option>
-            </select>
-        </div>
-    </div>
-</div>
 CAL;
     }
 
@@ -385,14 +286,14 @@ CAL;
     {
         // create day cells
         $calendar_day_cells = "";
-        $datetime = $this->_cal->cal_start_date;
+        $datetime = $this->_cal->month_start;
 
         // Add Cells for this month
         // Including left-over days from the previous month
         // and remainder for the next
-        while($datetime <= $this->_cal->cal_end_date)
+        while($datetime <= $this->_cal->month_end)
         {
-            $calendar_day_cells .= "<div class='row'>";
+            $calendar_day_cells .= "<div class='row g-0'>";
             for($i = 0; $i < 7; $i++)
             {
                 $day_num = date("j", $datetime);
@@ -408,18 +309,18 @@ CAL;
         }
 
         return <<<CAL
-<div class='cal small'>
-        <div class="row">
-            <div class='col weekend'>Su</div>
-            <div class='col'>Mo</div>
-            <div class='col'>Tu</div>
-            <div class='col'>We</div>
-            <div class='col'>Th</div>
-            <div class='col'>Fr</div>
-            <div class='col'>Sa</div>
+        <div class='cal-cont small'>
+            <div class="row g-0">
+                <div class='col hdr-cell weekend'>Su</div>
+                <div class='col hdr-cell'>Mo</div>
+                <div class='col hdr-cell'>Tu</div>
+                <div class='col hdr-cell'>We</div>
+                <div class='col hdr-cell'>Th</div>
+                <div class='col hdr-cell'>Fr</div>
+                <div class='col hdr-cell'>Sa</div>
+            </div>
+            $calendar_day_cells
         </div>
-        $calendar_day_cells
-</div>
 CAL;
     }
 
@@ -484,8 +385,8 @@ CAL;
         $options = "";
         foreach($opt_ary as $opt)
         {
-            $sel = ($opt->val == $sel_view) ? " selected" : "";
-            $options .= "<option value='{$opt->val}'{$sel}>{$opt->text}</option>";
+            $sel = ($opt->val == $sel_view) ? "active" : "";
+            $options .= "<li><a class='dropdown-item {$sel}' href='calendar.php?act=set_view&view={$opt->val}' alt='Set View' title='Set View'>{$opt->text}</a></li>";
         }
 
         return $options;
