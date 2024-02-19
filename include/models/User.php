@@ -1,5 +1,30 @@
 <?php
 
+/**
+ * 
+CREATE TABLE `user` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `user_name` varchar(255) NOT NULL,
+  `nick_name` varchar(255) DEFAULT 'Sucker',
+  `password` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `user_type` varchar(255) NOT NULL DEFAULT 'SYSTEM',
+  `status` varchar(255) NOT NULL DEFAULT 'NEW',
+  `permissions` int DEFAULT '0',
+  `verification` varchar(255) DEFAULT NULL,
+  `verified` tinyint(1) DEFAULT '0',
+  `login_attempts` int DEFAULT '0',
+  `block_expires` datetime DEFAULT NULL,
+  `created_on` datetime NOT NULL,
+  `last_mod` datetime NOT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+ */
+
 class User extends CDModel
 {
 	public $pkey;                   # integer
@@ -41,6 +66,7 @@ class User extends CDModel
 		$this->SetFieldArray();
 
 		$this->pkey = $user_id;
+		$this->user_id = $user_id;
 		$this->user_type = $type;
 		$this->profile = new UserProfile($user_id);
 		$this->bets = array();
