@@ -61,9 +61,14 @@ class CalendarView extends CDView
         else if ($this->_cal->view == "ww")
             echo $this->WeekView();
         else if ($this->_cal->view == "e")
-            include("include/templates/calendar_event.php");
+        {
+            $event = new CalEvent(null, $this->_cal->sel_date);
+            include("include/templates/calendar/event.php");
+        }
         else
             echo $this->MonthView();
+
+        
 
         echo $this->EventJS($this->_cal->month_first, $this->_cal->month_end);
 	}

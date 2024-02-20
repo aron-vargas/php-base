@@ -140,6 +140,56 @@ class CDModel
     }
 
     /**
+     * Find all records matching the field value
+     * 
+     * @param string $table_name
+     * @param string $field_name
+     * @param mixed $key
+     * @return StdClass[] | null
+     */
+    static public function GetALL($table_name, $field_name, $key)
+    {
+        $dbh = $_SESSION['APPSESSION']->dbh;
+
+        if ($dbh)
+        {
+            $table_name = self::Clean($table_name);
+            $field_name = self::Clean($field_name);
+            $key = self::Clean($key);
+            $sth = $dbh->query("SELECT * FROM {$table_name} WHERE {$field_name} = {$key}");
+            $sth->execute();
+            return $sth->fetchALL(PDO::FETCH_OBJ);
+        }
+
+        return null;
+    }
+
+    /**
+     * Return attribute value.
+     * Option to replace html entities
+     * Option to clean tags
+     * 
+     * @param string $attribute
+     * @param boolean $html
+     * @param boolean $clean
+     * @return mixed
+     */
+    public function Get($attribute, $html = true, $clean = true, )
+    {
+        $val = null;
+
+        if (@property_exists($this, $attribute))
+        {
+            $val =  $this->{$attribute};
+            
+            if ($html) $val = htmlentities($val, ENT_QUOTES);
+            if ($clean) $val = self::Clean($val);
+        }
+
+        return $val;
+    }
+
+    /**
      * "Delete" the record
      */
     public function Delete()
@@ -197,13 +247,15 @@ class CDModel
      * @param DBField
      * @return mixed
      */
-    public function Val($db_field)
+    public function Val($db_field, $clean = true)
     {
         $val = null;
 
         if (@property_exists($this, $db_field->name))
         {
             $val =  $this->{$db_field->name};
+            
+            if ($clean) $val = self::Clean($val);
 
             if ($db_field->max_length)
                 $val = substr($val, 0, $db_field->max_length);
