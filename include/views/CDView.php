@@ -2,43 +2,44 @@
 
 class CDView
 {
-	public $header = "include/templates/header.php";
-	public $template = "include/templates/home.php";
-	public $footer = "include/templates/footer.php";
+    public $header = "include/templates/header.php";
+    public $template = "include/templates/home.php";
+    public $footer = "include/templates/footer.php";
 
     private $header_rendered = false;
     private $body_rendered = false;
     private $footer_rendered = false;
 
-	private $message = array();
-	public $css = array();
-	public $js = array();
+    private $message = array();
+    public $css = array();
+    public $js = array();
 
-	private $model;
+    private $model;
 
-	private $debug = false;
+    private $debug = false;
 
     /**
      * Create a new instance
      * @param CDModel
      */
-	public function __construct($model = null)
-	{
-		$this->css['main'] = "<link rel='stylesheet' type='text/css' href='style/main.css' media='all'>";
-		$this->css['bootstrap'] = "<link rel='stylesheet' type='text/css' href='vendor/twbs/bootstrap/dist/css/bootstrap.min.css' media='all'>";
-		$this->css['jquery-ui'] = "<link rel='stylesheet' type='text/css' href='vendor/components/jqueryui/themes/base/all.css' media='all'>";
-		$this->css['datatable'] = "<link rel='stylesheet' type='text/css' href='js/DataTables-1.12.1/css/jquery.dataTables.min.css'/>";
+    public function __construct($model = null)
+    {
+        $this->css['main'] = "<link rel='stylesheet' type='text/css' href='style/main.css' media='all'>";
+        $this->css['bootstrap'] = "<link rel='stylesheet' type='text/css' href='vendor/twbs/bootstrap/dist/css/bootstrap.min.css' media='all'>";
+        $this->css['jquery-ui'] = "<link rel='stylesheet' type='text/css' href='vendor/components/jqueryui/themes/base/all.css' media='all'>";
+        $this->css['datatable'] = "<link rel='stylesheet' type='text/css' href='js/DataTables-1.12.1/css/jquery.dataTables.min.css'/>";
         $this->css['fa'] = "<link rel='stylesheet' type='text/css' href='vendor/components/font-awesome/css/all.css' media='all'>";
-		$this->css['imgpicker'] = "<link rel='stylesheet' type='text/css' href='style/image-picker.css'/>";
+        $this->css['imgpicker'] = "<link rel='stylesheet' type='text/css' href='style/image-picker.css'/>";
+        $this->css['chime'] = "<link rel='stylesheet' type='text/css' href='style/chime.css'/>";
 
-		$this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.min.js'></script>";
-		$this->js['jquery'] = "<script type='text/javascript' src='vendor/components/jquery/jquery.min.js'></script>";
-		$this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
-		$this->js['datatable'] = "<script type='text/javascript' src='js/datatables.min.js'></script>";
-		$this->js['imgpicker'] = "<script type='text/javascript' src='js/image-picker.min.js'></script>";
+        $this->js['bootstrap'] = "<script type='text/javascript' src='vendor/twbs/bootstrap/dist/js/bootstrap.min.js'></script>";
+        $this->js['jquery'] = "<script type='text/javascript' src='vendor/components/jquery/jquery.min.js'></script>";
+        $this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
+        $this->js['datatable'] = "<script type='text/javascript' src='js/datatables.min.js'></script>";
+        $this->js['imgpicker'] = "<script type='text/javascript' src='js/image-picker.min.js'></script>";
 
-		$this->model = $model;
-	}
+        $this->model = $model;
+    }
 
     /**
      * Append to the message array
@@ -71,69 +72,64 @@ class CDView
 
     public function render()
     {
-        if ($this->header_rendered == false)
-        {
+        if ($this->header_rendered == false) {
             $this->render_header();
             $this->header_rendered = true;
         }
 
-        if ($this->body_rendered == false)
-        {
+        if ($this->body_rendered == false) {
             $this->render_body();
             $this->body_rendered = false;
         }
 
-        if ($this->footer_rendered == false)
-        {
+        if ($this->footer_rendered == false) {
             $this->render_footer();
             $this->footer_rendered = true;
         }
     }
 
-	public function render_header()
-	{
-		include($this->header);
+    public function render_header()
+    {
+        include($this->header);
 
-		$this->menu();
-	}
+        $this->menu();
+    }
 
     public function render_body()
-	{
-		if ($this->message)
-        {
-			echo "<div class='alert alert-secondary w-50 mx-auto my-1'>";
-            foreach($this->message as $message)
-            {
+    {
+        if ($this->message) {
+            echo "<div class='alert alert-secondary w-50 mx-auto my-1'>";
+            foreach ($this->message as $message) {
                 echo "<p>{$message}</p>";
             }
             echo "</div>\n";
         }
 
-		if ($this->debug)
-		{
-			echo "<div class='bebug_container'>";
-			include ("include/templates/debug.php");
-			echo "</div>\n";
-		}
+        if ($this->debug) {
+            echo "<div class='bebug_container'>";
+            include("include/templates/debug.php");
+            echo "</div>\n";
+        }
 
-		include($this->template);
-	}
+        include($this->template);
+    }
 
     public function render_footer()
-	{
-		include($this->footer);
-	}
+    {
+        include($this->footer);
+    }
 
-	public function Empty()
-	{   return empty($this->template);  }
+    public function Empty()
+    {
+        return empty($this->template);
+    }
 
-	public function menu()
-	{
-		$session = $_SESSION['APPSESSION'];
+    public function menu()
+    {
+        $session = $_SESSION['APPSESSION'];
 
-		if ($session->user->pkey)
-		{
-			$buttons = "<div class='float-end'>
+        if ($session->user->pkey) {
+            $buttons = "<div class='float-end'>
 				<span class='pe-2'>
 					<a href='index.php?v=avatar'>
                         <span class='rounded-circle avatar {$session->user->avatar}'>&nbsp;</span>
@@ -144,26 +140,24 @@ class CDView
 				</span>
 				<a class='btn btn-light me-2' href='logout.php'>Logout</a>
 			</div>";
-		}
-		else
-		{
-			$buttons = "
+        } else {
+            $buttons = "
 			<div class='float-end'>
 				<a class='btn btn-light me-2' href='login.php'>Login</a>
 				<a class='btn btn-warning' href='index.php?v=register'>Register</a>
 			</div>";
-		}
+        }
 
-		$home_class = (strstr($this->template, "home") === false) ? "" : "active";
+        $home_class = (strstr($this->template, "home") === false) ? "" : "active";
         $membership_class = (strstr($this->template, "membership") === false) ? "" : "active";
-		$about_class = (strstr($this->template, "about") === false) ? "" : "active";
-		$calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
+        $about_class = (strstr($this->template, "about") === false) ? "" : "active";
+        $calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
 
         # Get the menu from "mega_menu.php"
         # This uses the pages defined in config.json
         $menu = include("include/templates/mega_menu.php");
 
-		echo <<<HEADER
+        echo <<<HEADER
 		<header>
             <nav class='navbar navbar-default navbar-fixed-top navbar-dark bg-dark'>
                 <span class='navbar-brand ms-5'>
@@ -193,9 +187,8 @@ class CDView
         </header>
 HEADER;
 
-		if ($session->auth)
-		{
-			echo "
+        if ($session->auth) {
+            echo "
 			<nav class='navbar navbar-default navbar-fixed-top bg-light border-bottom p-0'>
 				<div class='container d-flex flex-wrap'>
 					<ul class='nav me-auto'>
@@ -206,14 +199,16 @@ HEADER;
 					</ul>
 				</div>
 			</nav>";
-		}
+        }
 
-		echo "
+        echo "
 		</header>";
-	}
+    }
 
-	public function Set($template)
-	{   $this->template = $template; }
+    public function Set($template)
+    {
+        $this->template = $template;
+    }
 
     private function DayCells()
     {

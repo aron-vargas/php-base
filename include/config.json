@@ -7,9 +7,19 @@
             "text": "Home",
             "href": "index.php?v=home",
             "children": [
-                { "name": "home-child1", "text": "home-child-1", "href": "index.php?v=home&child1"},
-                { "name": "home-child2", "text": "home-child-2", "href": "index.php?v=home&child2"},
-                { "name": "home-child3", "text": "home-child-3", "href": "index.php?v=home$child3"}
+                {
+                    "name": "home-resources",
+                    "text": "Resources",
+                    "children": [
+                        { "name": "tips-for-buyers", "text": "Tips For Buyers", "href": "index.php?v=chime/tips-for-buyers"},
+                        { "name": "tips-for-sellers", "text": "Tips For Sellers", "href": "index.php?v=chime/tips-for-sellers"},
+                        { "name": "homeowner-information", "text": "Homeowner Information", "href": "index.php?v=chime/homeowner-information"},
+                        { "name": "mortgage-information", "text": "Mortgage Information", "href": "index.php?v=chime/mortgage-information"},
+                        { "name": "mortgage-rates", "text": "Mortgage Rates", "href": "index.php?v=chime/mortgage-rates"},
+                        { "name": "title-and-escrow", "text": "Title and Escrow", "href": "index.php?v=chime/title-and-escrow"},
+                        { "name": "real-estate-glossary", "text": "Real Estate Glossary", "href": "index.php?v=chime/real-estate-glossary"}
+                    ]
+                }
             ]
         },
         {

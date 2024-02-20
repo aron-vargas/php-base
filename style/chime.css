@@ -1,0 +1,176 @@
+.css-1wy0on6 {
+    -webkit-box-align: center;
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+.card-grid, .css-1wpxgp2
+{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 30px;
+}
+.input-group>.input-group-prepend>.btn, .input-group>.input-group-prepend>.input-group-text, .input-group>.input-group-append:not(:last-child)>.btn, .input-group>.input-group-append:not(:last-child)>.input-group-text, .input-group>.input-group-append:last-child>.btn:not(:last-child):not(.dropdown-toggle), .input-group>.input-group-append:last-child>.input-group-text:not(:last-child)
+{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.legend input {
+    min-width: 80px;
+    -webkit-box-flex: 0;
+    flex-grow: 0;
+}
+
+.legend .input-group-prepend:first-of-type .input-group-text
+{
+    position: absolute;
+    width: 100%;
+}
+
+.input-group-prepend:first-of-type
+{
+    min-width: 100px;
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+}
+.input-group-prepend, .input-group-append {
+    display: flex;
+}
+
+.input-group-prepend {
+    margin-right: -1px;
+}
+
+.payment-estimator-bottom-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    column-gap: 30px;
+}
+
+.css-2b097c-container {
+    position: relative;
+    box-sizing: border-box;
+}
+
+.css-7pg0cj-a11yText {
+    z-index: 9999;
+    border: 0px;
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    width: 1px;
+    position: absolute;
+    overflow: hidden;
+    padding: 0px;
+    white-space: nowrap;
+}
+
+.react-select__control {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    flex-wrap: nowrap !important;
+    min-height: 37.5px !important;
+}
+
+.react-select__control .react-select__value-container:not(.react-select__value-container--is-multi) {
+    margin-left: 1px;
+    overflow: visible;
+}
+
+.react-select__control .react-select__value-container:not(.react-select__value-container--is-multi)>div:not(.react-select__multi-value) {
+    width: 100%;
+}
+
+.css-1uccc91-singleValue {
+    color: rgb(51, 51, 51);
+    margin-left: 2px;
+    margin-right: 2px;
+    max-width: calc(100% - 8px);
+    overflow: hidden;
+    position: absolute;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    top: 50%;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+}
+
+.css-1hwfws3 {
+    -webkit-box-align: center;
+    align-items: center;
+    display: flex;
+    flex: 1 1 0%;
+    flex-wrap: wrap;
+    padding: 2px 8px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.css-yk16xz-control {
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(204, 204, 204);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    cursor: default;
+    display: flex;
+    flex-wrap: wrap;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    min-height: 38px;
+    position: relative;
+    transition: all 100ms ease 0s;
+    box-sizing: border-box;
+    outline: 0px !important;
+}
+
+.css-1okebmr-indicatorSeparator {
+    align-self: stretch;
+    background-color: rgb(204, 204, 204);
+    margin-bottom: 8px;
+    margin-top: 8px;
+    width: 1px;
+    box-sizing: border-box;
+}
+
+.css-62g3xt-dummyInput {
+    background: 0px center;
+    border: 0px;
+    font-size: inherit;
+    outline: 0px;
+    padding: 0px;
+    width: 1px;
+    color: transparent;
+    left: -100px;
+    opacity: 0;
+    position: relative;
+    transform: scale(0);
+}
+
+.css-foaaz5 .payment-estimator-disclaimer {
+    font-size: 0.75rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+ul.glossary-toc-list {
+    padding-left: 0;
+}
+ul.glossary-toc-list li {
+    display: inline-block;
+}
