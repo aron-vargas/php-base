@@ -63,6 +63,8 @@ class CalendarModel extends CDModel {
         {
             $sth = $dbh->prepare("SELECT
                 e.*,
+                'cell-' || DATE_FORMAT(e.start_date, '%Y%m%d') as id,
+                (e.end_date - e.start_date) / 60 / {$this->_cal->time_slot} as duration,
                 c.first_name as creator_first_name,
                 c.last_name as creator_last_name,
                 o.first_name as orginizer_first_name,

@@ -12,11 +12,25 @@ function AttachEvents(data, textStatus, jqXHR)
         alert("Got some data back");
         for (var event in data)
         {
-            $("")
+            var eventElem = CreateEventElem(event);
+            $('#'+event.id).append(eventElem);
         }
     }
 }
 
+function CreateEventElem(event)
+{
+    var title = $("<div></div>").text(event.title);
+    var descr = $("<div></div>").text(event.description);
+    title.addClass('event-title');
+    descr.addClass('event-descr');
+
+    var elem = $("<div></div>");
+    elem.addClass("cal-event");
+    elem.append(title,descr);
+
+    return elem;
+}
 function SetEvents(start, end)
 {
     var url = "calendar.php?act=getevents&start="+start+"&end="+end;

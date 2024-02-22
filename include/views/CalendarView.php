@@ -198,10 +198,11 @@ CAL;
 
             $class_list = $this->ClassList("hdr-cell", $datetime);
             $calendar_hdr_cells .= "<div class='col $class_list'>{$day_text}<br/>{$day_num}</div>";
+            $cell_class = "cell-".date("Ymd", $datetime);
 
             $class_list = $this->ClassList("flexcol", $datetime);
             $calendar_day_cells .= "<div class='col cal-days'>
-                <div id='cell-{$datetime}' class='$class_list'>
+                <div id='{$cell_class}' class='$class_list'>
                     {$this->TimeCells($datetime, "wv-cell")}
                 </div>
             </div>";
@@ -248,12 +249,13 @@ CAL;
             {
                 $day_num = date("j", $datetime);
                 $class_list = $this->ClassList("mv-cell", $datetime);
+                $cell_class = "cell-".date("Ymd", $datetime);
                 $event_datetime = $datetime + $todays_secods;
 
                 $calendar_day_cells .= "<div class='col'>
                     <div class='{$class_list}' onClick=\"ShowEventDialog(0, '$event_datetime');\"'>
                         <div class='cell-num'>{$day_num}</div>
-                        <div id='cell-{$datetime}' class='cal-days'></div>
+                        <div id='{$cell_class}' class='cal-days'></div>
                     </div>
                 </div>";
 
