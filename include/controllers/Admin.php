@@ -1,9 +1,9 @@
 <?php
 class Admin extends CDController
 {
-	private $act = "view";
-	private $target = "home";
-	private $target_pkey;
+    protected $act = "view";
+    protected $target = "home";
+    protected $target_pkey;
 
     /**
      * Create a new instance

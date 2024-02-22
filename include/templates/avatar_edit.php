@@ -1,5 +1,5 @@
 <?php
-	$usr = $_SESSION['APPSESSION']->user;
+$usr = $_SESSION['APPCONTROLLER']->user;
 
 echo "
 <style>
@@ -63,5 +63,5 @@ echo "
 </div>";
 ?>
 <script type='text/javascript'>
-	$("#avator-sel").imagepicker();
+    $("#avator-sel").imagepicker();
 </script>

@@ -1,7 +1,6 @@
 <?php
 
-class CDModel
-{
+class CDModel {
     public $pkey;
     public $key_name = "pkey";
     protected $db_table;
@@ -10,7 +9,7 @@ class CDModel
     public $ClassName = "CDModel";
 
     public $edit_view = "include/templates/login_form.php";
-	public $display_view = "include/templates/home.php";
+    public $display_view = "include/templates/home.php";
 
     /**
      * Create a new instance
@@ -24,39 +23,6 @@ class CDModel
     }
 
     /**
-	 * Perform requestion action
-	 * @param string
-	 * @param mixed
-	 */
-    public function ActionHandler($action, $req)
-    {
-        if ($action == 'save')
-        {
-            $this->Copy($req);
-            $this->Save();
-        }
-        else if ($action == 'create')
-        {
-            $this->Copy($req);
-            if ($this->Validate())
-            {
-                $this->Create();
-            }
-        }
-        else if ($action == 'change')
-        {
-            $field = (isset($req['field'])) ? $req['field'] : null;
-            $value = (isset($req['value'])) ? trim($req['value']) : null;
-
-            $this->Change($field, $value);
-        }
-        else if ($action == 'delete')
-        {
-            $this->Delete();
-        }
-    }
-
-    /**
      * Set the field values in the PDO Statement
      * @param PDOStatement
      */
@@ -64,7 +30,7 @@ class CDModel
     {
         $i = 1;
 
-        foreach($this->field_array as $field)
+        foreach ($this->field_array as $field)
         {
             $val = $this->Val($field);
             $sth->bindValue($i++, $val, $field->Type($val));
@@ -98,7 +64,7 @@ class CDModel
      */
     public function Change($field, $value)
     {
-        $dbh = $_SESSION['APPSESSION']->dbh;
+        $dbh = CDController::DBConnection();
 
         if (is_int($value))
             $val_type = PDO::PARAM_INT;
@@ -109,7 +75,7 @@ class CDModel
         else if (is_string($value))
             $val_type = PDO::PARAM_STR;
         else
-          $val_type = false;
+            $val_type = false;
 
         $field = trim($field);
 
@@ -129,7 +95,7 @@ class CDModel
     {
         if (is_array($assoc))
         {
-            foreach($assoc AS $key => $val)
+            foreach ($assoc as $key => $val)
             {
                 if ($key == 'db_table')
                     continue;
@@ -141,7 +107,7 @@ class CDModel
 
     /**
      * Find all records matching the field value
-     * 
+     *
      * @param string $table_name
      * @param string $field_name
      * @param mixed $key
@@ -149,7 +115,7 @@ class CDModel
      */
     static public function GetALL($table_name, $field_name, $key)
     {
-        $dbh = $_SESSION['APPSESSION']->dbh;
+        $dbh = CDController::DBConnection();
 
         if ($dbh)
         {
@@ -165,25 +131,169 @@ class CDModel
     }
 
     /**
+     * Get the date string
+     *
+     * @param mixed
+     * @param boolean
+     * @param boolean
+     * @return string
+     */
+    public function GetDate($attribute, $html = true, $clean = true)
+    {
+        $val = $this->Get($attribute, $html, $clean);
+        $parsed = self::ParseDate($val);
+        return $parsed;
+    }
+
+    /**
+     * Parse given value into a date string
+     *
+     * @param mixed
+     * @return string
+     */
+    static public function ParseDate($date_str)
+    {
+        $parsed = null;
+
+        if (preg_match('/[\-\/]/', $date_str))	# Date string
+            $parsed = date('Y-m-d', strtotime($date_str));
+        else if (is_numeric($date_str))			# Unix time
+            $parsed = date('Y-m-d', $date_str);
+
+        return $parsed;
+    }
+
+    /**
+     * Get time string
+     *
+     * @param mixed
+     * @param boolean
+     * @param boolean
+     * @return string
+     */
+    public function GetTime($attribute, $html = true, $clean = true)
+    {
+        $parsed = null;
+        $val = $this->Get($attribute, $html, $clean);
+        $parsed = self::ParseTime($val);
+
+        return $parsed;
+    }
+
+    /**
+     * Parse given parameter into a time string
+     *
+     * @param mixed
+     * @return string
+     */
+    static public function ParseTime($time_str)
+    {
+        $parsed = null;
+
+        if (preg_match('/[:]/', $time_str))	# Date string
+            $parsed = date('H:i:s', strtotime($time_str));
+        else if (is_numeric($time_str))			# Unix time
+            $parsed = date('H:i:s', $time_str);
+
+        return $parsed;
+    }
+
+    /**
+     * Parse given parameter into a date string
+     *
+     * @param mixed
+     * @param boolean
+     * @param boolean
+     * @return string
+     */
+    public function GetTStamp($date, $html = true, $clean = true)
+    {
+        $parsed = NULL;
+        $date = $this->Get($date, $html, $clean);
+        $parsed = self::ParseTStamp($date);
+
+        return $parsed;
+    }
+
+    /**
+     * Parse given parameter into a datetime string
+     *
+     * @param mixed
+     * @param boolean
+     * @param boolean
+     * @return string
+     */
+    static public function ParseTStamp($date, $html = true, $clean = true)
+    {
+        $parsed = NULL;
+
+        if (preg_match('/[\-\/]/', $date))	# Date string
+            $parsed = trim($date);
+        else if (is_numeric($date))			# Unix time
+            $parsed = date('Y-m-d H:i:s', $date);
+
+        return $parsed;
+    }
+
+    /**
+     * Get unix timestamp
+     *
+     * @param mixed
+     * @param boolean
+     * @param boolean
+     * @return integer
+     */
+    public function GetUnixTime($date, $html = true, $clean = true)
+    {
+        $parsed = NULL;
+        $date = $this->Get($date, $html, $clean);
+        $parsed = self::ParseUnixTime($date);
+
+        return $parsed;
+    }
+
+    /**
+     * Parse given parameter into a unix timestamp
+     *
+     * @param mixed
+     * @param boolean
+     * @param boolean
+     * @return integer
+     */
+    static public function ParseUnixTime($date, $html = true, $clean = true)
+    {
+        $parsed = NULL;
+
+        if (preg_match('/[\-\/]/', $date))	# Date string
+            $parsed = strtotime($date);
+        else if (is_numeric($date))			# Unix time
+            $parsed = trim($date);
+
+        return $parsed;
+    }
+
+    /**
      * Return attribute value.
      * Option to replace html entities
      * Option to clean tags
-     * 
+     *
      * @param string $attribute
      * @param boolean $html
      * @param boolean $clean
      * @return mixed
      */
-    public function Get($attribute, $html = true, $clean = true, )
+    public function Get($attribute, $html = true, $clean = true)
     {
         $val = null;
 
         if (@property_exists($this, $attribute))
         {
-            $val =  $this->{$attribute};
-            
-            if ($html) $val = htmlentities($val, ENT_QUOTES);
-            if ($clean) $val = self::Clean($val);
+            $val = $this->{$attribute};
+
+            if ($html)
+                $val = htmlentities($val, ENT_QUOTES);
+            if ($clean)
+                $val = self::Clean($val);
         }
 
         return $val;
@@ -194,7 +304,7 @@ class CDModel
      */
     public function Delete()
     {
-        $dbh = $_SESSION['APPSESSION']->dbh;
+        $dbh = CDController::DBConnection();
 
         $sth = $dbh->query("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = {$this->pkey}");
         $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
@@ -208,7 +318,7 @@ class CDModel
     {
         if ($this->pkey)
         {
-            $dbh = $_SESSION['APPSESSION']->dbh;
+            $dbh = CDController::DBConnection();
 
             $sth = $dbh->prepare("SELECT * FROM {$this->db_table} WHERE {$this->key_name} = ?");
             $sth->bindValue(1, $this->pkey, PDO::PARAM_INT);
@@ -240,7 +350,10 @@ class CDModel
     /**
      * Check validity of this record
      */
-    public function Validate() {}
+    public function Validate()
+    {
+        return true;
+    }
 
     /**
      * Return attribute value
@@ -253,12 +366,16 @@ class CDModel
 
         if (@property_exists($this, $db_field->name))
         {
-            $val =  $this->{$db_field->name};
-            
-            if ($clean) $val = self::Clean($val);
+            $val = $this->{$db_field->name};
 
-            if ($db_field->max_length)
-                $val = substr($val, 0, $db_field->max_length);
+            if ($val)
+            {
+                if ($clean)
+                    $val = self::Clean($val);
+
+                if ($db_field->max_length)
+                    $val = substr($val, 0, $db_field->max_length);
+            }
         }
 
         return $val;
@@ -270,11 +387,11 @@ class CDModel
      */
     public function db_insert()
     {
-        $dbh = $_SESSION['APPSESSION']->dbh;
+        $dbh = CDController::DBConnection();
 
         $fields = "";
         $holders = "";
-        foreach($this->field_array as $field)
+        foreach ($this->field_array as $field)
         {
             $fields .= " {$field->Name()},";
             $holders .= " ?,";
@@ -300,10 +417,10 @@ class CDModel
      */
     public function db_update()
     {
-        $dbh = $_SESSION['APPSESSION']->dbh;
+        $dbh = CDController::DBConnection();
 
         $fields = "";
-        foreach($this->field_array as $field)
+        foreach ($this->field_array as $field)
         {
             $fields .= " {$field->Name()} = ?,";
         }

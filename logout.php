@@ -1,5 +1,5 @@
 <?php
 require("include/session_manager.php");
-$session->End();
+$controller->End();
 header('Location: index.php');
 exit;

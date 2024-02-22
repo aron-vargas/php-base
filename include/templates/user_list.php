@@ -1,9 +1,9 @@
 <?php
 
-$session = $_SESSION['APPSESSION'];
-$dbh = $session->dbh;
+$controller = $_SESSION['APPCONTROLLER'];
+$dbh = CDController::DBConnection();
 
-$is_admin = $session->user->isAdmin();
+$is_admin = $controller->user->isAdmin();
 $protected = ($is_admin) ? "" : " hidden";
 
 $tr = "";
@@ -14,9 +14,9 @@ WHERE user_id > 1
 ORDER BY u.user_id DESC");
 while ($row = $sth->fetch(PDO::FETCH_OBJ))
 {
-	$num = $row->user_id;
+    $num = $row->user_id;
 
-	$tr .= "<tr>
+    $tr .= "<tr>
 		<td class='text-right'>{$num}</td>
 		<td class='text-left'>{$row->user_name}<span class='rounded-circle avatar-sm float-start base_blue'>&nbsp;</span></td>
 		<td class='text-left'>{$row->first_name} {$row->last_name}</td>
@@ -30,36 +30,37 @@ while ($row = $sth->fetch(PDO::FETCH_OBJ))
 }
 ?>
 <div role='main' class='container'>
-	<div class='mt-4 p-2 bg-secondary text-white text-center rounded shadow'>
-		<h3>There's No One Like You! Thankfully</h3>
-	</div>
-	<table id='user_list' class='data stripe'>
-		<thead>
-			<tr>
-				<th class='text-right'>User #</th>
-				<th class='text-left'>Username</th>
-				<th class='text-left'>Full Name</th>
-				<th class='text-left'>Nickname</th>
-				<th class='text-left'>Email</th>
-				<th class='text-left'>Phone</th>
-				<th class='text-left'>Status</th>
-				<th class='text-right<?php echo $protected; ?>'>Perm</th>
-				<th class='text-right<?php echo $protected; ?>'>Action</th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php echo $tr; ?>
-		</tbody>
-	</table>
+    <div class='mt-4 p-2 bg-secondary text-white text-center rounded shadow'>
+        <h3>There's No One Like You! Thankfully</h3>
+    </div>
+    <table id='user_list' class='data stripe'>
+        <thead>
+            <tr>
+                <th class='text-right'>User #</th>
+                <th class='text-left'>Username</th>
+                <th class='text-left'>Full Name</th>
+                <th class='text-left'>Nickname</th>
+                <th class='text-left'>Email</th>
+                <th class='text-left'>Phone</th>
+                <th class='text-left'>Status</th>
+                <th class='text-right<?php echo $protected; ?>'>Perm</th>
+                <th class='text-right<?php echo $protected; ?>'>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php echo $tr; ?>
+        </tbody>
+    </table>
 </div>
 <script type='text/javascript'>
-// Shorthand for $( document ).ready()
-$(function() {
+    // Shorthand for $( document ).ready()
+    $(function ()
+    {
 
-	$('.data').DataTable({
-        paging: false,
-        info: false,
-		order: [[2, 'asc']]
+        $('.data').DataTable({
+            paging: false,
+            info: false,
+            order: [[2, 'asc']]
+        });
     });
-});
 </script>

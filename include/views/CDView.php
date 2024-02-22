@@ -1,22 +1,19 @@
 <?php
 
-class CDView
-{
+class CDView {
     public $header = "include/templates/header.php";
     public $template = "include/templates/home.php";
     public $footer = "include/templates/footer.php";
 
-    private $header_rendered = false;
-    private $body_rendered = false;
-    private $footer_rendered = false;
+    protected $header_rendered = false;
+    protected $body_rendered = false;
+    protected $footer_rendered = false;
 
-    private $message = array();
-    public $css = array();
+    protected $message = array();
+    protected $css = array();
     public $js = array();
 
-    private $model;
-
-    private $debug = false;
+    protected $debug = false;
 
     /**
      * Create a new instance
@@ -37,8 +34,6 @@ class CDView
         $this->js['jquery-ui'] = "<script type='text/javascript' src='vendor/components/jqueryui/jquery-ui.min.js'></script>";
         $this->js['datatable'] = "<script type='text/javascript' src='js/datatables.min.js'></script>";
         $this->js['imgpicker'] = "<script type='text/javascript' src='js/image-picker.min.js'></script>";
-
-        $this->model = $model;
     }
 
     /**
@@ -70,19 +65,52 @@ class CDView
             $this->footer_rendered = ($state['footer_rendered']);
     }
 
+
+    public function process($req)
+    {
+        # ALL attributes
+        $parsed = parse_url($_SERVER['REQUEST_URI']);
+        # path only
+        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        # Change the view based on "v" parameter
+        if (isset($req['v']))
+        {
+            $view = strtolower(CDModel::Clean($req['v']));
+
+            $template_file = "include/templates/{$view}.php";
+
+            if ($view == 'event')
+                $this->template = "include/templates/calendar/event.php";
+        }
+
+        # [D]ata [O]nly do not show header or footer
+        if (isset($req['do']))
+        {
+            $this->SetState(array(
+                "header_rendered" => true,
+                "body_rendered" => false,
+                "footer_rendered" => true
+            ));
+        }
+    }
+
     public function render()
     {
-        if ($this->header_rendered == false) {
+        if ($this->header_rendered == false)
+        {
             $this->render_header();
             $this->header_rendered = true;
         }
 
-        if ($this->body_rendered == false) {
+        if ($this->body_rendered == false)
+        {
             $this->render_body();
             $this->body_rendered = false;
         }
 
-        if ($this->footer_rendered == false) {
+        if ($this->footer_rendered == false)
+        {
             $this->render_footer();
             $this->footer_rendered = true;
         }
@@ -97,15 +125,18 @@ class CDView
 
     public function render_body()
     {
-        if ($this->message) {
+        if ($this->message)
+        {
             echo "<div class='alert alert-secondary w-50 mx-auto my-1'>";
-            foreach ($this->message as $message) {
+            foreach ($this->message as $message)
+            {
                 echo "<p>{$message}</p>";
             }
             echo "</div>\n";
         }
 
-        if ($this->debug) {
+        if ($this->debug)
+        {
             echo "<div class='bebug_container'>";
             include("include/templates/debug.php");
             echo "</div>\n";
@@ -126,21 +157,24 @@ class CDView
 
     public function menu()
     {
-        $session = $_SESSION['APPSESSION'];
+        $controller = $_SESSION['APPCONTROLLER'];
 
-        if ($session->user->pkey) {
+        if ($controller->user->pkey)
+        {
             $buttons = "<div class='float-end'>
 				<span class='pe-2'>
 					<a href='index.php?v=avatar'>
-                        <span class='rounded-circle avatar {$session->user->avatar}'>&nbsp;</span>
+                        <span class='rounded-circle avatar {$controller->user->avatar}'>&nbsp;</span>
                     </a>
-					<a href='index.php?act=edit&target=User&pkey={$session->user->pkey}'>
-                        {$session->user->first_name} {$session->user->last_name}
+					<a href='index.php?act=edit&target=User&pkey={$controller->user->pkey}'>
+                        {$controller->user->first_name} {$controller->user->last_name}
                     </a>
 				</span>
 				<a class='btn btn-light me-2' href='logout.php'>Logout</a>
 			</div>";
-        } else {
+        }
+        else
+        {
             $buttons = "
 			<div class='float-end'>
 				<a class='btn btn-light me-2' href='login.php'>Login</a>
@@ -187,7 +221,8 @@ class CDView
         </header>
 HEADER;
 
-        if ($session->auth) {
+        if ($controller->auth)
+        {
             echo "
 			<nav class='navbar navbar-default navbar-fixed-top bg-light border-bottom p-0'>
 				<div class='container d-flex flex-wrap'>

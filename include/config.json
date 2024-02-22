@@ -1,6 +1,6 @@
 {
     "exit_on_error": false,
-    "use_db": false,
+    "use_db": true,
     "pages": [
         {
             "name": "home",

@@ -4,8 +4,8 @@ class DBField
 {
     public $name;
     public $val;
-    private $type;
-    private $nullable;
+    protected $type;
+    protected $nullable;
 
     public $max_length;
 

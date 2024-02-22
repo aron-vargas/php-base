@@ -1,4 +1,4 @@
 <?php
 require("include/session_manager.php");
-$session->controller->SetTemplate("include/templates/showqrcode.php");
-$session->controller->view->render();
+$controller->view->Set("include/templates/showqrcode.php");
+$controller->view->render();

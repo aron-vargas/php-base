@@ -27,10 +27,11 @@ class ErrorView extends CDView
         </div>";
     }
 
-    public function render_footer()
+    public function render_body()
     {
         // Add all the errors
-        foreach($this->errors AS $msg)
+        $error_message = "";
+        foreach ($this->errors as $msg)
         {
             $error_message .= self::WrapError($msg);
         }
@@ -47,8 +48,5 @@ class ErrorView extends CDView
                 <div>try looking at our <a href=\"/help\">Help Center</a> if you need a hand.</div>
             </div>
         </div>";
-
-        // Add the normal footer template
-        include($this->footer);
     }
 }

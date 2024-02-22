@@ -1,10 +1,10 @@
 <?php
 
-$session = $_SESSION["APPSESSION"];
+$controller = $_SESSION["APPCONTROLLER"];
 
 # Create a mega menu from the page configuration
 $menu = "<div class='mega_menu navbar-nav'>";
-$menu .= AppItem(0, $session->config->pages);
+$menu .= AppItem(0, $controller->config->pages);
 $menu .= "</div>";
 
 return $menu;
@@ -26,15 +26,17 @@ function AppItem($num, $item)
     if (isset($item->menuclass))
     {
         if (is_array($item->class))
-            $class_list = " ".implode(" ", $item->class);
+            $class_list = " " . implode(" ", $item->class);
         else
             $class_list .= " {$item->class}";
     }
 
     # SET the item contents
     # name and text are required
-    if (!isset($item->name)) $item->name = "Page Link";
-    if (!isset($item->text)) $item->text = "--Missing-Text--";
+    if (!isset($item->name))
+        $item->name = "Page Link";
+    if (!isset($item->text))
+        $item->text = "--Missing-Text--";
     $innerHTML = $item->text;
     if (isset($item->href))
     {

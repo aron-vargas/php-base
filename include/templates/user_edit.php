@@ -1,5 +1,5 @@
 <?php
-	$usr = $_SESSION['APPSESSION']->user;
+$usr = $_SESSION['APPCONTROLLER']->user;
 
 echo "
 <style>

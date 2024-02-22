@@ -2,13 +2,12 @@
 # 1 Day = 86400 seconds
 define('ONE_DAY', 86400);
 
-class CalendarModel extends CDModel
-{
+class CalendarModel extends CDModel {
     public $pkey;                   # integer
     public $key_name = "event_id";  # string
-	protected $db_table = "event";  # string
+    protected $db_table = "event";  # string
 
-    private $_cal;                   # Object : calendar settings
+    protected $_cal;                   # Object : calendar settings
 
     /**
      * Create a new instanace
@@ -25,91 +24,6 @@ class CalendarModel extends CDModel
         }
 
         $this->_cal = $_SESSION["cal"];
-    }
-
-    /**
-	 * Perform requestion action
-	 * @param string
-	 * @param mixed
-	 */
-    public function ActionHandler($action, $req)
-    {
-        $pkey = (isset($req['pkey'])) ? self::Clean($req['pkey']) : null;
-
-        if ($action == 'save')
-        {
-            $event = new CalEvent($pkey);
-            $event->Copy($req);
-            $event->Save();
-        }
-        else if ($action == 'create')
-        {
-            $event = new CalEvent($pkey);
-            $event->Copy($req);
-            if ($event->Validate())
-            {
-                $event->Create();
-            }
-        }
-        else if ($action == 'change')
-        {
-            $field = (isset($req['field'])) ? self::Clean($req['field']) : null;
-            $value = (isset($req['value'])) ? self::Clean($req['value']) : null;
-
-            $event = new CalEvent($pkey);
-            $event->Change($field, $value);
-        }
-        else if ($action == 'delete')
-        {
-            $event = new CalEvent($pkey);
-            $event->Delete();
-        }
-        else if ($action == 'reset')
-        {
-            $sel_date = strtotime("today");
-            $_SESSION['cal'] = $this->GetDefaults($sel_date);
-            $this->_cal = $_SESSION['cal'];
-        }
-        else if ($action == 'today')
-        {
-            $this->_cal->sel_date = strtotime('today');
-        }
-        else if ($action == 'sel')
-        {
-            if (isset($req['date']))
-            {
-                $this->_cal->sel_date = self::Clean($req['date']);
-            }
-        }
-        else if ($action == 'prev')
-        {
-            if ($this->_cal->view == 'm')
-                $this->_cal->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
-            else if ($this->_cal->view == "w")
-                $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
-            else if ($this->_cal->view == "ww")
-                $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
-            else if ($this->_cal->view == "d")
-                $this->_cal->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
-        }
-        else if ($action == 'next')
-        {
-            if ($this->_cal->view == 'm')
-                $this->_cal->sel_date = strtotime("+1 Month", $this->_cal->sel_date);
-            else if ($this->_cal->view == "w")
-                $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
-            else if ($this->_cal->view == "ww")
-                $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
-            else if ($this->_cal->view == "d")
-                $this->_cal->sel_date = strtotime("+1 Day", $this->_cal->sel_date);
-        }
-        else if ($action == 'set_view')
-        {
-            if (isset($req['view']))
-                $this->_cal->view = self::Clean($req['view']);
-        }
-
-        $this->InitDates();
     }
 
     /**
@@ -139,6 +53,39 @@ class CalendarModel extends CDModel
         }");
     }
 
+    public function GetMyEvents($from, $to)
+    {
+        $data = null;
+        $dbh = CDController::DBConnection();
+        $user = $_SESSION['APPCONTROLLER']->user;
+
+        if ($user->user_id)
+        {
+            $sth = $dbh->prepare("SELECT
+                e.*,
+                c.first_name as creator_first_name,
+                c.last_name as creator_last_name,
+                o.first_name as orginizer_first_name,
+                o.last_name as orginizer_last_name,
+                p.first_name as performer_first_name,
+                p.last_name as performer_last_name
+            FROM event e
+            LEFT JOIN user c on e.created_by = c.user_id
+            LEFT JOIN user o on e.orginizer_id = c.user_id
+            LEFT JOIN user p on e.performer_id = c.user_id
+            WHERE (e.created_by = ? OR e.orginizer_id = ? OR e.performer_id = ?) AND e.start_date BETWEEN ? AND ?");
+            $sth->bindValue(1, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(2, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(3, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(4, $from, PDO::PARAM_STR);
+            $sth->bindValue(5, $to, PDO::PARAM_STR);
+            $sth->execute();
+            $data = $sth->fetchAll(PDO::FETCH_OBJ);
+        }
+
+        return $data;
+    }
+
     /**
      * (Re)Calculate dates based on view and sel_date
      */
@@ -151,7 +98,7 @@ class CalendarModel extends CDModel
 
         $end = date("t", $_SESSION['cal']->sel_date);
         $_SESSION['cal']->month_last = strtotime(date("Y-m-{$end}", $_SESSION['cal']->sel_date));
-        $_SESSION['cal']->month_end = strtotime("Saturday",  $_SESSION['cal']->month_last);
+        $_SESSION['cal']->month_end = strtotime("Saturday", $_SESSION['cal']->month_last);
 
         $day = date("w", $_SESSION['cal']->sel_date);
         $_SESSION['cal']->week_start = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
@@ -162,16 +109,16 @@ class CalendarModel extends CDModel
         $_SESSION['cal']->work_week_end = strtotime("Friday", $_SESSION['cal']->work_week_start);
     }
 
-    public function isWeekend($timestamp)
+    static public function isWeekend($timestamp)
     {
         $the_day = date("w", $timestamp);
 
         return ($the_day == 0 || $the_day == 6) ? true : false;
     }
 
-    public function isHoliday($timestamp)
+    static public function isHoliday($timestamp)
     {
-        $dbh = $_SESSION['APPSESSION']->dbh;
+        $dbh = CDController::DBConnection();
 
         $is_holiday = false;
 
@@ -183,35 +130,73 @@ class CalendarModel extends CDModel
             $is_holiday = $sth->fetchColumn();
         }
 
-        return (boolean)$is_holiday;
+        return (boolean) $is_holiday;
     }
 
-    public function isToday($timestamp)
+    static public function isToday($timestamp)
     {
         $date = date("Ymd", $timestamp);
         $today = date("Ymd");
         return ($date == $today);
     }
 
-    public function isSelected($selected, $timestamp)
+    static public function isSelected($selected, $timestamp)
     {
         $date = date("Ymd", $timestamp);
         $today = date("Ymd", $selected);
         return ($date == $today);
     }
 
+    public function Next()
+    {
+        if ($this->_cal->view == 'm')
+            $this->_cal->sel_date = strtotime("+1 Month", $this->_cal->sel_date);
+        else if ($this->_cal->view == "w")
+            $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "ww")
+            $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "d")
+            $this->_cal->sel_date = strtotime("+1 Day", $this->_cal->sel_date);
+        $this->InitDates();
+    }
+    public function Prev()
+    {
+        if ($this->_cal->view == 'm')
+            $this->_cal->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
+        else if ($this->_cal->view == "w")
+            $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "ww")
+            $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "d")
+            $this->_cal->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
+        $this->InitDates();
+    }
+
+    public function Reset($sel_date)
+    {
+        $_SESSION['cal'] = $this->GetDefaults($sel_date);
+        $this->_cal = $_SESSION['cal'];
+        $this->InitDates();
+    }
+
+    public function SelectDate($new_date)
+    {
+        $this->_cal->sel_date = $new_date;
+        $this->InitDates();
+    }
+
     private function SetFieldArray()
-	{
-		$i = 0;
-		$this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 32);
-		$this->field_array[$i++] = new DBField('user_name', PDO::PARAM_STR, false, 32);
-		$this->field_array[$i++] = new DBField('first_name', PDO::PARAM_STR, false, 64);
-		$this->field_array[$i++] = new DBField('last_name', PDO::PARAM_STR, false, 64);
-		$this->field_array[$i++] = new DBField('nick_name', PDO::PARAM_STR, false, 45);
-		$this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
-		$this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 32);
-		$this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 32);
-		$this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_INT, false, 0);
-		$this->field_array[$i++] = new DBField('avatar', PDO::PARAM_STR, true, 45);
-	}
+    {
+        $i = 0;
+        $this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 32);
+        $this->field_array[$i++] = new DBField('user_name', PDO::PARAM_STR, false, 32);
+        $this->field_array[$i++] = new DBField('first_name', PDO::PARAM_STR, false, 64);
+        $this->field_array[$i++] = new DBField('last_name', PDO::PARAM_STR, false, 64);
+        $this->field_array[$i++] = new DBField('nick_name', PDO::PARAM_STR, false, 45);
+        $this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
+        $this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 32);
+        $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 32);
+        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('avatar', PDO::PARAM_STR, true, 45);
+    }
 }
