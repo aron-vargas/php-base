@@ -4,13 +4,15 @@ $controller = $_SESSION["APPCONTROLLER"];
 
 # Create a mega menu from the page configuration
 $menu = "<div class='mega_menu navbar-nav'>";
-$menu .= AppItem(0, $controller->config->pages);
+$menu .= AppItem(0, $_SESSION['APPCONFIG']->pages);
 $menu .= "</div>";
 
 return $menu;
 
 function AppItem($num, $item)
 {
+    $controller = $_SESSION["APPCONTROLLER"];
+
     if (is_array($item))
     {
         $html = "";
@@ -40,7 +42,7 @@ function AppItem($num, $item)
     $innerHTML = $item->text;
     if (isset($item->href))
     {
-        $active = ($item->name == $_SESSION['ACTIVE_PAGE']) ? "active" : "";
+        $active = ($item->name == $controller->active_page) ? "active" : "";
         $innerHTML = "<a class='nav-link p-2 {$active}' href='{$item->href}' alt='{$item->name}' title='{$item->name}'>{$item->text}</a>";
     }
 

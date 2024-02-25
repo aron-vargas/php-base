@@ -3,7 +3,7 @@
 /**
  *
 CREATE TABLE `event` (
-  `event_id` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `pkey` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `description` varchar(512) DEFAULT NULL,
   `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -12,6 +12,8 @@ CREATE TABLE `event` (
   `last_mod_by` int NOT NULL,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
+  `all_day` tinyint NOT NULL DEFAULT '0',
+  `private` tinyint NOT NULL DEFAULT '1',
   `event_type` varchar(45) NOT NULL DEFAULT 'Public',
   `event_status` varchar(45) NOT NULL DEFAULT 'NEW',
   `location_id` int DEFAULT NULL,
@@ -27,15 +29,14 @@ CREATE TABLE `event` (
   `scheduled_at` datetime DEFAULT NULL,
   `content` text,
   `url` varchar(1024) DEFAULT NULL,
-  PRIMARY KEY (`event_id`)
+  PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
  */
 class CalEvent extends CDModel {
     public $pkey;
-    public $key_name = "event_id";
+    public $key_name = "pkey";
     protected $db_table = "event";
 
-    public $event_id;       #` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
     public $title;          #` varchar(255) DEFAULT NULL,
     public $description;    #` varchar(512) DEFAULT NULL,
     public $created_on;     #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -44,7 +45,10 @@ class CalEvent extends CDModel {
     public $last_mod_by;    #` int NOT NULL,
     public $start_date;     #` datetime NOT NULL,
     public $end_date;       #` datetime NOT NULL,
-    public $event_type = 'Public';  #` varchar(45) NOT NULL DEFAULT 'Public',
+    public $all_day;        #` tinyint NOT NULL DEFAULT '0',
+
+    public $private = 1;        # ` tinyint NOT NULL DEFAULT '1',
+    public $event_type = 'Event';  #` varchar(45) NOT NULL DEFAULT 'Event',
     public $event_status = 'NEW';   #` varchar(45) NOT NULL DEFAULT 'NEW',
     public $location_id;    #` int DEFAULT NULL,
     public $location_info;  #` varchar(255) DEFAULT NULL,
@@ -67,8 +71,7 @@ class CalEvent extends CDModel {
     public function __construct($id = null, $start_date = null)
     {
         $this->pkey = $id;
-        $this->event_id = $id;
-         $this->start_date = ($start_date) ? CDModel::ParseTStamp($start_date) : date("Y-m-d H:00");
+        $this->start_date = ($start_date) ? CDModel::ParseTStamp($start_date) : date("Y-m-d H:00");
         $DEFAULT_INTERVAL = self::$DEFAULT_INTERVAL;
         $this->end_date = date("Y-m-d H:00", strtotime("+{$DEFAULT_INTERVAL}", strtotime($this->start_date)));
         $this->SetFieldArray();
@@ -105,7 +108,7 @@ class CalEvent extends CDModel {
     private function SetFieldArray()
     {
         $i = 0;
-        $this->field_array[$i++] = new DBField('event_id', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('title', PDO::PARAM_STR, true, 255);
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 512);
         $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, false, 0);
@@ -114,6 +117,8 @@ class CalEvent extends CDModel {
         $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('start_date', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('end_date', PDO::PARAM_STR, true, 0);
+        $this->field_array[$i++] = new DBField('all_day', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('private', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('event_type', PDO::PARAM_STR, true, 45);
         $this->field_array[$i++] = new DBField('event_status', PDO::PARAM_STR, true, 45);
         $this->field_array[$i++] = new DBField('location_id', PDO::PARAM_INT, true, 0);
@@ -151,5 +156,35 @@ class CalEvent extends CDModel {
             $this->created_on = date("Y-m-d H:i:s");
 
         return true;
+    }
+
+    public function CreatedBy()
+    {
+        return new User($this->created_by);
+    }
+
+    public function ModifiedBy()
+    {
+        return new User($this->last_mod_by);
+    }
+
+    public function Orginizer()
+    {
+        $ret = false;
+
+        if ($this->orginizer_id)
+            $ret = new User($this->orginizer_id);
+
+        return $ret;
+    }
+
+    public function Performer()
+    {
+        $ret = false;
+
+        if ($this->performer_id)
+            $ret = new User($this->performer_id);
+
+         return $ret;
     }
 }

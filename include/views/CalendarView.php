@@ -3,11 +3,6 @@
 class CalendarView extends CDView {
     public $template = null;
 
-    public $message;
-
-    public $css = array();
-    public $js = array();
-
     protected $debug = false;
 
     protected $_cal;                  # Object : calendar settings
@@ -15,9 +10,8 @@ class CalendarView extends CDView {
 
     /**
      * Create a new instance
-     * @param CDModel
      */
-    public function __construct($model = null)
+    public function __construct()
     {
         $this->css['main'] = "<link rel='stylesheet' type='text/css' href='style/main.css' media='all'>";
         $this->css['bootstrap'] = "<link rel='stylesheet' type='text/css' href='vendor/twbs/bootstrap/dist/css/bootstrap.min.css' media='all'>";
@@ -56,19 +50,28 @@ class CalendarView extends CDView {
 
     public function render_footer()
     {
-        echo "</body></html>";
+        if ($this->mode == self::$HTML_MODE)
+        {
+            echo "</body></html>";
+        }
     }
 
     private function EventJS($start, $end)
     {
-        return <<<JS
+        $controller = $_SESSION['APPCONTROLLER'];
+
+        $LoadEvents = "";
+        if ($controller->user->user_id)
+        {
+            $LoadEvents = "mgr.GetEvents({ start: {$start}, end: {$end} });";
+        }
+
+        return <<<SCRIPT
 <script type="text/javascript">
-var start = {$start};
-var end = {$end};
-SetEvents(start, end);
-SetTasks(start, end);
+var mgr = new EventMgr("cal-cont", { view: '{$this->_cal->view}' });
+{$LoadEvents}
 </script>
-JS;
+SCRIPT;
     }
 
     private function Navigation()
@@ -147,6 +150,7 @@ BAR;
         $day_text = date("l", $this->_cal->sel_date);
         $day_num = date("j", $this->_cal->sel_date);
         $class_list = $this->ClassList("flexcol", $this->_cal->sel_date);
+        $cell_id = "cell-" . date("Ymd", $this->_cal->sel_date);
 
         return <<<CAL
 <div class='cal'>
@@ -163,8 +167,8 @@ BAR;
                     <div class='col gutter'>
                         {$this->GutterCells(0, "dv-cell")}
                     </div>
-                    <div class='col cal-days'>
-                        <div id='cell-{$this->_cal->sel_date}' class='{$class_list}'>
+                    <div class='day col cal-days'>
+                        <div id='{$cell_id}' class='{$class_list}'>
                             {$this->TimeCells($this->_cal->sel_date, "dv-cell")}
                         </div>
                     </div>
@@ -198,11 +202,11 @@ CAL;
 
             $class_list = $this->ClassList("hdr-cell", $datetime);
             $calendar_hdr_cells .= "<div class='col $class_list'>{$day_text}<br/>{$day_num}</div>";
-            $cell_class = "cell-".date("Ymd", $datetime);
+            $cell_id = "cell-" . date("Ymd", $datetime);
 
             $class_list = $this->ClassList("flexcol", $datetime);
-            $calendar_day_cells .= "<div class='col cal-days'>
-                <div id='{$cell_class}' class='$class_list'>
+            $calendar_day_cells .= "<div class='week col cal-days'>
+                <div id='{$cell_id}' class='$class_list'>
                     {$this->TimeCells($datetime, "wv-cell")}
                 </div>
             </div>";
@@ -249,7 +253,7 @@ CAL;
             {
                 $day_num = date("j", $datetime);
                 $class_list = $this->ClassList("mv-cell", $datetime);
-                $cell_class = "cell-".date("Ymd", $datetime);
+                $cell_class = "cell-" . date("Ymd", $datetime);
                 $event_datetime = $datetime + $todays_secods;
 
                 $calendar_day_cells .= "<div class='col'>
@@ -292,37 +296,52 @@ CAL;
         {
             if ($req['v'] == 'event')
             {
-                $pkey = (isset($req['event_id'])) ? CDModel::Clean($req['event_id']) : 0;
+                $pkey = (isset($req['pkey'])) ? CDModel::Clean($req['pkey']) : 0;
                 $start_date = (isset($req['start_date'])) ? CDModel::Clean($req['start_date']) : null;
                 $this->active_event = new CalEvent($pkey, $start_date);
                 $this->template = "include/templates/calendar/event.php";
+            }
+            else if ($req['v'] == 'list')
+            {
+                $this->template = "include/templates/calendar/event_list.php";
             }
         }
     }
 
     public function render_body()
     {
-        if ($this->message)
-            echo "\n<div class='alert alert-secondary w-50 mx-auto my-1'><p>{$this->message}</p></div>\n";
-
-        if ($this->template)
+        if ($this->mode == self::$HTML_MODE)
         {
-            $event = $this->active_event;
-            include("include/templates/calendar/event.php");
+            $this->render_message();
+
+            if ($this->template)
+            {
+                $event = $this->active_event;
+                include($this->template);
+            }
+            else if ($this->_cal->view == "d")
+                echo $this->DayView();
+            else if ($this->_cal->view == "w")
+                echo $this->WeekView();
+            else if ($this->_cal->view == "ww")
+                echo $this->WeekView();
+            else
+                echo $this->MonthView();
+
+            // class='modal fade' tabindex='-1' role='dialog' data-backdrop='false' aria-hidden='true'
+            echo "\n<div id='event-dialog' class='modal fade'></div>\n";
+
+            echo $this->EventJS($this->_cal->month_first, $this->_cal->month_end);
         }
-        else if ($this->_cal->view == "d")
-            echo $this->DayView();
-        else if ($this->_cal->view == "w")
-            echo $this->WeekView();
-        else if ($this->_cal->view == "ww")
-            echo $this->WeekView();
-        else
-            echo $this->MonthView();
+        else if ($this->mode == self::$JSON_MODE)
+        {
+            $body = new StdClass();
+            $body->status_code = 200;
+            $body->message = $this->message;
+            $body->data = $this->data;
 
-        // class='modal fade' tabindex='-1' role='dialog' data-backdrop='false' aria-hidden='true'
-        echo "\n<div id='event-dialog' class='modal fade'></div>\n";
-
-        echo $this->EventJS($this->_cal->month_first, $this->_cal->month_end);
+            echo json_encode($body);
+        }
     }
 
     public function SelectCal()
@@ -417,6 +436,29 @@ CAL;
         return $cells;
     }
 
+    static public function EventTypeOptions($selected = "Private")
+    {
+        if (empty($selected))
+            $selected = "Private";
+
+        $opt_ary = json_decode('
+        [
+            {"val": "Event", "text": "Event"},
+            {"val": "Task", "text": "Task"},
+            {"val": "Meeting", "text": "Meeting"},
+            {"val": "Conference Call", "text": "Conference Call"},
+            {"val": "Seminar", "text": "Seminar"},
+            {"val": "Conference", "text": "Conference"},
+            {"val": "Training", "text": "Training"},
+            {"val": "Out of Offive", "text": "Out of Office"},
+            {"val": "Vacation", "text": "Vacation"},
+            {"val": "Holiday", "text": "Holiday"},
+            {"val": "Other", "text": "Other"}
+        ]');
+
+        return CDView::OptionsList($selected, $opt_ary);
+    }
+
     public function ViewOptions($sel_view = "m")
     {
         if (empty($sel_view))
@@ -429,14 +471,6 @@ CAL;
             {"val": "ww", "text": "WorkWeek"},
             {"val": "d", "text": "Day"}
         ]');
-
-        $options = "";
-        foreach ($opt_ary as $opt)
-        {
-            $sel = ($opt->val == $sel_view) ? "active" : "";
-            $options .= "<li><a class='dropdown-item {$sel}' href='calendar.php?act=set_view&view={$opt->val}' alt='Set View' title='Set View'>{$opt->text}</a></li>";
-        }
-
-        return $options;
+        return CDView::ListItemLinks("calendar.php?act=set_view&view", $sel_view, $opt_ary);
     }
 }

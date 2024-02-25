@@ -109,25 +109,118 @@ class CDModel {
      * Find all records matching the field value
      *
      * @param string $table_name
-     * @param string $field_name
-     * @param mixed $key
+     * @param mixed $filter
      * @return StdClass[] | null
      */
-    static public function GetALL($table_name, $field_name, $key)
+    static public function GetALL($table_name, $filter)
     {
         $dbh = CDController::DBConnection();
+        $controller = $_SESSION['APPCONTROLLER'];
 
         if ($dbh)
         {
             $table_name = self::Clean($table_name);
-            $field_name = self::Clean($field_name);
-            $key = self::Clean($key);
-            $sth = $dbh->query("SELECT * FROM {$table_name} WHERE {$field_name} = {$key}");
+
+            $AND_WHERE = self::ParseFilter($filter);
+
+            //$controller->AddMsg("SELECT * FROM {$table_name} {$AND_WHERE}");
+            //$controller->view->render_message();
+            $sth = $dbh->query("SELECT * FROM {$table_name} {$AND_WHERE}");
             $sth->execute();
             return $sth->fetchALL(PDO::FETCH_OBJ);
         }
 
         return null;
+    }
+
+    /**
+     * Build WHERE clause from args array
+     * $args = [
+     *  [field => sring, type => string, op => string, match => string],
+     *  [field => sring, type => string, op => string, match => string],
+     *  ...
+     *  ]
+     *
+     * @param array
+     * @return string
+     */
+    static public function ParseFilter($args)
+    {
+        $dbh = CDController::DBConnection();
+
+        # All Valid SM status
+        $WHERE = "WHERE true";
+
+        if ($args)
+        {
+            foreach ($args as $idx => $filter)
+            {
+                $field = $filter['field'];
+                $op = $filter['op'];
+
+                $is_int = $filter['type'] == "int";
+                $is_date = $filter['type'] == "date";
+
+                $string = trim(urldecode($filter['match']));
+                if (strtoupper($string) == 'YES')
+                    $string = "YES";
+                if (strtoupper($string) == 'NO')
+                    $string = "NO";
+
+                if ($is_date)
+                    $date_str = date('Y-m-d', strtotime($string));
+
+                switch ($op)
+                {
+                    case 'sw':
+                        $WHERE .= "\n AND {$field} like " . $dbh->quote("$string%");
+                        break;
+                    case 'ew':
+                        $WHERE .= "\n AND {$field} like " . $dbh->quote("%$string");
+                        break;
+                    case 'eq':
+                        if ($is_int)
+                            $WHERE .= "\n AND $field = " . (int) $string;
+                        else if ($is_date)
+                            $WHERE .= "\n AND {$field} = " . $dbh->quote($date_str);
+                        else
+                            $WHERE .= "\n AND upper($field) = " . $dbh->quote(strtoupper($string));
+                        break;
+                    case 'ne':
+                        if ($is_int)
+                            $WHERE .= "\n AND $field <> " . (int) $string;
+                        else if ($is_date)
+                            $WHERE .= "\n AND {$field} != {$dbh->quote($date_str)}";
+                        else
+                            $WHERE .= "\n AND upper($field) <> " . $dbh->quote(strtoupper($string));
+                        break;
+                    case 'gt':
+                        if ($is_int)
+                            $WHERE .= "\n AND $field > " . (int) $string;
+                        else if ($is_date)
+                            $WHERE .= "\n AND {$field} > {$dbh->quote($date_str)}";
+                        else
+                            $WHERE .= "\n AND $field > " . $dbh->quote($string);
+                        break;
+                    case 'lt':
+                        if ($is_int)
+                            $WHERE .= "\n AND $field < " . (int) $string;
+                        else if ($is_date)
+                            $WHERE .= "\n AND {$field} < {$dbh->quote($date_str)}";
+                        else
+                            $WHERE .= "\n AND $field < " . $dbh->quote($string);
+                        break;
+                    default:
+                        if ($is_date)
+                            $WHERE .= "\n AND {$field} = " . $dbh->quote($date_str);
+                        else
+                            $WHERE .= "\n AND {$field} like " . $dbh->quote("%$string%");
+                        break;
+                }
+            }
+        }
+        //echo "<pre>$WHERE</pre>";
+        return $WHERE;
     }
 
     /**

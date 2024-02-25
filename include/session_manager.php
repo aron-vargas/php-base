@@ -6,10 +6,12 @@ syslog(LOG_DEBUG, "Autoload LoadClass registered");
 
 # Create a CDController
 session_start();
-$controller = new CDController();
-syslog(LOG_DEBUG, "CDController created");
+if (!isset($ControllerClass))
+    $ControllerClass = "CDController";
+$controller = new $ControllerClass();
+syslog(LOG_DEBUG, "$ControllerClass created");
 
-if ($controller->config->use_db)
+if ($_SESSION['APPCONFIG']->use_db)
 {
     $dbh = CDController::DBConnection();
     syslog(LOG_DEBUG, "Connected to Database");
@@ -29,6 +31,6 @@ function LoadClass($class)
         include_once "include/models/{$class}.php";
     else if (file_exists("include/views/{$class}.php"))
         include_once "include/views/{$class}.php";
-    else if (file_exists("include/controlers/{$class}.php"))
-        include_once "include/controlers/{$class}.php";
+    else if (file_exists("include/controllers/{$class}.php"))
+        include_once "include/controllers/{$class}.php";
 }

@@ -6,25 +6,56 @@ class CDController {
     public $auth = false;
 
     protected $act = "view";
-    protected $target = "home";
+    protected $target = "CDModel";
     protected $target_pkey;
+    public $active_page = "home";
 
     public $model;
     public $view;
-
-    public $config;
 
     /**
      * Create a new instance
      */
     public function __construct()
     {
-        $this->config = json_decode(file_get_contents("include/config.json"));
+        $_SESSION['APPCONFIG'] = json_decode(file_get_contents("include/config.json"));
         $this->user = new User();
-        if (!isset($_SESSION['ACTIVE_PAGE']))
-            $_SESSION['ACTIVE_PAGE'] = $this->target;
         $_SESSION['APPCONTROLLER'] = $this;
         $this->Init();
+    }
+
+    public function ActionHandler($req)
+    {
+        # Perform the action
+        if (isset($req['act']))
+        {
+            $action = (isset($req['act'])) ? $req['act'] : null;
+
+            if ($action == 'save')
+            {
+                $this->model->Copy($req);
+                $this->model->Save();
+            }
+            else if ($action == 'create')
+            {
+                $this->model->Copy($req);
+                if ($this->model->Validate())
+                {
+                    $this->model->Create();
+                }
+            }
+            else if ($action == 'change')
+            {
+                $field = (isset($req['field'])) ? $req['field'] : null;
+                $value = (isset($req['value'])) ? trim($req['value']) : null;
+
+                $this->model->Change($field, $value);
+            }
+            else if ($action == 'delete')
+            {
+                $this->model->Delete();
+            }
+        }
     }
 
     /**
@@ -47,7 +78,7 @@ class CDController {
         {
             $controller = $_SESSION['APPCONTROLLER'];
 
-            if ($controller->config->exit_on_error)
+            if ($_SESSION['APPCONFIG']->exit_on_error)
             {
                 $error = "<h2>Unable to make a database connection!</h2>";
                 $error .= "<div class='error-info'>{$exp->getMessage()}</div>";
@@ -99,7 +130,7 @@ class CDController {
     public function Init($ModelClass = "CDModel", $ViewClass = "CDView")
     {
         $this->model = new $ModelClass();
-        $this->view = new $ViewClass($this->model);
+        $this->view = new $ViewClass();
     }
 
     public function Insert()

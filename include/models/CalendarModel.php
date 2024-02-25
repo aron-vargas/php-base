@@ -4,7 +4,7 @@ define('ONE_DAY', 86400);
 
 class CalendarModel extends CDModel {
     public $pkey;                   # integer
-    public $key_name = "event_id";  # string
+    public $key_name = "pkey";  # string
     protected $db_table = "event";  # string
 
     protected $_cal;                   # Object : calendar settings
@@ -49,7 +49,7 @@ class CalendarModel extends CDModel {
             \"end_hour\": 20,
             \"work_start\": 8,
             \"work_end\": 18,
-            \"time_slot\": 900
+            \"time_slot\": 3600
         }");
     }
 
@@ -57,14 +57,30 @@ class CalendarModel extends CDModel {
     {
         $data = null;
         $dbh = CDController::DBConnection();
-        $user = $_SESSION['APPCONTROLLER']->user;
+        $controller = $_SESSION['APPCONTROLLER'];
 
-        if ($user->user_id)
+        if ($controller->user->user_id)
         {
+            /*
+            $controller->AddMsg("SELECT
+                e.*,
+                c.first_name as creator_first_name,
+                c.last_name as creator_last_name,
+                o.first_name as orginizer_first_name,
+                o.last_name as orginizer_last_name,
+                p.first_name as performer_first_name,
+                p.last_name as performer_last_name
+            FROM event e
+            LEFT JOIN user c on e.created_by = c.user_id
+            LEFT JOIN user o on e.orginizer_id = c.user_id
+            LEFT JOIN user p on e.performer_id = c.user_id
+            WHERE (e.created_by = {$controller->user->user_id} OR e.orginizer_id = {$controller->user->user_id} OR e.performer_id = {$controller->user->user_id}) AND e.start_date BETWEEN '{$from}' AND '{$to}'");
+            */
+
+            $from = CDModel::ParseTStamp($from);
+            $to = CDModel::ParseTStamp($to);
             $sth = $dbh->prepare("SELECT
                 e.*,
-                'cell-' || DATE_FORMAT(e.start_date, '%Y%m%d') as id,
-                (e.end_date - e.start_date) / 60 / {$this->_cal->time_slot} as duration,
                 c.first_name as creator_first_name,
                 c.last_name as creator_last_name,
                 o.first_name as orginizer_first_name,
@@ -76,13 +92,28 @@ class CalendarModel extends CDModel {
             LEFT JOIN user o on e.orginizer_id = c.user_id
             LEFT JOIN user p on e.performer_id = c.user_id
             WHERE (e.created_by = ? OR e.orginizer_id = ? OR e.performer_id = ?) AND e.start_date BETWEEN ? AND ?");
-            $sth->bindValue(1, $user->user_id, PDO::PARAM_INT);
-            $sth->bindValue(2, $user->user_id, PDO::PARAM_INT);
-            $sth->bindValue(3, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(1, $controller->user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(2, $controller->user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(3, $controller->user->user_id, PDO::PARAM_INT);
             $sth->bindValue(4, $from, PDO::PARAM_STR);
             $sth->bindValue(5, $to, PDO::PARAM_STR);
             $sth->execute();
-            $data = $sth->fetchAll(PDO::FETCH_OBJ);
+            while ($rec = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $rec->id = "event-{$rec->pkey}";
+                $rec->cell_id = '#cell-' . date("Ymd", strtotime($rec->start_date));
+                # in minutes
+                $start_time = strtotime($rec->start_date);
+                $rec->start_time = date("H", $start_time) * 60 + date("i", $start_time);
+                $end_time = strtotime($rec->end_date);
+                $rec->end_time = date("H", $end_time) * 60 + date("i", $end_time);
+                $rec->duration = ($rec->end_time - $rec->start_time);
+                $data[] = $rec;
+            }
+        }
+        else
+        {
+            throw new Exception("User Not Authorized", 401);
         }
 
         return $data;
