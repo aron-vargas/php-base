@@ -1,39 +1,38 @@
 <?php
-
-$user = $_SESSION['sess']->user;
-$dbh = DBSettings::DBConnection();
-
-$is_admin = $user->isAdmin();
-$protected = ($is_admin) ? "" : " hidden";
-
 $tr = "";
-$sth = $dbh->query("SELECT
-	u.*
-FROM user u
-WHERE user_id > 1
-ORDER BY u.user_id DESC");
-while ($row = $sth->fetch(PDO::FETCH_OBJ))
-{
-    $num = $row->user_id;
 
-    $tr .= "<tr>
-		<td class='text-right'>{$num}</td>
-		<td class='text-left'>{$row->user_name}<span class='rounded-circle avatar-sm float-start base_blue'>&nbsp;</span></td>
-		<td class='text-left'>{$row->first_name} {$row->last_name}</td>
-		<td class='text-left'>{$row->nick_name}</td>
-		<td class='text-left'>{$row->email}</td>
-		<td class='text-left'>{$row->phone}</td>
-		<td class='text-left'>{$row->status}</td>
-		<td class='text-right{$protected}'>{$row->permissions}</td>
-		<td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='index.php?act=edit&target=User&pkey={$row->user_id}&v=user_edit'>Edit</a></td>
-	</tr>";
+// Hide some stuff
+$protected = " hidden";
+if ($this->config->get("session"))
+    $protected = "";
+
+if ($this->data)
+{
+    foreach ($this->data as $i => $row)
+    {
+        $num = $row->user_id;
+
+        $tr .= "<tr>
+            <td class='text-right'>{$num}</td>
+            <td class='text-left'>{$row->user_name}<span class='rounded-circle avatar-sm float-start base_blue'>&nbsp;</span></td>
+            <td class='text-left'>{$row->first_name} {$row->last_name}</td>
+            <td class='text-left'>{$row->nick_name}</td>
+            <td class='text-left'>{$row->email}</td>
+            <td class='text-left'>{$row->phone}</td>
+            <td class='text-left'>{$row->user_type}</td>
+            <td class='text-left'>{$row->status}</td>
+            <td class='text-right{$protected}'>{$row->verified}</td>
+            <td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='/auth/user/{$row->user_id}'>Edit</a></td>
+            <td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='/auth/profile/{$row->user_id}'>Profile</a></td>
+        </tr>";
+    }
 }
 ?>
 <div role='main' class='container'>
     <div class='mt-4 p-2 bg-secondary text-white text-center rounded shadow'>
-        <h3>There's No One Like You! Thankfully</h3>
+        <h3>Administration: User listing</h3>
     </div>
-    <table id='user_list' class='data stripe'>
+    <table id='user_list' class='data striped'>
         <thead>
             <tr>
                 <th class='text-right'>User #</th>
@@ -42,8 +41,9 @@ while ($row = $sth->fetch(PDO::FETCH_OBJ))
                 <th class='text-left'>Nickname</th>
                 <th class='text-left'>Email</th>
                 <th class='text-left'>Phone</th>
+                <th class='text-left'>Type</th>
                 <th class='text-left'>Status</th>
-                <th class='text-right<?php echo $protected; ?>'>Perm</th>
+                <th class='text-right<?php echo $protected; ?>'>Verified</th>
                 <th class='text-right<?php echo $protected; ?>'>Action</th>
             </tr>
         </thead>
@@ -53,14 +53,12 @@ while ($row = $sth->fetch(PDO::FETCH_OBJ))
     </table>
 </div>
 <script type='text/javascript'>
-    // Shorthand for $( document ).ready()
-    $(function ()
-    {
-
-        $('.data').DataTable({
-            paging: false,
-            info: false,
-            order: [[2, 'asc']]
-        });
+$(function ()
+{
+    $('.data').DataTable({
+        paging: false,
+        info: false,
+        order: [[2, 'asc']]
     });
+});
 </script>

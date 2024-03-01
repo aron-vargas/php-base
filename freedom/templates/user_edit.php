@@ -1,5 +1,5 @@
 <?php
-$usr = $_SESSION['APPCONTROLLER']->user;
+$usr = $this->data;
 
 echo "
 <style>
@@ -17,10 +17,10 @@ echo "
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
-	<form action='index.php' method='POST'>
+	<form action='/auth/user' method='POST'>
 		<input type='hidden' name='act' value='Save'>
 		<input type='hidden' name='target' value='User'>
-		<input type='hidden' name='pkey' value='{$usr->pkey}}'>
+		<input type='hidden' name='pkey' value='{$usr->pkey}'>
 		<h4>My Information:</h4>
 		<div class='mb-4'>
 			<label class='form-label' for='user_name' style='margin-left: 0px;'>Username</label>
@@ -36,7 +36,7 @@ echo "
 		</div>
 		<div class='mb-4'>
 			<label class='form-label' for='nickname' style='margin-left: 0px;'>Nickname</label>
-			<input type='text' id='nickname' name='nickname' class='form-control' placeholder='What should we call you'  value='{$usr->nickname}'/>
+			<input type='text' id='nick_name' name='nick_name' class='form-control' placeholder='What should we call you'  value='{$usr->nick_name}'/>
 		</div>
 		<div class='mb-4'>
 			<label class='form-label' for='email' style='margin-left: 0px;'>Email</label>

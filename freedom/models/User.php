@@ -41,13 +41,14 @@ class User extends CDModel {
     public $user_name;              # string
     public $first_name;             # string
     public $last_name;              # string
-    public $nickname;               # string
+    public $nick_name;               # string
     public $email;                  # string
     public $phone;                  # string
     public $status;                 # string
     public $created_on;                 # int
     public $last_mod;                 # int
-    public $avatar;                 # string
+
+    public $avatar = "base_blue";
 
     protected $container;           # Container
     protected $profile;             # UserProfile
@@ -60,7 +61,7 @@ class User extends CDModel {
     static public $STATUS_INACTIVE = "INACTIVE";
     static public $PERM_ADMIN = 1;
 
-    static public $USER_NICKNAME = 1;
+    static public $USER_nick_name = 1;
     static public $USER_FULLNAME = 0;
 
     /**
@@ -165,8 +166,8 @@ class User extends CDModel {
 
         if ($dbh)
         {
-            if ($options == self::$USER_NICKNAME)
-                $order_by = "ORDER BY nickname";
+            if ($options == self::$USER_nick_name)
+                $order_by = "ORDER BY nick_name";
             else
                 $order_by = "ORDER BY first_name, last_name";
 
@@ -187,7 +188,7 @@ class User extends CDModel {
 
         foreach ($user_list as $usr)
         {
-            if ($options == User::$USER_NICKNAME)
+            if ($options == User::$USER_nick_name)
                 $text = "{$usr->nick_name}";
             else
                 $text = "{$usr->first_name} {$usr->last_name}";
@@ -204,21 +205,20 @@ class User extends CDModel {
     private function SetFieldArray()
     {
         $i = 0;
-        $this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 32);
-        $this->field_array[$i++] = new DBField('user_name', PDO::PARAM_STR, false, 32);
-        $this->field_array[$i++] = new DBField('first_name', PDO::PARAM_STR, false, 64);
-        $this->field_array[$i++] = new DBField('last_name', PDO::PARAM_STR, false, 64);
-        $this->field_array[$i++] = new DBField('nick_name', PDO::PARAM_STR, false, 45);
+        $this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('user_name', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('first_name', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('last_name', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('nick_name', PDO::PARAM_STR, false, 128);
         $this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
-        $this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 32);
-        $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 32);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('avatar', PDO::PARAM_STR, true, 45);
+        $this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 128);
+        $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
     }
 
     public function Save()
     {
-        $this->last_mod = time();
+        $this->last_mod = date("c");
 
         if ($this->pkey)
         {
@@ -228,12 +228,12 @@ class User extends CDModel {
 
     public function Create()
     {
-        $this->created_on = time();
-        $this->last_mod = time();
+        $this->created_on = date("c");
+        $this->last_mod = date("c");
         $this->status = self::$STATUS_ACTIVE;
 
         $this->field_array['p'] = new DBField('password', PDO::PARAM_STR, false, 128);
-        $this->field_array['c'] = new DBField('created_on', PDO::PARAM_INT, false, 0);
+        $this->field_array['c'] = new DBField('created_on', PDO::PARAM_STR, false, 0);
         $this->db_insert();
         unset($this->field_array['p']);
         unset($this->field_array['c']);
@@ -259,9 +259,14 @@ class User extends CDModel {
             $valid = false;
             $this->AddMsg("<div>Missing First Name</div>");
         }
-        if (empty($this->nickname))
+        if (empty($this->status))
         {
-            $this->nickname = $this->user_name;
+            $valid = false;
+            $this->AddMsg("<div>Missing User's Status</div>");
+        }
+        if (empty($this->nick_name))
+        {
+            $this->nick_name = $this->user_name;
         }
 
         if (empty($dbh))

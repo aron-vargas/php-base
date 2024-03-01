@@ -17,8 +17,8 @@
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class="card-body p-md-5 mx-md-4">
-	<form action='index.php' method='POST'>
-		<input type='hidden' name='act' value='Create'>
+	<form action='user' method='POST'>
+		<input type='hidden' name='act' value='Save'>
 		<input type='hidden' name='target' value='User'>
 		<input type='hidden' name='avatar' value='base_sucker'>
 		<h4>Register</h4>
