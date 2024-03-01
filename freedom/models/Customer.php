@@ -8,7 +8,7 @@ CREATE TABLE `customer` (
   `primary_address_id` int DEFAULT NULL,
   `shipping_address_id` int DEFAULT NULL,
   `billing_address_id` int DEFAULT NULL,
-  `description` varchar(512) DEFAULT NULL,
+  `description` mediumtext DEFAULT NULL,
   `customer_status` varchar(65) NOT NULL DEFAULT 'NEW',
   `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int NOT NULL,
@@ -33,17 +33,27 @@ class Customer extends CDModel {
     protected $last_mod;                #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     protected $last_mod_by;             #` int NOT NULL,
 
+    static public $STATUS_INACTIVE = "DELETED";
+
     public function __construct($id = null)
     {
         $this->pkey = $id;
         $this->{$this->key_name} = $id;
+        $this->SetFieldArray();
         $this->dbh = DBSettings::DBConnection();
+    }
+
+    public function Delete()
+    {
+        if ($this->pkey)
+        {
+            $this->change('customer_status', self::$STATUS_INACTIVE);
+        }
     }
 
     private function SetFieldArray()
     {
         $i = 0;
-        $this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('custome_name', PDO::PARAM_STR, false, 125);
         $this->field_array[$i++] = new DBField('primary_address_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('shipping_address_id', PDO::PARAM_INT, false, 0);

@@ -12,6 +12,8 @@ CREATE TABLE `company` (
   `created_by` int NOT NULL,
   `last_mod` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_mod_by` int NOT NULL,
+  `status` varchar(125) NOT NULL,
+  `description` mediumtext NOT NULL,
   PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
  */
@@ -28,18 +30,29 @@ class Company extends CDModel {
     protected $created_by;          #` int NOT NULL,
     protected $last_mod;            #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     protected $last_mod_by;         #` int NOT NULL,
+    protected $status = "ACTIVE";   # varchar(125) DFAULT ACTIVE
+    public $description;            # meduimtext
+
+    static public $STATUS_INACTIVE = "DELETED";
 
     public function __construct($id = null)
     {
         $this->pkey = $id;
         $this->{$this->key_name} = $id;
+        $this->SetFieldArray();
         $this->dbh = DBSettings::DBConnection();
     }
 
+    public function Delete()
+    {
+        if ($this->pkey)
+        {
+            $this->change('status', self::$STATUS_INACTIVE);
+        }
+    }
     private function SetFieldArray()
     {
         $i = 0;
-        $this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('company_name', PDO::PARAM_STR, false, 125);
         $this->field_array[$i++] = new DBField('primary_address_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('shipping_address_id', PDO::PARAM_INT, false, 0);
@@ -48,5 +61,7 @@ class Company extends CDModel {
         $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 125);
+        $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 1025);
     }
 }
