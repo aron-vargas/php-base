@@ -44,7 +44,7 @@ class CDModel {
 
     /**
      * Set the field values in the PDO Statement
-     * @param PDOStatement
+     * @param \PDOStatement
      */
     public function BindValues(&$sth)
     {
@@ -156,7 +156,7 @@ class CDModel {
      *
      * @param string $table_name
      * @param mixed $filter
-     * @return StdClass[] | null
+     * @return \StdClass[] | null
      */
     static public function GetALL($table_name, $filter)
     {

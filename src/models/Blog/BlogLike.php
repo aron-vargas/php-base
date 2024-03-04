@@ -10,9 +10,9 @@ use Freedom\Components\DBSettings;
  *
 CREATE TABLE `blog_like` (
   `pkey` int unsigned NOT NULL AUTO_INCREMENT,
-  `post_id` int unasigned NOT NULL
+  `post_id` int unsigned NOT NULL
     REFERENCES blog_post (pkey)
-    ONUPDATE CASCADE ON DELETE CASCADE,
+    ON UPDATE CASCADE ON DELETE CASCADE,
   `created_by` int unsigned
     REFERENCES users (id)
     ON UPDATE CASCADE ON DELETE SET NULL,

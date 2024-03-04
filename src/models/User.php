@@ -4,8 +4,8 @@ namespace Freedom\Models;
 use PDO;
 use Freedom\Components\DBField;
 use Freedom\Components\DBSettings;
-use Freedom\Models\Role;
-use Freedom\Models\Permission;
+use Freedom\Traits\RoleTrait;
+use Freedom\Traits\PermissionTrait;
 use Freedom\Models\UserProfile;
 
 /**
@@ -206,9 +206,12 @@ class User extends CDModel {
         {
             parent::Load();
             $this->LoadUserRoles();
-            foreach ($this->roles as $role)
+            if (!empty($this->roles))
             {
-                $this->LoadRolePermissions($role->pkey);
+                foreach ($this->roles as $role)
+                {
+                    $this->LoadRolePermissions($role->pkey);
+                }
             }
         }
         $this->profile = new UserProfile($this->pkey);

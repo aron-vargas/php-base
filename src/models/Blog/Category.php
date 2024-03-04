@@ -1,6 +1,6 @@
 <?php
 
-namespace Freedom\Modeles\Blog;
+namespace Freedom\Models\Blog;
 
 use PDO;
 use Freedom\Models\CDModel;

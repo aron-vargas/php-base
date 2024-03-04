@@ -90,6 +90,35 @@ class BlogPost extends CDModel
         }
     }
 
+    /**
+     * Find all records matching the field value
+     *
+     * @param string $table_name
+     * @param mixed $filter
+     * @return \StdClass[] | null
+     */
+    static public function GetALL($table_name, $filter)
+    {
+        $dbh = DBSettings::DBConnection();
+
+        if ($dbh)
+        {
+            $blogs = array();
+            $table_name = self::Clean($table_name);
+            $AND_WHERE = self::ParseFilter($filter);
+            $sth = $dbh->query("SELECT pkey FROM {$table_name} {$AND_WHERE}");
+            $sth->execute();
+            while($row = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $blogs[$row->pkey] = new BlogPost($row->pkey);
+            }
+
+            return $blogs;
+        }
+
+        return null;
+    }
+
     public function HasCategory($name)
     {
         foreach($this->categories as $cat)
@@ -141,14 +170,14 @@ class BlogPost extends CDModel
         {
             $this->comments = array();
             $sth = $this->dbh->prepare("SELECT
-                j.comment_id
+                j.pkey
             FROM blog_comment j
             WHERE j.post_id = ?");
             $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
             $sth->execute();
             while($row = $sth->fetch(PDO::FETCH_OBJ))
             {
-                $this->comments[$row->comment_id] = new BlogComment($row->comment_id);
+                $this->comments[$row->pkey] = new BlogComment($row->pkey);
             }
         }
     }
