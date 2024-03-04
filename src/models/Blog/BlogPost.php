@@ -5,6 +5,8 @@ use PDO;
 use Freedom\Models\CDModel;
 use Freedom\Components\DBField;
 use Freedom\Components\DBSettings;
+use Freedom\Models\Blog\BlogCategory;
+use Freedom\Models\Blog\BlogLike;
 
 /**
  *
@@ -39,11 +41,11 @@ CREATE TABLE `blog_post_categories` (
   CONSTRAINT `blog_post_categories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `blog_categories` (`pkey`) ON DELETE CASCADE,
   CONSTRAINT `blog_post_categories_post_id_foreign` FOREIGN KEY (`post_id`) REFERENCES `blog_post` (`pkey`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+
  */
 
-class BlogPost extends CDModel {
-    use hasCategories;
-
+class BlogPost extends CDModel 
+{
     public $pkey;
     public $key_name = "pkey";
     protected $db_table = "blog_post";   # string
@@ -62,6 +64,9 @@ class BlogPost extends CDModel {
     public $created_at;         #` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     public $updated_at;         #` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+    public $categories = array();
+    public $comments = array();
+    public $likes = array();
 
     public function __construct($id = null)
     {
@@ -83,6 +88,77 @@ class BlogPost extends CDModel {
             $dbh->exec("DELETE FROM {$this->db_table} WHERE {$this->key_name} = {$this->pkey}");
             $this->AddMsg("DELETED BlogPost ({$this->pkey})");
         }
+    }
+
+    public function HasCategory($name)
+    {
+        foreach($this->categories as $cat)
+        {
+            if ($cat->category_name == $name)
+                return true;
+        }
+
+        return false;
+    }
+    public function LoadCategories($reload = false)
+    {
+        if ($reload || empty($this->categories))
+        {
+            $sth = $this->dbh->prepare("SELECT
+                j.category_id
+            FROM blog_post_categories j
+            WHERE j.post_id = ?");
+            $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
+            $sth->execute();
+            while($cat = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $this->categories[] = new BlogCategory($cat->category_id);
+            }
+        }
+    }
+
+    public function LoadLikes($reload = false)
+    {
+        if ($reload || empty($this->likes))
+        {
+            $this->likes = array();
+            $sth = $this->dbh->prepare("SELECT
+                j.pkey
+            FROM blog_like j
+            WHERE j.post_id = ?");
+            $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
+            $sth->execute();
+            while($row = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $this->likes[$row->like_id] = new BlogLike($row->like_id);
+            }
+        }
+    }
+
+    public function LoadComments($reload = false)
+    {
+        if ($reload || empty($this->likes))
+        {
+            $this->comments = array();
+            $sth = $this->dbh->prepare("SELECT
+                j.comment_id
+            FROM blog_comment j
+            WHERE j.post_id = ?");
+            $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
+            $sth->execute();
+            while($row = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $this->comments[$row->comment_id] = new BlogComment($row->comment_id);
+            }
+        }
+    }
+
+    public function Load()
+    {
+        parent::Load();
+        $this->LoadCategories(true);
+        $this->LoadLikes(true);
+        $this->LoadComments(true);
     }
 
     public function Save()
@@ -122,6 +198,8 @@ class BlogPost extends CDModel {
     }
 }
 
+
+# TODO : Evaluate if this is needed just add these to the class
 trait hasCategories {
     public $categories;
 

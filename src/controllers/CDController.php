@@ -192,58 +192,60 @@ class CDController {
     public function get_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
-        $this->AddMsg("<pre>" . print_r($_REQUEST, true) . "</pre>");
 
         # Parse the request and args
         $act = CDModel::Clean($args['act']);
-        $BaseModel = CDModel::Clean($args['model']);
-        $ModelName = "\\Freedom\\Models\\" . str_replace("-", "\\", $BaseModel);
-        $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
-        $model_name = strtolower(basename($ModelName));
-        $pkey = (isset($_REQUEST['pkey'])) ? CDModel::Clean($_REQUEST['pkey']) : 0;
-
-        # Create the model
-        $this->model = new $ModelName($pkey);
-        $this->model->Connect($this->container);
-        $this->model->Copy($_GET);
-
+        $data = $_GET;
+        $this->SetupModel($args, $data);
+        $this->AddMsg("<pre>" . print_r($data, true) . "</pre>");
+       
         # Perform action
         $display = $this->ActionHandler($act, $args);
 
         # Setup the display
-        $this->container->set("active_page", $model_name);
-        $template = "src/templates/$section/{$model_name}_{$display}.php";
-        $this->view->Set($template);
-        $this->AddMsg("Location: $template");
+        $this->SetupView($args, $display);
 
         return $this->buffer_response($request, $response, $args);
     }
     public function post_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
-        $this->AddMsg("<pre>" . print_r($_REQUEST, true) . "</pre>");
 
         # Parse the request and args
         $act = CDModel::Clean($args['act']);
-        $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
+        $data = $request->getParsedBody();
+        $this->SetupModel($args, $data);
+        $this->AddMsg("<pre>" . print_r($data, true) . "</pre>");
+
+        # Perform action
+        $display = $this->ActionHandler($act, $data);
+
+        # Setup the display
+        $this->SetupView($args, $display);
+
+        return $this->buffer_response($request, $response, $args);
+    }
+
+    protected function SetupModel(array $args, array $data)
+    {
+        # Determine the proper Class to use
         $BaseModel = CDModel::Clean($args['model']);
         $ModelName = "\\Freedom\\Models\\" . str_replace("-", "\\", $BaseModel);
-        $model_name = strtolower(basename($ModelName));
-        $parsed = $request->getParsedBody();
-        $pkey = (isset($parsed['pkey'])) ? CDModel::Clean($parsed['pkey']) : 0;
-
+        $pkey = (isset($data['pkey'])) ? CDModel::Clean($data['pkey']) : 0;
+         
         # Create the model
         $this->model = new $ModelName($pkey);
         $this->model->Connect($this->container);
+        $this->model->Copy($data);
+    }
 
-        # Perform action
-        $display = $this->ActionHandler($act, $parsed);
-
-        # Setup the display
+    protected function SetupView(array $args, string $display)
+    {
+        $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
+        $model_name = strtolower(basename(get_class($this->model)));
         $this->container->set("active_page", $model_name);
-        $template = "src/templates/{$section}/{$model_name}_{$display}.php";
+        $template = "src/templates/$section/{$model_name}_{$display}.php";
         $this->view->Set($template);
-
-        return $this->buffer_response($request, $response, $args);
+        $this->AddMsg("Location: $template");
     }
 }

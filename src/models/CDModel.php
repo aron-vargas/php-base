@@ -22,6 +22,7 @@ class CDModel {
     public function __construct($id = null)
     {
         $this->pkey = $id;
+        $this->{$this->key_name} = $id;
         $this->dbh = DBSettings::DBConnection();
         $this->SetFieldArray();
         $this->Load();

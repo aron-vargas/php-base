@@ -4,6 +4,9 @@ namespace Freedom\Models;
 use PDO;
 use Freedom\Components\DBField;
 use Freedom\Components\DBSettings;
+use Freedom\Models\Role;
+use Freedom\Models\Permission;
+use Freedom\Models\UserProfile;
 
 /**
  *
@@ -38,6 +41,8 @@ CREATE TABLE `user_session` (
  */
 
 class User extends CDModel {
+    use RoleTrait, PermissionTrait;
+
     public $pkey;                   # integer
     public $key_name = "user_id";   # string
     protected $db_table = "user";   # string
@@ -50,14 +55,15 @@ class User extends CDModel {
     public $email;                  # string
     public $phone;                  # string
     public $status;                 # string
-    public $created_on;                 # int
-    public $last_mod;                 # int
+    public $created_on;             # int
+    public $last_mod;               # int
 
     public $avatar = "base_blue";
 
     protected $container;           # Container
     protected $profile;             # UserProfile
-    protected $bets;                # array
+    protected $roles;               # Role[]
+    protected $permissions;         # Permission[]
 
     public $edit_view = "include/templates/user_edit.php";
     public $display_view = "include/templates/user_list.php";
@@ -68,6 +74,9 @@ class User extends CDModel {
 
     static public $USER_nick_name = 1;
     static public $USER_FULLNAME = 0;
+
+    static public $SUPER_ADMIN_ROLE = "super-admin";
+    static public $ADMIN_ROLE = "admin";
 
     /**
      * Create a new instance
@@ -80,7 +89,6 @@ class User extends CDModel {
         $this->pkey = $user_id;
         $this->user_id = $user_id;
         $this->user_type = $type;
-        $this->profile = new UserProfile($user_id);
         $this->dbh = DBSettings::DBConnection();
         $this->Load();
     }
@@ -169,7 +177,7 @@ class User extends CDModel {
 
     public function isAdmin()
     {
-        return true; # TODO Implement this on permerissions table
+        return $this->hasRole(self::$ADMIN_ROLE) || $this->hasRole(self::$SUPER_ADMIN_ROLE);
     }
 
     static public function GetAllUsers($options = 0)
@@ -184,12 +192,26 @@ class User extends CDModel {
                 $order_by = "ORDER BY first_name, last_name";
 
             $sth = $dbh->query("SELECT * FROM user WHERE user_id > 1 $order_by");
-            $list = $sth->fetchAll(PDO::FETCH_OBJ);
+            $list = $sth->fetchAll(PDO::FETCH_CLASS, "User");
         }
         else
             $list = null;
 
         return $list;
+    }
+
+    public function Load()
+    {
+        if ($this->pkey)
+        {
+            parent::Load();
+            $this->LoadUserRoles();
+            foreach ($this->roles as $role)
+            {
+                $this->LoadRolePermissions($role->pkey);
+            }
+        }
+        $this->profile = new UserProfile($this->pkey);
     }
 
     static public function OptionList($selected = null, $options = 0)
