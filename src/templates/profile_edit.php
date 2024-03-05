@@ -37,8 +37,8 @@ echo "
 			<textarea id='info_conf' name='info_conf' class='form-control'>{$usr->info_conf}</textarea>
 		</div>
 		<div class='text-center pt-1 mb-4 pb-1'>
-			<button type='submit' class='btn btn-primary' type='button' name='act' value='1'>Submit</button>
-            <button type='submit' class='btn btn-primary' type='button' name='act' value='-1'>Delete</button>
+			<button type='submit' class='btn btn-primary' type='button' name='act' value='1' onClick='SubmitFrom(this)'>Submit</button>
+            <button type='submit' class='btn btn-primary' type='button' name='act' value='-1' onClick='SubmitFrom(this)'>Delete</button>
 		</div>
 	</form>
 </div>

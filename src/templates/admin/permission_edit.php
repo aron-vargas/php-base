@@ -30,8 +30,8 @@ echo "
 			<input type='text' id='guard_name' name='guard_name' class='form-control' placeholder='Guard Name' value='{$perm->guard_name}'>
 		</div>
 		<div class='text-center pt-1 mb-4 pb-1'>
-			<button type='submit' class='btn btn-primary' name='act' value='1'>Submit</button>
-            <button type='submit' class='btn btn-primary' name='act' value='-1'>Delete</button>
+			<button type='submit' class='btn btn-primary' name='act' value='1' onClick='SubmitFrom(this)'>Submit</button>
+            <button type='submit' class='btn btn-primary' name='act' value='-1' onClick='SubmitFrom(this)'>Delete</button>
 		</div>
 	</form>
 </div>

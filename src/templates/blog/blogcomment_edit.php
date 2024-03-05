@@ -57,8 +57,8 @@ echo "
 			<textarea id='comment' name='comment' class='form-control'>{$comment->comment}</textarea>
 		</div>
 		<div class='text-center pt-1 mb-4 pb-1'>
-			<button type='submit' class='btn btn-primary' type='button' name='act' value='1'>Submit</button>
-            <button type='submit' class='btn btn-primary' type='button' name='act' value='-1'>Delete</button>
+			<button type='submit' class='btn btn-primary' type='button' name='act' value='1' onClick='SubmitFrom(this)'>Submit</button>
+            <button type='submit' class='btn btn-primary' type='button' name='act' value='-1' onClick='SubmitFrom(this)'>Delete</button>
 		</div>
 	</form>
 </div>

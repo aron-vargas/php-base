@@ -34,8 +34,8 @@ echo "
                     <input type='text' id='description' name='description' class='form-control' placeholder='Tell me more' value='{$co->description}'>
                 </div>
                 <div class='text-center pt-1 mb-4 pb-1'>
-                    <button type='submit' class='btn btn-primary' name='act' value='1'>Submit</button>
-                    <button type='submit' class='btn btn-warning' name='act' value='-1'>Delete</button>
+                    <button type='submit' class='btn btn-primary' name='act' value='1' onClick='SubmitFrom(this)'>Submit</button>
+                    <button type='submit' class='btn btn-warning' name='act' value='-1' onClick='SubmitFrom(this)'>Delete</button>
                 </div>
             </form>
         </div>

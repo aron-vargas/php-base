@@ -8,30 +8,34 @@ use Freedom\Components\DBSettings;
 
 /**
  *
-CREATE TABLE `blog_categories` (
+CREATE TABLE `blog_like` (
   `pkey` int unsigned NOT NULL AUTO_INCREMENT,
+  `post_id` int unsigned NOT NULL
+    REFERENCES blog_post (pkey)
+    ON UPDATE CASCADE ON DELETE CASCADE,
   `created_by` int unsigned
     REFERENCES users (id)
     ON UPDATE CASCADE ON DELETE SET NULL,
-  `category_name` varchar(255) NOT NULL COLLATE utf8mb4_unicode_ci,
-  `active` tinyint NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
  */
 
-class BlogCategory extends CDModel {
+class BlogLike extends CDModel {
     public $pkey;
     public $key_name = "pkey";
-    protected $db_table = "blog_comment";   # string
-
-    public $active = 1;         # int default 1
-    public $category_name;      #` varchar(255) NOT NULL COLLATE utf8mb4_unicode_ci,
+    protected $db_table = "blog_like";   # string
+    public $post_id;            #` int unsigned NOT NULL,
     public $created_by;         # int unsigned NOT NULL,
     public $created_at;         #` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     public $updated_at;         #` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+
+    public function __construct($id = null)
+    {
+        parent::__construct($id);
+    }
 
     /**
      * "Delete" the record
@@ -42,14 +46,15 @@ class BlogCategory extends CDModel {
 
         if ($this->pkey)
         {
-            $this->Change("active", 0);
+            $dbh->exec("DELETE FROM {$this->db_table} WHERE {$this->key_name} = {$this->pkey}");
+            $this->AddMsg("DELETED BlogLike ({$this->pkey})");
         }
     }
 
     public function Save()
     {
         $user_id = 1;
-   
+         
         if ($this->container)
         {
             $usr = $this->container->get("session")->user;
@@ -58,8 +63,8 @@ class BlogCategory extends CDModel {
 
         if (empty($this->created_at))
             $this->created_at = date("c");
-        if (empty($this->created_by))
-            $this->created_by = $user_id;
+        if (empty($this->user_id))
+            $this->user_id = $user_id;
 
         $this->updated_at = date("c");
 
@@ -72,10 +77,8 @@ class BlogCategory extends CDModel {
     private function SetFieldArray()
     {
         $i = 0;
+        $this->field_array[$i++] = new DBField('post_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('category_name', PDO::PARAM_STR, false, 255);
-        $this->field_array[$i++] = new DBField('active', PDO::PARAM_STR, true, 255);
-        $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, true, 0);
         $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
     }

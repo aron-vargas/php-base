@@ -2,6 +2,7 @@
 
 use Freedom\Controllers\CDController;
 use Freedom\Controllers\HomeController;
+use Freedom\Controllers\API1;
 use Psr\Http\Message\ResponseInterface as Res;
 use Psr\Http\Message\ServerRequestInterface as Req;
 
@@ -30,7 +31,13 @@ function AddRoutes($app)
     $app->post('/reset-password', [HomeController::class, 'reset_store'])->setName('password.store');
 
     // Static Pages
-    $app->get('/static/{page:.*}', [HomeController::class, 'static']);
+    $app->get('/static/{page:.*}', [CDController::class, 'static']);
+
+    // API Calls
+    $app->get('/api/v1/{act}/{model}', [API1::class, 'get_act']);
+    $app->post('/api/v1/{act}/{model}', [API1::class, 'post_act']);
+    $app->put('/api/v1/{act}/{model}', [API1::class, 'put_act']);
+    $app->delete('/api/v1/{act}/{model}', [API1::class, 'delete_act']);
 
     // General Get Page
     $app->get('/{section}/{page}[/{act}[/{pkey:[0-9]+}]]', [HomeController::class, 'get_act']);

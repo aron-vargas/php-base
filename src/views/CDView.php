@@ -47,6 +47,7 @@ class CDView {
         $this->js['jquery-ui'] = "<script type='text/javascript' src='//{$config->get('base_url')}/vendor/components/jqueryui/jquery-ui.min.js'></script>";
         $this->js['datatable'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/datatables.min.js'></script>";
         $this->js['imgpicker'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/image-picker.min.js'></script>";
+        $this->js['forms'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/forms.js'></script>";
     }
 
     /**

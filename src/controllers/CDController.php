@@ -187,7 +187,6 @@ class CDController {
     public function get_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
-        $this->AddMsg("<pre>" . print_r($_REQUEST, true) . "</pre>");
 
         # Parse the request and args
         $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
@@ -210,7 +209,6 @@ class CDController {
     public function post_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
-        $this->AddMsg("<pre>" . print_r($_REQUEST, true) . "</pre>");
 
         # Parse the route args
         $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";

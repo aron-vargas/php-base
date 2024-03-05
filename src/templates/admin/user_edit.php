@@ -47,7 +47,7 @@ echo "
 			<input type='tel' id='phone' name='phone' class='form-control' placeholder='Phone Number' value='{$usr->phone}'>
 		</div>
 		<div class='text-center pt-1 mb-4 pb-1'>
-			<button type='submit' class='btn btn-primary' type='button'>Submit</button>
+			<button type='submit' class='btn btn-primary' type='button' onClick='SubmitFrom(this)''>Submit</button>
 		</div>
 	</form>
 </div>

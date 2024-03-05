@@ -14,6 +14,8 @@ if ($this->data)
         $author = new User($row->user_id);
         $display_date = date("M j, Y", strtotime($row->created_at));
         $age = CDModel::human_time_diff(strtotime($row->created_at), $now);
+
+        $comment_count = count($row->comments);
         $posts .= "<div class='col m-2'>
             <div class='card col {$publised}'>
                 <div class='hidden seo'>{$row->seo_title}</div>
@@ -55,7 +57,7 @@ if ($this->data)
                     <div class='row'>
                         <div class='col'>0 <i class='fa fa-eye'></i></div>
                         <div class='col'>
-                            0
+                            {$comment_count}
                             <a href='/edit/blog-blogcomment/blog/?pkey=0&post_id={$row->pkey}'>
                                 <i class='fa fa-comment text-primary'></i>
                             </a>
