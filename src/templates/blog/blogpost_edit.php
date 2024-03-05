@@ -1,5 +1,5 @@
 <?php
-$blog = $this->data;
+$blog = $this->model;
 /*
    public $title = 'New blog post'; #` varchar(255) DEFAULT 'New blog post',
     public $subtitle;           #` varchar(255) DEFAULT '',
@@ -32,7 +32,7 @@ echo "
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
-	<form action='/save/blog-blogpost/blog' method='POST'>
+	<form action='/blog/blogpost' method='POST'>
 		<input type='hidden' name='pkey' value='{$blog->pkey}'>
 		<h4>Post:</h4>
 		<div class='mb-4'>

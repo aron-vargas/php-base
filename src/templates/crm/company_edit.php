@@ -1,5 +1,5 @@
 <?php
-$co = $this->data;
+$co = $this->model;
 
 # TODO: Add breadcrumb
 echo "

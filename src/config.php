@@ -5,7 +5,6 @@ return
         "use_db" => true,
         "base_url" => "localhost:8000",
         "message" => array(),
-        "active_page" => "home",
         "pages" =>
             [
                 [

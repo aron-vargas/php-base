@@ -2,7 +2,7 @@
 
 # Create a mega menu from the page configuration
 $menu = "<div class='mega_menu navbar-nav'>";
-$menu .= AppItem(0, $pages, $active_page);
+$menu .= AppItem(0, $pages, $this->active_page);
 $menu .= "</div>";
 
 return $menu;

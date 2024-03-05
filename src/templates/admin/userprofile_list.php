@@ -16,7 +16,7 @@ if ($this->data)
             <td class='text-left'>{$row->info_conf}</td>
             <td class='text-center'>{$row->createdAt}</td>
             <td class='text-center'>{$row->updatedAt}</td>
-            <td class='text-right'><a class='btn btn-primary btn-xs' href='/edit/userprofile/{$row->pkey}'>Edit</a></td>
+            <td class='text-right'><a class='btn btn-primary btn-xs' href='/admin/userprofile/edit/{$row->pkey}'>Edit</a></td>
         </tr>";
     }
 }

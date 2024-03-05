@@ -20,7 +20,7 @@ CREATE TABLE `blog_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
  */
 
-class BlogComment extends CDModel {
+class BlogCategory extends CDModel {
     public $pkey;
     public $key_name = "pkey";
     protected $db_table = "blog_comment";   # string

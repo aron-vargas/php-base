@@ -17,7 +17,7 @@ echo "
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
-	<form action='/auth/user' method='POST'>
+	<form action='/admin/user' method='POST'>
 		<input type='hidden' name='act' value='Save'>
 		<input type='hidden' name='target' value='User'>
 		<input type='hidden' name='pkey' value='{$usr->pkey}'>

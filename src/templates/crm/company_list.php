@@ -14,7 +14,7 @@ if ($this->data)
             <td class='text-left'>{$row->description}</td>
             <td class='text-center'>{$row->created_on}</td>
             <td class='text-center'>{$row->last_mod}</td>
-            <td class='text-right'><a class='btn btn-primary btn-xs' href='/edit/company?pkey={$row->pkey}'>Edit</a></td>
+            <td class='text-right'><a class='btn btn-primary btn-xs' href='/crm/company/edit/{$row->pkey}'>Edit</a></td>
         </tr>";
     }
 }

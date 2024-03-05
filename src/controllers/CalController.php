@@ -11,7 +11,6 @@ class CalController extends CDController {
     protected $act = "view";
     protected $target = "CDModel";
     protected $target_pkey;
-    public $active_page = "calendar";
 
     public $model;
     public $view;

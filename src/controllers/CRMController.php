@@ -17,7 +17,7 @@ class CRMController extends CDController {
 
     public function list_companies(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "crm");
+        //$this->container->set("active_page", "crm");
         $this->model = new \Models\Company();
         $this->model->Connect($this->container);
         $filter = $this->model->BuildFilter($args);
@@ -30,7 +30,7 @@ class CRMController extends CDController {
 
     public function get_company(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "crm");
+        //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/company_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new \Models\Company($pkey);
@@ -41,7 +41,7 @@ class CRMController extends CDController {
     }
     public function update_company(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "crm");
+       // $this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/company_edit.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))
@@ -89,7 +89,7 @@ class CRMController extends CDController {
         }
 
         # Show whos left
-        $this->container->set("active_page", "crm");
+        //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/company_list.php");
         $this->model = new \Models\Company();
         $this->model->Connect($this->container);
@@ -105,7 +105,7 @@ class CRMController extends CDController {
         # TODO: ^THAT^
         try
         {
-            $this->container->set("active_page", "crm");
+            //$this->container->set("active_page", "crm");
             $this->model = new \Models\Customer();
             $this->model->Connect($this->container);
             $filter = $this->model->BuildFilter($args);
@@ -122,7 +122,7 @@ class CRMController extends CDController {
 
     public function get_customer(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "crm");
+        //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/customer_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new \Models\Customer($pkey);
@@ -133,7 +133,7 @@ class CRMController extends CDController {
     }
     public function update_customer(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "crm");
+        //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/customer_edit.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))
@@ -183,7 +183,7 @@ class CRMController extends CDController {
         }
 
         # Show whos left
-        $this->container->set("active_page", "crm");
+        //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/customer_list.php");
         $this->model = new \Models\Customer();
         $this->model->Connect($this->container);
@@ -199,7 +199,7 @@ class CRMController extends CDController {
         # TODO: ^THAT^
         try
         {
-            $this->container->set("active_page", "admin");
+            //$this->container->set("active_page", "admin");
             $this->model = new \Models\Location();
             $this->model->Connect($this->container);
             $this->view->Set("src/templates/crm/location_list.php");
@@ -216,7 +216,7 @@ class CRMController extends CDController {
 
     public function get_location(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "admin");
+        //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/location_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new \Models\Location($pkey);
@@ -227,7 +227,7 @@ class CRMController extends CDController {
     }
     public function update_location(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "admin");
+        //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/location_edit.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))

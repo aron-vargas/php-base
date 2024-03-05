@@ -13,7 +13,6 @@ if ($this->data)
         $publised = $row->is_published ? "published" : "un-published";
         $author = new User($row->user_id);
         $display_date = date("M j, Y", strtotime($row->created_at));
-        $date = new DateTime($row->created_at);
         $age = CDModel::human_time_diff(strtotime($row->created_at), $now);
         $posts .= "<div class='col m-2'>
             <div class='card col {$publised}'>

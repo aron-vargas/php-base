@@ -1,5 +1,5 @@
 <?php
-$usr = $this->data;
+$usr = $this->model;
 
 echo "
 <style>
@@ -17,7 +17,7 @@ echo "
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
-	<form action='/save/userprofile' method='POST'>
+	<form action='/admin/userprofile' method='POST'>
 		<input type='hidden' name='pkey' value='{$usr->pkey}'>
 		<h4>My Information:</h4>
 		<div class='mb-4'>

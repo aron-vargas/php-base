@@ -8,9 +8,11 @@ class CDView {
     public $header = "src/templates/header.php";
     public $template = "src/templates/home.php";
     public $footer = "src/templates/footer.php";
+    public $active_page = "home";
     public $status_code = 200;
     public $config;
     public $data;
+    public $model;
 
     protected $header_rendered = false;
     protected $body_rendered = false;
@@ -64,6 +66,12 @@ class CDView {
         print_r($mixed);
         echo "</pre>";
     }
+
+    public function Empty()
+    {
+        return empty($this->template);
+    }
+
     public function GetState()
     {
         return array(
@@ -73,19 +81,224 @@ class CDView {
             "mode" => $this->mode
         );
     }
-    public function SetState($state)
+
+    static public function ListItemLinks($base_url, $selected, $opt_ary)
     {
-        if (isset($state['header_rendered']))
-            $this->header_rendered = ($state['header_rendered']);
+        $options = "";
+        if (is_array($opt_ary))
+        {
+            foreach ($opt_ary as $opt)
+            {
+                $sel = ($opt->val == $selected) ? "active" : "";
+                $options .= "<li><a class='dropdown-item {$sel}' href='{$base_url}={$opt->val}'>{$opt->text}</a></li>";
+            }
+        }
 
-        if (isset($state['body_rendered']))
-            $this->body_rendered = ($state['body_rendered']);
+        return $options;
+    }
 
-        if (isset($state['footer_rendered']))
-            $this->footer_rendered = ($state['footer_rendered']);
+    public function InitDisplay($section, $page, $display)
+    {
+        if ($section == "admin")
+        {
+            if ($page == "user")
+                $this->template = "src/templates/admin/user_{$display}.php";
+            else if ($page == "userprofile")
+            {
+                if ($display == "list")
+                    $this->template = "src/templates/admin/userprofile_{$display}.php";
+                else
+                    $this->template = "src/templates/profile_{$display}.php";
+            }
+            else if ($page == "permission")
+                $this->template = "src/templates/admin/permission_{$display}.php";
+            else if ($page == "role")
+                $this->template = "src/templates/admin/role_{$display}.php";
+        }
+        else if ($section == "blog")
+        {
+            if ($page == "comment")
+                $this->template = "src/templates/blog/blogcomment_{$display}.php";
+            else if ($page == "category")
+                $this->template = "src/templates/blog/blogcategory_{$display}.php";
+            else
+                $this->template = "src/templates/blog/blogpost_{$display}.php";
+        }
+        else if ($section == "crm")
+        {
+            if ($page == "company")
+                $this->template = "src/templates/crm/company_{$display}.php";
+            else if ($page == "customer")
+                $this->template = "src/templates/crm/customer_{$display}.php";
+            else if ($page == "location")
+                $this->template = "src/templates/crm/location_{$display}.php";
+        }
+        else if (file_exists("src/templates/{$section}/{$page}_{$display}.php"))
+        {
+            $this->template = "src/templates/{$section}/{$page}_{$display}.php";
+        }
+        else if (file_exists("src/templates/{$page}_{$display}.php"))
+        {
+            $this->template = "src/templates/{$page}_{$display}.php";
+        }
+        else if (file_exists($this->template = "src/templates/{$page}.php"))
+        {
+            $this->template = "src/templates/{$page}.php";
+        }
+    }
 
-        if (isset($state['mode']))
-            $this->mode = ($state['mode']);
+    public function InitModel($section, $page, $pkey)
+    {
+        $this->model = false;
+
+        if ($section == "admin")
+        {
+            if ($page == "user")
+                $this->model = new \Freedom\Models\User($pkey);
+            else if ($page == "userprofile")
+                $this->model = new \Freedom\Models\UserProfile($pkey);
+            else if ($page == "permission")
+                $this->model = new \Freedom\Models\Permission($pkey);
+            else if ($page == "role")
+                $this->model = new \Freedom\Models\Role($pkey);
+        }
+        else if ($section == "blog")
+        {
+            if ($page == "comment")
+                $this->model = new \Freedom\Models\Blog\BlogComment($pkey);
+            else if ($page == "category")
+                $this->model = new \Freedom\Models\Blog\BlogCategory($pkey);
+            else
+                $this->model = new \Freedom\Models\Blog\BlogPost($pkey);
+        }
+        else if ($section == "crm")
+        {
+            if ($page == "customer")
+                $this->model = new \Freedom\Models\Customer($pkey);
+            else if ($page == "company")
+                $this->model = new \Freedom\Models\Company($pkey);
+            else if ($page == "category")
+                $this->model = new \Freedom\Models\Blog\BlogCategory($pkey);
+            else if ($page == "location")
+                $this->model = new \Freedom\Models\Location($pkey);
+            else
+                $this->model = new \Freedom\Models\Blog\BlogPost($pkey);
+        }
+        else
+        {
+            $this->model = new \Freedom\Models\CDModel();
+        }
+
+        return $this->model;
+    }
+
+    public function menu()
+    {
+        $user = $this->config->get("session")->user;
+
+        if ($user->pkey)
+        {
+            $buttons = "<div class='float-end'>
+				<span class='pe-2'>
+					<a href='avatar'>
+                        <span class='rounded-circle avatar {$user->avatar}'>&nbsp;</span>
+                    </a>
+					<a href='/user/{$user->pkey}'>
+                        {$user->first_name} {$user->last_name}
+                    </a>
+				</span>
+				<a class='btn btn-light me-2' href='/logout'>Logout</a>
+			</div>";
+        }
+        else
+        {
+            $buttons = "
+			<div class='float-end'>
+				<a class='btn btn-light me-2' href='login'>Login</a>
+				<a class='btn btn-warning' href='register'>Register</a>
+			</div>";
+        }
+
+        $home_class = (strstr($this->template, "home") === false) ? "" : "active";
+        $membership_class = (strstr($this->template, "membership") === false) ? "" : "active";
+        $about_class = (strstr($this->template, "about") === false) ? "" : "active";
+        $calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
+
+        # Get the menu from "mega_menu.php"
+        # This uses the pages defined in config.json
+        $pages = $this->config->get('pages');
+        //$active_page = $this->config->get('active_page');
+        $menu = include("src/templates/mega_menu.php");
+
+        echo <<<HEADER
+		<header>
+            <nav class='navbar navbar-default navbar-fixed-top navbar-dark bg-dark'>
+                <span class='navbar-brand ms-5'>
+                    <div class="nav-item dropdown">
+                        <button
+                            id="menu-dd-btn"
+                            class="btn btn-light"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#nav_menu"
+                            aria-expanded="false"
+                            aria-controls="nav_menu">
+                            <i class='fa fa-bars'></i>
+                        </button>
+                        <div id='nav_menu' class="dropdown-menu" aria-labelledby="menu-dd-btn">
+                            {$menu}
+                        </div>
+                    </div>
+                </span>
+                <span class='navbar-brand p2 me-auto'>
+                    <img class='round-logo' src='images/logo.png' height='40'/>
+                </span>
+                <span class='p2 ms-auto me-5'>
+                    {$buttons}
+                </span>
+			</nav>
+        </header>
+HEADER;
+
+        if ($user->pkey)
+        {
+            echo "
+			<nav class='navbar navbar-default navbar-fixed-top bg-light border-bottom p-0'>
+				<div class='container d-flex flex-wrap'>
+					<ul class='nav me-auto'>
+						<li class='nav-item'><a href='calendar/schedule' class='nav-link link-dark px-2 text-underline'>My Schedule</a></li>
+						<li class='nav-item'><a href='resources' class='nav-link link-dark px-2'>Resources</a></li>
+						<li class='nav-item'><a href='/crm/company/list' class='nav-link link-dark px-2'>Companies</a></li>
+						<li class='nav-item'><a href='/crm/customer/list' class='nav-link link-dark px-2'>Customers</a></li>
+                        <li class='nav-item'><a href='/crm/location/list' class='nav-link link-dark px-2'>Locations</a></li>
+                        <li class='nav-item'><a href='/admin/user/list' class='nav-link link-dark px-2'>Users</a></li>
+                        <li class='nav-item'><a href='/admin/userprofile/list' class='nav-link link-dark px-2'>Profiles</a></li>
+                        <li class='nav-item'><a href='/admin/permission/list' class='nav-link link-dark px-2'>Permissions</a></li>
+                        <li class='nav-item'><a href='/admin/role/list' class='nav-link link-dark px-2'>Roles</a></li>
+                        <li class='nav-item'><a href='/blog/blogpost/show' class='nav-link link-dark px-2'>Blogs</a></li>
+                        <li class='nav-item'><a href='/blog/blogpost/list' class='nav-link link-dark px-2'>Blogs Admin</a></li>
+					</ul>
+				</div>
+			</nav>";
+        }
+
+        echo "
+		</header>";
+    }
+
+    static public function OptionsList($selected, $opt_ary)
+    {
+        $options = "";
+        if (is_array($opt_ary))
+        {
+            foreach ($opt_ary as $opt)
+            {
+                $sel = ($opt->val == $selected) ? "active" : "";
+                $options .= "<option value='{$opt->val}' $sel>{$opt->text}</a></li>";
+            }
+        }
+
+        return $options;
     }
 
     public function render()
@@ -197,6 +410,21 @@ class CDView {
         {
             include($this->footer);
         }
+    }
+
+    public function SetState($state)
+    {
+        if (isset($state['header_rendered']))
+            $this->header_rendered = ($state['header_rendered']);
+
+        if (isset($state['body_rendered']))
+            $this->body_rendered = ($state['body_rendered']);
+
+        if (isset($state['footer_rendered']))
+            $this->footer_rendered = ($state['footer_rendered']);
+
+        if (isset($state['mode']))
+            $this->mode = ($state['mode']);
     }
 
     private function SetStatusCode($code)
@@ -323,139 +551,5 @@ class CDView {
         $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
         header($protocol . ' ' . $code . ' ' . $text);
         $GLOBALS['http_response_code'] = $code;
-    }
-
-
-    public function Empty()
-    {
-        return empty($this->template);
-    }
-
-    public function menu()
-    {
-        $user = $this->config->get("session")->user;
-
-        if ($user->pkey)
-        {
-            $buttons = "<div class='float-end'>
-				<span class='pe-2'>
-					<a href='avatar'>
-                        <span class='rounded-circle avatar {$user->avatar}'>&nbsp;</span>
-                    </a>
-					<a href='/user/{$user->pkey}'>
-                        {$user->first_name} {$user->last_name}
-                    </a>
-				</span>
-				<a class='btn btn-light me-2' href='/logout'>Logout</a>
-			</div>";
-        }
-        else
-        {
-            $buttons = "
-			<div class='float-end'>
-				<a class='btn btn-light me-2' href='login'>Login</a>
-				<a class='btn btn-warning' href='register'>Register</a>
-			</div>";
-        }
-
-        $home_class = (strstr($this->template, "home") === false) ? "" : "active";
-        $membership_class = (strstr($this->template, "membership") === false) ? "" : "active";
-        $about_class = (strstr($this->template, "about") === false) ? "" : "active";
-        $calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
-
-        # Get the menu from "mega_menu.php"
-        # This uses the pages defined in config.json
-        $pages = $this->config->get('pages');
-        $active_page = $this->config->get('active_page');
-        $menu = include("src/templates/mega_menu.php");
-
-        echo <<<HEADER
-		<header>
-            <nav class='navbar navbar-default navbar-fixed-top navbar-dark bg-dark'>
-                <span class='navbar-brand ms-5'>
-                    <div class="nav-item dropdown">
-                        <button
-                            id="menu-dd-btn"
-                            class="btn btn-light"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#nav_menu"
-                            aria-expanded="false"
-                            aria-controls="nav_menu">
-                            <i class='fa fa-bars'></i>
-                        </button>
-                        <div id='nav_menu' class="dropdown-menu" aria-labelledby="menu-dd-btn">
-                            {$menu}
-                        </div>
-                    </div>
-                </span>
-                <span class='navbar-brand p2 me-auto'>
-                    <img class='round-logo' src='images/logo.png' height='40'/>
-                </span>
-                <span class='p2 ms-auto me-5'>
-                    {$buttons}
-                </span>
-			</nav>
-        </header>
-HEADER;
-
-        if ($user->pkey)
-        {
-            echo "
-			<nav class='navbar navbar-default navbar-fixed-top bg-light border-bottom p-0'>
-				<div class='container d-flex flex-wrap'>
-					<ul class='nav me-auto'>
-						<li class='nav-item'><a href='calendar/schedule' class='nav-link link-dark px-2 text-underline'>My Schedule</a></li>
-						<li class='nav-item'><a href='resources' class='nav-link link-dark px-2'>Resources</a></li>
-						<li class='nav-item'><a href='/list/company/crm' class='nav-link link-dark px-2'>Companies</a></li>
-						<li class='nav-item'><a href='/list/customer/crm' class='nav-link link-dark px-2'>Customers</a></li>
-                        <li class='nav-item'><a href='/list/location/crm' class='nav-link link-dark px-2'>Locations</a></li>
-                        <li class='nav-item'><a href='/list/user' class='nav-link link-dark px-2'>Users</a></li>
-                        <li class='nav-item'><a href='/list/userprofile' class='nav-link link-dark px-2'>Profiles</a></li>
-                        <li class='nav-item'><a href='/list/permission/crm' class='nav-link link-dark px-2'>Permissions</a></li>
-                        <li class='nav-item'><a href='/list/role/crm' class='nav-link link-dark px-2'>Roles</a></li>
-                        <li class='nav-item'><a href='/list/blog-blogpost/blog' class='nav-link link-dark px-2'>Blogs</a></li>
-					</ul>
-				</div>
-			</nav>";
-        }
-
-        echo "
-		</header>";
-    }
-
-    public function Set($template)
-    {
-        $this->template = $template;
-    }
-
-    static public function ListItemLinks($base_url, $selected, $opt_ary)
-    {
-        $options = "";
-        if (is_array($opt_ary))
-        {
-            foreach ($opt_ary as $opt)
-            {
-                $sel = ($opt->val == $selected) ? "active" : "";
-                $options .= "<li><a class='dropdown-item {$sel}' href='{$base_url}={$opt->val}'>{$opt->text}</a></li>";
-            }
-        }
-
-        return $options;
-    }
-
-    static public function OptionsList($selected, $opt_ary)
-    {
-        $options = "";
-        if (is_array($opt_ary))
-        {
-            foreach ($opt_ary as $opt)
-            {
-                $sel = ($opt->val == $selected) ? "active" : "";
-                $options .= "<option value='{$opt->val}' $sel>{$opt->text}</a></li>";
-            }
-        }
-
-        return $options;
     }
 }

@@ -26,7 +26,7 @@ $GLOBALS['base_url'] = $container->get('base_url');
 
 // Create the app
 $app = AppFactory::create();
-$callableResolver = $app->getCallableResolver();
+//$callableResolver = $app->getCallableResolver();
 
 // Add Routing
 AddRoutes($app);

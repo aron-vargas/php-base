@@ -56,8 +56,12 @@ class User extends CDModel {
     public $avatar = "base_blue";
 
     protected $container;           # Container
-    protected $profile;             # UserProfile
-    protected $bets;                # array
+    public $profile;             # UserProfile
+    public $verified = 0;
+    public $verification;
+    public $login_attempts = 0;
+    public $block_expires;
+
 
     public $edit_view = "include/templates/user_edit.php";
     public $display_view = "include/templates/user_list.php";
@@ -225,6 +229,8 @@ class User extends CDModel {
         $this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
         $this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 128);
         $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('verified', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('block_expires', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
     }
 

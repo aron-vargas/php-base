@@ -27,9 +27,9 @@ class CDController {
         return $this->buffer_response($request, $response, $args);
     }
 
-    public function ActionHandler($action, $req)
+    public function ActionHandler($model, string $action = "show", array $req = array())
     {
-        $ModelName = get_class($this->model);
+        $ModelName = get_class($model);
         $display = "list";
         $act = isset($req['act']) ? (int) $req['act'] : 1;
 
@@ -38,30 +38,29 @@ class CDController {
         {
             if ($act === -1) # Delete Button
             {
-                $this->model->Delete();
-                $this->AddMsg("$ModelName #{$this->model->pkey}Deleted");
+                $model->Delete();
+                $this->AddMsg("$ModelName #{$model->pkey}Deleted");
 
                 // Go back to listing
                 $display = "list";
-                $this->model->Clear();
-                $filter = $this->model->BuildFilter($req);
-                $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+                $model->Clear();
+                $filter = $model->BuildFilter($req);
+                $this->view->data = $model->GetALL($model->GetTable(), $filter);
             }
             else
             {
-                $this->model->Copy($req);
-                $this->model->Save();
-                $this->AddMsg("$ModelName #{$this->model->pkey} was Updated");
-                $this->view->data = $this->model;
+                $model->Copy($req);
+                $model->Save();
+                $this->AddMsg("$ModelName #{$model->pkey} was Updated");
                 $display = "edit";
             }
         }
         else if ($action == 'create')
         {
-            $this->model->Copy($req);
-            if ($this->model->Validate())
+            $model->Copy($req);
+            if ($model->Validate())
             {
-                $this->model->Create();
+                $model->Create();
                 $this->AddMsg("$ModelName was Created");
             }
             $display = "list";
@@ -71,39 +70,39 @@ class CDController {
             $field = (isset($req['field'])) ? $req['field'] : null;
             $value = (isset($req['value'])) ? trim($req['value']) : null;
 
-            $this->model->Change($field, $value);
-            $this->AddMsg("$ModelName #{$this->model->pkey} was changed");
+            $model->Change($field, $value);
+            $this->AddMsg("$ModelName #{$model->pkey} was changed");
             $display = "list";
         }
         else if ($action == 'list')
         {
-            $filter = $this->model->BuildFilter($req);
-            $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+            $filter = $model->BuildFilter($req);
+            $this->view->data = $model->GetALL($model->GetTable(), $filter);
             $display = "list";
         }
         else if ($action == 'show')
         {
-            $filter = $this->model->BuildFilter($req);
-            $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+            $filter = $model->BuildFilter($req);
+            $this->view->data = $model->GetALL($model->GetTable(), $filter);
             $display = "show";
         }
         else if ($action == 'delete')
         {
-            $this->model->Delete();
-            $this->AddMsg("$ModelName #{$this->model->pkey} was Deleted");
+            $model->Delete();
+            $this->AddMsg("$ModelName #{$model->pkey} was Deleted");
 
             // Go back to listing
             $display = "list";
-            $this->model->Clear();
-            $filter = $this->model->BuildFilter($req);
-            $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+            $model->Clear();
+            $filter = $model->BuildFilter($req);
+            $this->view->data = $model->GetALL($model->GetTable(), $filter);
 
             $display = "list";
         }
-        else if ($action == 'edit')
+        else
         {
-            $display = "edit";
-            $this->view->data = $this->model;
+            # Just show it (view,edit,ect..)
+            $display = $action;
         }
 
         return $display;
@@ -138,15 +137,15 @@ class CDController {
 
     public function index(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        //$response->getBody()->write("This is OK right??");
-        $this->container->set("active_page", "home");
+        $this->view->active_page = "home";
+        $this->view->template = "src/templates/home.php";
         return $this->buffer_response($request, $response, $args);
     }
 
     public function home(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
-        $this->view->Set("src/templates/home.php");
+        $this->view->active_page = "home";
+        $this->view->template = "src/templates/home.php";
         return $this->buffer_response($request, $response, $args);
     }
 
@@ -172,10 +171,7 @@ class CDController {
     public function static(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $path_i = pathinfo($args['page']);
-        $name = $path_i['filename'];
-        $template = "src/templates/{$path_i['dirname']}/{$name}.php";
-        $this->container->set("active_page", $name);
-        $this->view->Set($template);
+        $this->view->InitDisplay(false, $args['page'], false);
 
         $this->AddMsg("Page Information");
         $this->AddMsg("Full Page: {$args['page']}");
@@ -184,7 +180,6 @@ class CDController {
         if (isset($path_i['extension']))
             $this->AddMsg("extension: {$path_i['extension']}");
         $this->AddMsg("filename: {$path_i['filename']}");
-        $this->AddMsg("Constructed: src/templates/{$path_i['dirname']}/{$name}.php");
 
         return $this->buffer_response($request, $response, $args);
     }
@@ -195,26 +190,20 @@ class CDController {
         $this->AddMsg("<pre>" . print_r($_REQUEST, true) . "</pre>");
 
         # Parse the request and args
-        $act = CDModel::Clean($args['act']);
-        $BaseModel = CDModel::Clean($args['model']);
-        $ModelName = "\\Freedom\\Models\\" . str_replace("-", "\\", $BaseModel);
         $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
-        $model_name = strtolower(basename($ModelName));
-        $pkey = (isset($_REQUEST['pkey'])) ? CDModel::Clean($_REQUEST['pkey']) : 0;
+        $page = (isset($args['page'])) ? CDModel::Clean($args['page']) : "home";
+        $act = (isset($args['act'])) ? CDModel::Clean($args['act']) : "show";
+        $pkey = (isset($args['pkey'])) ? CDModel::Clean($args['pkey']) : 0;
 
-        # Create the model
-        $this->model = new $ModelName($pkey);
-        $this->model->Connect($this->container);
-        $this->model->Copy($_GET);
+        //$this->view->active_page = $view;
+        $model = $this->view->InitModel($section, $page, $pkey);
+        $model->Connect($this->container);
 
         # Perform action
-        $display = $this->ActionHandler($act, $args);
+        $display = $this->ActionHandler($model, $act, $_GET);
 
         # Setup the display
-        $this->container->set("active_page", $model_name);
-        $template = "src/templates/$section/{$model_name}_{$display}.php";
-        $this->view->Set($template);
-        $this->AddMsg("Location: $template");
+        $this->view->InitDisplay($section, $page, $display);
 
         return $this->buffer_response($request, $response, $args);
     }
@@ -223,26 +212,24 @@ class CDController {
         $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
         $this->AddMsg("<pre>" . print_r($_REQUEST, true) . "</pre>");
 
-        # Parse the request and args
-        $act = CDModel::Clean($args['act']);
+        # Parse the route args
         $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
-        $BaseModel = CDModel::Clean($args['model']);
-        $ModelName = "\\Freedom\\Models\\" . str_replace("-", "\\", $BaseModel);
-        $model_name = strtolower(basename($ModelName));
+        $page = (isset($args['page'])) ? CDModel::Clean($args['page']) : "home";
+        $act = (isset($args['act'])) ? CDModel::Clean($args['act']) : "show";
+
+        # Get pkey from POST Body
         $parsed = $request->getParsedBody();
         $pkey = (isset($parsed['pkey'])) ? CDModel::Clean($parsed['pkey']) : 0;
 
         # Create the model
-        $this->model = new $ModelName($pkey);
-        $this->model->Connect($this->container);
+        $model = $this->view->InitModel($section, $page, $pkey);
+        $model->Connect($this->container);
 
         # Perform action
-        $display = $this->ActionHandler($act, $parsed);
+        $display = $this->ActionHandler($model, $act, $parsed);
 
         # Setup the display
-        $this->container->set("active_page", $model_name);
-        $template = "src/templates/{$section}/{$model_name}_{$display}.php";
-        $this->view->Set($template);
+        $this->view->InitDisplay($section, $page, $display);
 
         return $this->buffer_response($request, $response, $args);
     }

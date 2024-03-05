@@ -196,7 +196,7 @@ class CDModel {
         # All Valid SM status
         $WHERE = "WHERE true";
 
-        if ($args)
+        if ($args && !empty($args))
         {
             foreach ($args as $idx => $filter)
             {

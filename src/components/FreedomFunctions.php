@@ -33,8 +33,8 @@ function AddRoutes($app)
     $app->get('/static/{page:.*}', [HomeController::class, 'static']);
 
     // General Get Page
-    $app->get('/{act}/{model}[/{section:.*}]', [HomeController::class, 'get_act']);
+    $app->get('/{section}/{page}[/{act}[/{pkey:[0-9]+}]]', [HomeController::class, 'get_act']);
 
     // General Post Page
-    $app->post('/{act}/{model}[/{section:.*}]', [HomeController::class, 'post_act']);
+    $app->post('/{section}/{page}', [HomeController::class, 'post_act']);
 }

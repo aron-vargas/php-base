@@ -20,7 +20,7 @@ class AdminController extends CDController {
 
     public function list_users(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $parsed = $request->getParsedBody();
         $filter = [
             ["field" => "status", "op" => "ne", "match" => "INVALID", "type" => "string"]
@@ -45,7 +45,7 @@ class AdminController extends CDController {
 
     public function get_user(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/user_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new User($pkey);
@@ -55,7 +55,7 @@ class AdminController extends CDController {
     }
     public function update_user(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/user_list.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))
@@ -88,7 +88,7 @@ class AdminController extends CDController {
         }
 
         # Show whos left
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/user_list.php");
         $filter = [
             ["field" => "status", "op" => "ne", "match" => "INVALID", "type" => "string"]
@@ -100,7 +100,7 @@ class AdminController extends CDController {
 
     public function list_profiles(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         //$parsed = $request->getParsedBody();
         $filter = [
             ["field" => "company_id", "op" => "gt", "match" => 0, "type" => "int"]
@@ -115,7 +115,7 @@ class AdminController extends CDController {
 
     public function get_profile(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/profile_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new UserProfile($pkey);
@@ -125,7 +125,7 @@ class AdminController extends CDController {
     }
     public function update_profile(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/profile_list.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))
@@ -158,7 +158,7 @@ class AdminController extends CDController {
         }
 
         # Show whos left
-        $this->container->set("active_page", "home");
+        //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/profile_list.php");
         $filter = [
             ["field" => "company_id", "op" => "gt", "match" => 0, "type" => "int"]
@@ -174,7 +174,7 @@ class AdminController extends CDController {
         # TODO: ^THAT^
         try
         {
-            $this->container->set("active_page", "admin");
+            //$this->container->set("active_page", "admin");
             $this->model = new Permission();
             $this->model->Connect($this->container);
             $this->view->Set("src/templates/crm/permission_list.php");
@@ -190,7 +190,7 @@ class AdminController extends CDController {
 
     public function get_permission(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "admin");
+        //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/permission_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new Permission($pkey);
@@ -201,7 +201,7 @@ class AdminController extends CDController {
     }
     public function update_permission(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "admin");
+        //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/permission_edit.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))
@@ -243,7 +243,7 @@ class AdminController extends CDController {
         # TODO: ^THAT^
         try
         {
-            $this->container->set("active_page", "admin");
+            //$this->container->set("active_page", "admin");
             $this->model = new Role();
             $this->model->Connect($this->container);
             $this->view->Set("src/templates/crm/role_list.php");
@@ -259,7 +259,7 @@ class AdminController extends CDController {
 
     public function get_role(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "admin");
+        //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/role_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
         $this->model = new Role($pkey);
@@ -270,7 +270,7 @@ class AdminController extends CDController {
     }
     public function update_role(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->container->set("active_page", "admin");
+        //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/role_edit.php");
         $parsed = $request->getParsedBody();
         if (isset($parsed['pkey']))

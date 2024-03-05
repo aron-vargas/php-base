@@ -17,7 +17,7 @@ if ($this->data)
             <td class='text-center'>{$row->is_published}</td>
             <td class='text-center'>{$row->created_at}</td>
             <td class='text-center'>{$row->updated_at}</td>
-            <td class='text-right'><a class='btn btn-primary btn-xs' href='/edit/blog-blogpost/blog?pkey={$row->pkey}'>Edit</a></td>
+            <td class='text-right'><a class='btn btn-primary btn-xs' href='/blog/blogpost/edit/{$row->pkey}'>Edit</a></td>
         </tr>";
     }
 }

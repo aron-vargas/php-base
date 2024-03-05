@@ -13,7 +13,7 @@ if ($this->data)
             <td class='text-left'>{$row->guard_name}</td>
             <td class='text-center'>{$row->created_at}</td>
             <td class='text-center'>{$row->updated_at}</td>
-            <td class='text-right'><a class='btn btn-primary btn-xs' href='/edit/permission/?pkey={$row->id}'>Edit</a></td>
+            <td class='text-right'><a class='btn btn-primary btn-xs' href='/admin/permission/edit/{$row->id}'>Edit</a></td>
         </tr>";
     }
 }

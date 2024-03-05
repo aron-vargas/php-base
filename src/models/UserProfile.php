@@ -37,6 +37,8 @@ class UserProfile extends CDModel {
     public $createdAt;      #` datetime DEFAULT NULL,
     public $updatedAt;      #` datetime DEFAULT NULL,
 
+    public $theme = "elegant";
+
     public $links;
 
     /**
@@ -55,7 +57,7 @@ class UserProfile extends CDModel {
 
     /**
      * Set the field values in the PDO Statement
-     * @param PDOStatement
+     * @param \PDOStatement
      */
     public function BindValues(&$sth)
     {
@@ -85,6 +87,17 @@ class UserProfile extends CDModel {
         }
     }
 
+    public function Img($name)
+    {
+        $src = "/images/base_blue.png";
+        if ($name == 'background')
+        {
+            $src = "/images/stock-dark-blue-background.jpg";
+        }
+
+        return $src;
+    }
+
     public function Save()
     {
         $this->Delete();
@@ -105,7 +118,7 @@ class UserProfile extends CDModel {
     private function SetFieldArray()
     {
         $i = 0;
-        $this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
+        //$this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('company_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('profile_image', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('image_content_type', PDO::PARAM_STR, true, 128);

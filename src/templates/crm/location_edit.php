@@ -1,5 +1,5 @@
 <?php
-$loc = $this->data;
+$loc = $this->model;
 
 # TODO: Add breadcrumb
 echo "

@@ -1,5 +1,5 @@
 <?php
-$comment = $this->data;
+$comment = $this->model;
 if (empty($comment->user_id))
 {
     $user = $this->config->get("session")->user;
@@ -38,7 +38,7 @@ echo "
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
-	<form action='/save/blog-blogcomment/blog' method='POST'>
+	<form action='/blog/blogcomment' method='POST'>
 		<input type='hidden' name='pkey' value='{$comment->pkey}'>
         <input type='hidden' name='post_id' value='{$comment->post_id}'>
         <input type='hidden' name='user_id' value='{$comment->user_id}'>
