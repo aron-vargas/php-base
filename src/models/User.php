@@ -46,8 +46,8 @@ class User extends CDModel {
     public $pkey;                   # integer
     public $key_name = "user_id";   # string
     protected $db_table = "user";   # string
-    public $user_id;                   # string
-    public $user_type;                   # string
+    public $user_id;                # string
+    public $user_type;              # string
     public $user_name;              # string
     public $first_name;             # string
     public $last_name;              # string
@@ -63,7 +63,7 @@ class User extends CDModel {
     protected $container;           # Container
     protected $roles;               # Role[]
     protected $permissions;         # Permission[]
-    public $profile;             # UserProfile
+    public $profile;                # UserProfile
     public $verified = 0;
     public $verification;
     public $login_attempts = 0;
@@ -197,7 +197,7 @@ class User extends CDModel {
                 $order_by = "ORDER BY first_name, last_name";
 
             $sth = $dbh->query("SELECT * FROM user WHERE user_id > 1 $order_by");
-            $list = $sth->fetchAll(PDO::FETCH_CLASS, "User");
+            $list = $sth->fetchAll(PDO::FETCH_OBJ);
         }
         else
             $list = null;

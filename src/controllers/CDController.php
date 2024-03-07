@@ -213,7 +213,7 @@ class CDController {
         # Parse the route args
         $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
         $page = (isset($args['page'])) ? CDModel::Clean($args['page']) : "home";
-        $act = (isset($args['act'])) ? CDModel::Clean($args['act']) : "show";
+        $act = (isset($args['act'])) ? CDModel::Clean($args['act']) : "edit";
 
         # Get pkey from POST Body
         $parsed = $request->getParsedBody();
@@ -225,6 +225,7 @@ class CDController {
 
         # Perform action
         $display = $this->ActionHandler($model, $act, $parsed);
+        $this->AddMsg("<pre>" . print_r($model, true) . "</pre>");
 
         # Setup the display
         $this->view->InitDisplay($section, $page, $display);

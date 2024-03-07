@@ -1,4 +1,6 @@
 <?php
+use Freedom\Models\CDModel;
+
 $user_name = (isset($_REQUEST['user_name'])) ? CDModel::Clean($_REQUEST['user_name']) : "";
 
 ?>

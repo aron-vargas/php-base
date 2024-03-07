@@ -40,8 +40,8 @@ function AddRoutes($app)
     $app->delete('/api/v1/{act}/{model}', [API1::class, 'delete_act']);
 
     // General Get Page
-    $app->get('/{section}/{page}[/{act}[/{pkey:[0-9]+}]]', [HomeController::class, 'get_act']);
+    $app->get('/{section}/{page}[/{act}[/{pkey:[0-9]+}]]', [CDController::class, 'get_act']);
 
     // General Post Page
-    $app->post('/{section}/{page}', [HomeController::class, 'post_act']);
+    $app->post('/{section}/{page}[/{act}]', [CDController::class, 'post_act']);
 }

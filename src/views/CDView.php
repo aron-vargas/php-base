@@ -40,6 +40,10 @@ class CDView {
         $this->css['datatable'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/js/DataTables-1.12.1/css/jquery.dataTables.min.css'/>";
         $this->css['fa'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/vendor/components/font-awesome/css/all.css' media='all'>";
         $this->css['imgpicker'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/style/image-picker.css'/>";
+        //$this->css['editor'] = "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css' />";
+        //$this->css['editor'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/js/editor/summernote.min.css'/>";
+        //$this->css['quill'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/js/quill/dist/quill.snow.css'>";
+        //$this->css['editor'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/js/ckeditor5-custom/sample/styles.css'/>";
         $this->css['chime'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/style/chime.css'/>";
 
         $this->js['bootstrap'] = "<script type='text/javascript' src='//{$config->get('base_url')}/vendor/twbs/bootstrap/dist/js/bootstrap.min.js'></script>";
@@ -47,6 +51,11 @@ class CDView {
         $this->js['jquery-ui'] = "<script type='text/javascript' src='//{$config->get('base_url')}/vendor/components/jqueryui/jquery-ui.min.js'></script>";
         $this->js['datatable'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/datatables.min.js'></script>";
         $this->js['imgpicker'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/image-picker.min.js'></script>";
+        //$this->js['quill'] = "<script src='//{$config->get('base_url')}/js/quill/dist/quill.min.js'></script>";
+        //$this->js['editor'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/editor/summernote.js'></script>";
+        //$this->js['editor'] = "<script src='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js'></script>";
+        $this->js['ckeditor'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/ckeditor5-custom/build/ckeditor.js'></script>";
+        //$this->js['ckeditor'] = "<script type='text/javascript' src='https://cdn.ckeditor.com/ckeditor5/41.2.0/super-build/ckeditor.js'></script>";
         $this->js['forms'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/forms.js'></script>";
     }
 
@@ -252,7 +261,7 @@ class CDView {
                     </div>
                 </span>
                 <span class='navbar-brand p2 me-auto'>
-                    <img class='round-logo' src='images/logo.png' height='40'/>
+                    <img class='round-logo' src='/images/logo.png' height='40'/>
                 </span>
                 <span class='p2 ms-auto me-5'>
                     {$buttons}
@@ -273,7 +282,6 @@ HEADER;
 						<li class='nav-item'><a href='/crm/customer/list' class='nav-link link-dark px-2'>Customers</a></li>
                         <li class='nav-item'><a href='/crm/location/list' class='nav-link link-dark px-2'>Locations</a></li>
                         <li class='nav-item'><a href='/admin/user/list' class='nav-link link-dark px-2'>Users</a></li>
-                        <li class='nav-item'><a href='/admin/userprofile/list' class='nav-link link-dark px-2'>Profiles</a></li>
                         <li class='nav-item'><a href='/admin/permission/list' class='nav-link link-dark px-2'>Permissions</a></li>
                         <li class='nav-item'><a href='/admin/role/list' class='nav-link link-dark px-2'>Roles</a></li>
                         <li class='nav-item'><a href='/blog/blogpost/show' class='nav-link link-dark px-2'>Blogs</a></li>

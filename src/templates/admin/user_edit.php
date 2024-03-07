@@ -1,5 +1,5 @@
 <?php
-$usr = $this->data;
+$usr = $this->model;
 
 echo "
 <style>

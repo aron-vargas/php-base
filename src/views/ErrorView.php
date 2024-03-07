@@ -36,11 +36,11 @@ class ErrorView extends CDView {
         $trace = htmlentities($exp->getTraceAsString());
 
         $html = "<div class='text-end'>
-            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-detail').toggle();\">
+            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-detail').toggleClass('hidden');\">
                 <i class='fa fa-caret-down'></i>
             </a>
         </div>
-        <div class='alert-detail alert alert-warning mx-auto my-1 overflow-auto'>
+        <div class='alert-detail alert alert-warning mx-auto my-1 overflow-auto hidden'>
             <h2>Details</h2>
             <div><strong>Type:</strong> $class</div>
             <div><strong>Code:</strong> $code</div>
@@ -49,11 +49,11 @@ class ErrorView extends CDView {
             <div><strong>Line:</strong> $line</div>
         </div>
         <div class='text-end'>
-            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-trace').toggle();\">
+            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-trace').toggleClass('hidden');\">
                 <i class='fa fa-caret-down'></i>
             </a>
         </div>
-        <div class='alert-trace alert alert-warning mx-auto my-1' style='display:none;'>
+        <div class='alert-trace alert alert-warning mx-auto my-1 hidden'>
             <h2>Trace</h2>
             <pre>$trace</pre>
         </div>";

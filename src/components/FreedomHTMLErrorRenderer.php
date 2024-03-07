@@ -51,7 +51,7 @@ class FreedomHtmlErrorRenderer implements ErrorRendererInterface {
     private function renderDetail(Throwable $exception): string
     {
         $html = "<div class='text-end'>
-            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-detail').toggle();\">
+            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-detail').toggleClass('hidden');\">
                 <i class='fa fa-caret-down'></i>
             </a>
         </div>";
@@ -67,11 +67,11 @@ class FreedomHtmlErrorRenderer implements ErrorRendererInterface {
         $html .= sprintf('<div><strong>Line:</strong> %s</div>', $exception->getLine());
         $html .= "</div>";
         $html .= "<div class='text-end'>
-            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-trace').toggle();\">
+            <a class='btn btn-outline-secondary p-1' onClick=\"$('.alert-trace').toggleClass('hidden');\">
                 <i class='fa fa-caret-down'></i>
             </a>
         </div>";
-        $html .= "<div class='alert alert-trace alert-warning mx-auto my-1' style='display: none;'>";
+        $html .= "<div class='alert alert-trace alert-warning mx-auto my-1 hidden'>";
         $html .= '<h2>Trace</h2>';
         $html .= sprintf('<pre>%s</pre>', htmlentities($exception->getTraceAsString()));
         $html .= "</div>";

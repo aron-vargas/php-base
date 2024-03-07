@@ -44,8 +44,7 @@ CREATE TABLE `blog_post_categories` (
 
  */
 
-class BlogPost extends CDModel 
-{
+class BlogPost extends CDModel {
     public $pkey;
     public $key_name = "pkey";
     protected $db_table = "blog_post";   # string
@@ -74,6 +73,30 @@ class BlogPost extends CDModel
         $this->dbh = DBSettings::DBConnection();
         $this->SetFieldArray();
         $this->Load();
+    }
+
+    /**
+     * Set the field values in the PDO Statement
+     * @param \PDOStatement
+     */
+    public function BindValues(&$sth)
+    {
+        $i = 1;
+
+        foreach ($this->field_array as $field)
+        {
+            // Special Handling for post_body which contains HTML
+            if ($field->name == "post_body" || $field->name == "short_description")
+                $val = $this->Val($field, false);
+            else
+                $val = $this->Val($field);
+            $sth->bindValue($i++, $val, $field->Type($val));
+        }
+
+        if ($this->pkey)
+            $sth->bindValue($i++, $this->pkey, PDO::PARAM_INT);
+
+        return $i;
     }
 
     /**
@@ -108,7 +131,7 @@ class BlogPost extends CDModel
             $AND_WHERE = self::ParseFilter($filter);
             $sth = $dbh->query("SELECT pkey FROM {$table_name} {$AND_WHERE}");
             $sth->execute();
-            while($row = $sth->fetch(PDO::FETCH_OBJ))
+            while ($row = $sth->fetch(PDO::FETCH_OBJ))
             {
                 $blogs[$row->pkey] = new BlogPost($row->pkey);
             }
@@ -121,7 +144,7 @@ class BlogPost extends CDModel
 
     public function HasCategory($name)
     {
-        foreach($this->categories as $cat)
+        foreach ($this->categories as $cat)
         {
             if ($cat->category_name == $name)
                 return true;
@@ -137,9 +160,9 @@ class BlogPost extends CDModel
                 j.category_id
             FROM blog_post_categories j
             WHERE j.post_id = ?");
-            $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
+            $sth->bindValue(1, (int) $this->pkey, PDO::PARAM_INT);
             $sth->execute();
-            while($cat = $sth->fetch(PDO::FETCH_OBJ))
+            while ($cat = $sth->fetch(PDO::FETCH_OBJ))
             {
                 $this->categories[] = new BlogCategory($cat->category_id);
             }
@@ -155,9 +178,9 @@ class BlogPost extends CDModel
                 j.pkey
             FROM blog_like j
             WHERE j.post_id = ?");
-            $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
+            $sth->bindValue(1, (int) $this->pkey, PDO::PARAM_INT);
             $sth->execute();
-            while($row = $sth->fetch(PDO::FETCH_OBJ))
+            while ($row = $sth->fetch(PDO::FETCH_OBJ))
             {
                 $this->likes[$row->like_id] = new BlogLike($row->like_id);
             }
@@ -173,9 +196,9 @@ class BlogPost extends CDModel
                 j.pkey
             FROM blog_comment j
             WHERE j.post_id = ?");
-            $sth->bindValue(1, (int)$this->pkey, PDO::PARAM_INT);
+            $sth->bindValue(1, (int) $this->pkey, PDO::PARAM_INT);
             $sth->execute();
-            while($row = $sth->fetch(PDO::FETCH_OBJ))
+            while ($row = $sth->fetch(PDO::FETCH_OBJ))
             {
                 $this->comments[$row->pkey] = new BlogComment($row->pkey);
             }

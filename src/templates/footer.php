@@ -6,7 +6,7 @@ echo "<footer class='footer mt-auto row' id='footer'>
     <div class='row'>
         <div class='col col-md-6'>
             <div class='p-4'>
-                <img class='round-logo' src='images/logo.png' alt='Company Logo' title='Company Logo' />
+                <img class='round-logo' src='/images/logo.png' alt='Company Logo' title='Company Logo' />
                 <div>Company Name</div>
                 <div>1198 Jasmine Ln</div>
                 <div>Fernley, Nevada 89408</div>

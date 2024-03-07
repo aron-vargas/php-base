@@ -78,7 +78,7 @@ class HomeController extends CDController {
     }
     public function authenticate(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->view->Set("src/templates/login_form.php");
+        $this->view->template = "src/templates/login_form.php";
 
         $data = $request->getParsedBody();
         $user_name = (isset($data['user_name'])) ? $data['user_name'] : null;
@@ -89,7 +89,7 @@ class HomeController extends CDController {
         if ($this->model->authenticate($user_name, $password))
         {
             //$this->container->set("active_page", "profile");
-            $this->view->Set("src/templates/profile.php");
+            $this->view->template = "src/templates/profile.php";
         }
 
         return $this->buffer_response($request, $response, $args);

@@ -22,8 +22,10 @@ if ($this->data)
             <td class='text-left'>{$row->user_type}</td>
             <td class='text-left'>{$row->status}</td>
             <td class='text-right{$protected}'>{$row->verified}</td>
-            <td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='/admin/user/edit/{$row->user_id}'>Edit</a></td>
-            <td class='text-right{$protected}'><a class='btn btn-primary btn-xs' href='/admin/profile/edit/{$row->user_id}'>Profile</a></td>
+            <td class='text-right{$protected}'>
+                <a class='btn btn-primary btn-xs' href='/admin/user/edit/{$row->user_id}'>Edit</a>
+                <a class='btn btn-primary btn-xs' href='/admin/userprofile/edit/{$row->user_id}'>Profile</a>
+            </td>
         </tr>";
     }
 }
@@ -53,12 +55,12 @@ if ($this->data)
     </table>
 </div>
 <script type='text/javascript'>
-$(function ()
-{
-    $('.table').DataTable({
-        paging: false,
-        info: false,
-        order: [[2, 'asc']]
+    $(function ()
+    {
+        $('.table').DataTable({
+            paging: false,
+            info: false,
+            order: [[2, 'asc']]
+        });
     });
-});
 </script>
