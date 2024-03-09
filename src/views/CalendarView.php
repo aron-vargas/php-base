@@ -1,6 +1,11 @@
 <?php
 namespace Freedom\Views;
 
+use Freedom\Models\CalEvent;
+
+# 1 Day = 86400 seconds
+define('ONE_DAY', 86400);
+
 class CalendarView extends CDView {
     public $template = null;
 
@@ -16,16 +21,23 @@ class CalendarView extends CDView {
     {
         $this->config = $config;
 
-        $this->css['main'] = "<link rel='stylesheet' type='text/css' href='//{$config->base_url}/style/main.css' media='all'>";
-        $this->css['bootstrap'] = "<link rel='stylesheet' type='text/css' href='//{$config->base_url}/vendor/twbs/bootstrap/dist/css/bootstrap.min.css' media='all'>";
-        $this->css['jquery-ui'] = "<link rel='stylesheet' type='text/css' href='//{$config->base_url}/vendor/components/jqueryui/themes/base/all.css' media='all'>";
-        $this->css['fa'] = "<link rel='stylesheet' type='text/css' href='//{$config->base_url}/vendor/components/font-awesome/css/all.css' media='all'>";
-        $this->css['cal'] = "<link rel='stylesheet' type='text/css' href='//{$config->base_url}/style/calendar.css' media='all'>";
+        $this->css['main'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/style/main.css' media='all'>";
+        $this->css['bootstrap'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/vendor/twbs/bootstrap/dist/css/bootstrap.min.css' media='all'>";
+        $this->css['jquery-ui'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/vendor/components/jqueryui/themes/base/all.css' media='all'>";
+        $this->css['fa'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/vendor/components/font-awesome/css/all.css' media='all'>";
+        $this->css['cal'] = "<link rel='stylesheet' type='text/css' href='//{$config->get('base_url')}/style/calendar.css' media='all'>";
 
-        $this->js['bootstrap'] = "<script type='text/javascript' src='//{$config->base_url}/vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>";
-        $this->js['jquery'] = "<script type='text/javascript' src='//{$config->base_url}/vendor/components/jquery/jquery.min.js'></script>";
-        $this->js['jquery-ui'] = "<script type='text/javascript' src='//{$config->base_url}/vendor/components/jqueryui/jquery-ui.min.js'></script>";
-        $this->js['cal'] = "<script type='text/javascript' src='//{$config->base_url}/js/calendar.js'></script>";
+        $this->js['bootstrap'] = "<script type='text/javascript' src='//{$config->get('base_url')}/vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>";
+        $this->js['jquery'] = "<script type='text/javascript' src='//{$config->get('base_url')}/vendor/components/jquery/jquery.min.js'></script>";
+        $this->js['jquery-ui'] = "<script type='text/javascript' src='//{$config->get('base_url')}/vendor/components/jqueryui/jquery-ui.min.js'></script>";
+        $this->js['fullcal'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/fullcalendar-scheduler/dist/index.global.min.js'></script>";
+        $this->js['cal'] = "<script type='text/javascript' src='//{$config->get('base_url')}/js/calendar.js'></script>";
+
+        if (!isset($_SESSION["cal"]))
+        {
+            $_SESSION["cal"] = $this->GetDefaults(strtotime("today"));
+            $this->InitDates();
+        }
 
         $this->_cal = $_SESSION["cal"];
     }
@@ -33,11 +45,11 @@ class CalendarView extends CDView {
     public function ClassList($base, $datetime)
     {
         $class_list = array($base);
-        if (CalendarModel::isWeekend($datetime))
+        if (CalEvent::isWeekend($datetime))
             $class_list[] = "weekend";
-        if (CalendarModel::isHoliday($datetime))
+        if (CalEvent::isHoliday($datetime))
             $class_list[] = "holiday";
-        if (CalendarModel::isToday($datetime))
+        if (CalEvent::isToday($datetime))
             $class_list[] = "today";
 
         if ($datetime < $this->_cal->month_first)
@@ -45,113 +57,10 @@ class CalendarView extends CDView {
         if ($datetime > $this->_cal->month_last)
             $class_list[] = "next";
 
-        if (CalendarModel::isSelected($this->_cal->sel_date, $datetime))
+        if (CalEvent::isSelected($this->_cal->sel_date, $datetime))
             $class_list[] = "selected";
 
         return implode(" ", $class_list);
-    }
-
-    public function render_footer()
-    {
-        if ($this->mode == self::$HTML_MODE)
-        {
-            echo "</body></html>";
-        }
-    }
-
-    private function EventJS($start, $end)
-    {
-        $user = $this->config->get('session')->user;
-
-        $LoadEvents = "";
-        if ($user->user_id)
-        {
-            $LoadEvents = "mgr.GetEvents({ start: {$start}, end: {$end} });";
-        }
-
-        return <<<SCRIPT
-<script type="text/javascript">
-var mgr = new EventMgr("cal-cont", { view: '{$this->_cal->view}' });
-{$LoadEvents}
-</script>
-SCRIPT;
-    }
-
-    private function Navigation()
-    {
-        $selected_month = date('M', $this->_cal->sel_date);
-        $selected_year = date('Y', $this->_cal->sel_date);
-        $view_options = $this->ViewOptions($this->_cal->view);
-
-        return <<<NAV
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <div class="col col-md-3 me-auto">
-                    <button class="btn btn-primary" type="button" onClick="ToggleSideBar()">
-                        <i class='fa fa-calendar-minus'></i>
-                    </button>
-                    <span class='h3 text-primary mx-3'>Calendar Events</span>
-                </div>
-                <div class="col col-md-4 mx-auto text-center">
-                    <a class="mx-2 col btn btn-light" href="?act=today">Today</a>
-                    <a class="mx-2 col btn btn-light" href="?act=prev"><i class='fa fa-caret-left'></i></a>
-                    <span class='col nav-text h4'>{$selected_month} {$selected_year}</span>
-                    <a class="mx-2 col btn btn-light" href="?act=next"><i class='fa fa-caret-right'></i></a>
-                    <span class="mx-2 col dropdown">
-                        <button class="btn btn-light dropdown-toggle" type="button" id="view-btn" data-bs-toggle="dropdown" aria-expanded="false">
-                            View
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="view-btn">
-                            $view_options
-                        </ul>
-                    </span>
-                </div>
-                <div class="col col-md-3 ms-auto">
-                    <div class="collapse" id="search">
-                        <input class='form-control' name="seach" placeholder="Search Events" />
-                    </div>
-                </div>
-                <div class="col col-md-2 ms-auto text-end">
-                    <button
-                        class="btn btn-light me-2"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#search"
-                        aria-controls="search"
-                        aria-expanded="false"
-                        aria-label="Search">
-                        <i class='fa fa-search'></i>
-                    </button>
-                    <a class="btn btn-light me-2" href="?v=support"><i class="fa fa-circle-question"></i></a>
-                    <a class="btn btn-light me-2" href="?v=settings"><i class='fa fa-gear'></i></a>
-                </div>
-            </div>
-        </nav>
-NAV;
-    }
-
-    private function SideBar()
-    {
-        // $selected = $this->_cal->view_types;
-        $event_type_options = CalendarView::EventTypeOptions(0);
-
-        return <<<BAR
-        <div id='cal-left-nav' class='col col-md-2'>
-            {$this->SelectCal()}
-            <div class="mb-auto">
-                <button type='button' class='btn btn-primary' onClick="ShowEventDialog()">New Event</button>
-                </li>
-                <li class="nav-item mt-1">
-                    <a class='nav-link btn-default' onClick="ShowTaskDialog()" href="#">New Task</a>
-                </li>
-            </div>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <select id="event_type" name="event_type" class="form-control">
-                    $event_type_options
-                </select>
-            </ul>
-        </div>
-BAR;
     }
 
     private function DayView()
@@ -191,56 +100,126 @@ BAR;
 CAL;
     }
 
-    private function WeekView()
+    private function EventJS($start, $end)
     {
-        // create day cells
-        $calendar_hdr_cells = "<div class='col gutter'>&nbsp;</div>";
+        $user = $this->config->get('session')->user;
 
-        $calendar_day_cells = "
-            <div class='col gutter'>
-                {$this->GutterCells(0, "wv-cell")}
-            </div>
-        ";
-
-        // Add Cells for this week
-        $datetime = ($this->_cal->view == "ww") ? $this->_cal->work_week_start : $this->_cal->week_start;
-        $end_date = ($this->_cal->view == "ww") ? $this->_cal->work_week_end : $this->_cal->week_end;
-        while ($datetime <= $end_date)
+        $LoadEvents = "";
+        if ($user->user_id)
         {
-            $day_text = date("D", $datetime);
-            $day_num = date("j", $datetime);
-
-            $class_list = $this->ClassList("hdr-cell", $datetime);
-            $calendar_hdr_cells .= "<div class='col $class_list'>{$day_text}<br/>{$day_num}</div>";
-            $cell_id = "cell-" . date("Ymd", $datetime);
-
-            $class_list = $this->ClassList("flexcol", $datetime);
-            $calendar_day_cells .= "<div class='week col cal-days'>
-                <div id='{$cell_id}' class='$class_list'>
-                    {$this->TimeCells($datetime, "wv-cell")}
-                </div>
-            </div>";
-            $datetime += ONE_DAY;
+            $LoadEvents = "mgr.GetEvents({ start: {$start}, end: {$end} });";
         }
 
-        return <<<CAL
-<div class='cal'>
-    {$this->Navigation()}
-    <div class='row cal-row'>
-        {$this->SideBar()}
-        <div id="MainView" class='cal-cont'>
-            <div class="row row-hdr g-0">
-                $calendar_hdr_cells
-            </div>
-            <div class='scroll-cont'>
-                <div class='scroll-y'>
-                    $calendar_day_cells
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-CAL;
+        return <<<SCRIPT
+<script type="text/javascript">
+var mgr = new EventMgr("cal-cont", { view: '{$this->_cal->view}' });
+{$LoadEvents}
+</script>
+SCRIPT;
+    }
+
+    static public function EventTypeOptions($selected = "Private")
+    {
+        if (empty($selected))
+            $selected = "Private";
+
+        $opt_ary = json_decode('
+        [
+            {"val": "Event", "text": "Event"},
+            {"val": "Task", "text": "Task"},
+            {"val": "Meeting", "text": "Meeting"},
+            {"val": "Conference Call", "text": "Conference Call"},
+            {"val": "Seminar", "text": "Seminar"},
+            {"val": "Conference", "text": "Conference"},
+            {"val": "Training", "text": "Training"},
+            {"val": "Out of Offive", "text": "Out of Office"},
+            {"val": "Vacation", "text": "Vacation"},
+            {"val": "Holiday", "text": "Holiday"},
+            {"val": "Other", "text": "Other"}
+        ]');
+
+        return CDView::OptionsList($selected, $opt_ary);
+    }
+
+    /**
+     * Set the cal data structure
+     * @param integer
+     * @return StdClass
+     */
+    private function GetDefaults($sel_date)
+    {
+        return json_decode("{
+            \"sel_date\": $sel_date,
+            \"today\": $sel_date,
+            \"month_start\": $sel_date,
+            \"month_first\": $sel_date,
+            \"month_last\": $sel_date,
+            \"month_end\": $sel_date,
+            \"week_start\": $sel_date,
+            \"week_end\": $sel_date,
+            \"work_week_start\": $sel_date,
+            \"work_week_end\": $sel_date,
+            \"view\": \"m\",
+            \"start_hour\": 6,
+            \"end_hour\": 20,
+            \"work_start\": 8,
+            \"work_end\": 18,
+            \"time_slot\": 3600
+        }");
+    }
+
+    private function GutterCells($datetime, $base_class)
+    {
+        $hr = $this->_cal->start_hour;
+        $start = strtotime("{$hr}:00", $datetime);
+        $hr = $this->_cal->end_hour;
+        $end = strtotime("{$hr}:00", $datetime);
+
+        $cells = "";
+        for ($time = $start; $time < $end; $time += $this->_cal->time_slot)
+        {
+            $class_list = $base_class;
+            if (date("G", $time) < $this->_cal->work_start)
+                $class_list .= " prev";
+            if (date("G", $time) > $this->_cal->work_end)
+                $class_list .= " next";
+
+            $time_text = date("g:i A", $time);
+
+            $cells .= "<div id='gutter-{$time}' class='{$class_list}'>
+                <div class='cell-lbl'>$time_text</div>
+            </div>";
+        }
+
+        return $cells;
+    }
+
+    /**
+     * (Re)Calculate dates based on view and sel_date
+     */
+    private function InitDates()
+    {
+        // Initialize the session settings
+        $_SESSION['cal']->month_first = strtotime(date("Y-m-01", $_SESSION['cal']->sel_date));
+        $day = date("w", $_SESSION['cal']->month_first);
+        $_SESSION['cal']->month_start = strtotime("-{$day} Days", $_SESSION['cal']->month_first);
+
+        $end = date("t", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->month_last = strtotime(date("Y-m-{$end}", $_SESSION['cal']->sel_date));
+        $_SESSION['cal']->month_end = strtotime("Saturday", $_SESSION['cal']->month_last);
+
+        $day = date("w", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->week_start = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->week_end = strtotime("Saturday", $_SESSION['cal']->sel_date);
+
+        $day = date("w", $_SESSION['cal']->sel_date) - 1;
+        $_SESSION['cal']->work_week_start = strtotime("-{$day} Days", $_SESSION['cal']->sel_date);
+        $_SESSION['cal']->work_week_end = strtotime("Friday", $_SESSION['cal']->work_week_start);
+    }
+
+    public function InitDisplay($section, $page, $display)
+    {
+        return;
     }
 
     private function MonthView()
@@ -300,14 +279,115 @@ CAL;
 CAL;
     }
 
+    private function Navigation()
+    {
+        $selected_month = date('M', $this->_cal->sel_date);
+        $selected_year = date('Y', $this->_cal->sel_date);
+        $view_options = $this->ViewOptions($this->_cal->view);
+
+        return <<<NAV
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <div class="col col-md-3 me-auto">
+                    <button class="btn btn-primary" type="button" onClick="ToggleSideBar()">
+                        <i class='fa fa-calendar-minus'></i>
+                    </button>
+                    <span class='h3 text-primary mx-3'>Calendar Events</span>
+                </div>
+                <div class="col col-md-4 mx-auto text-center">
+                    <a class="mx-2 col btn btn-light" href="?act=today">Today</a>
+                    <a class="mx-2 col btn btn-light" href="?act=prev"><i class='fa fa-caret-left'></i></a>
+                    <span class='col nav-text h4'>{$selected_month} {$selected_year}</span>
+                    <a class="mx-2 col btn btn-light" href="?act=next"><i class='fa fa-caret-right'></i></a>
+                    <span class="mx-2 col dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="view-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                            View
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="view-btn">
+                            $view_options
+                        </ul>
+                    </span>
+                </div>
+                <div class="col col-md-3 ms-auto">
+                    <div class="collapse" id="search">
+                        <input class='form-control' name="seach" placeholder="Search Events" />
+                    </div>
+                </div>
+                <div class="col col-md-2 ms-auto text-end">
+                    <button
+                        class="btn btn-light me-2"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#search"
+                        aria-controls="search"
+                        aria-expanded="false"
+                        aria-label="Search">
+                        <i class='fa fa-search'></i>
+                    </button>
+                    <a class="btn btn-light me-2" href="?v=support"><i class="fa fa-circle-question"></i></a>
+                    <a class="btn btn-light me-2" href="?v=settings"><i class='fa fa-gear'></i></a>
+                </div>
+            </div>
+        </nav>
+NAV;
+    }
+
+    public function Next()
+    {
+        if ($this->_cal->view == 'm')
+            $this->_cal->sel_date = strtotime("+1 Month", $this->_cal->sel_date);
+        else if ($this->_cal->view == "w")
+            $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "ww")
+            $this->_cal->sel_date = strtotime("+1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "d")
+            $this->_cal->sel_date = strtotime("+1 Day", $this->_cal->sel_date);
+        $this->InitDates();
+    }
+
+    static public function OrginizerOptions($selected)
+    {
+        // TODO: Pull this using model
+        //$opt_ary = Orginizer::GetOptions($selected);
+        $opt_ary = json_decode('
+        [
+            {"val": "1", "text": "--Default--"}
+        ]');
+        return CDView::OptionsList($selected, $opt_ary);
+    }
+
+    static public function PerformerOptions($selected)
+    {
+        // TODO: Pull this using model
+        //$opt_ary = Orginizer::GetOptions($selected);
+        $opt_ary = json_decode('
+        [
+            {"val": "1", "text": "--Default--"}
+        ]');
+        return CDView::OptionsList($selected, $opt_ary);
+    }
+
+    public function Prev()
+    {
+        if ($this->_cal->view == 'm')
+            $this->_cal->sel_date = strtotime("-1 Month", $this->_cal->sel_date);
+        else if ($this->_cal->view == "w")
+            $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "ww")
+            $this->_cal->sel_date = strtotime("-1 Week", $this->_cal->sel_date);
+        else if ($this->_cal->view == "d")
+            $this->_cal->sel_date = strtotime("-1 Day", $this->_cal->sel_date);
+        $this->InitDates();
+    }
+
     public function process($req)
     {
         if (isset($req['v']))
         {
             if ($req['v'] == 'event')
             {
-                $pkey = (isset($req['pkey'])) ? CDModel::Clean($req['pkey']) : 0;
-                $start_date = (isset($req['start_date'])) ? CDModel::Clean($req['start_date']) : null;
+                $pkey = (isset($req['pkey'])) ? CalEvent::Clean($req['pkey']) : 0;
+                $start_date = (isset($req['start_date'])) ? CalEvent::Clean($req['start_date']) : null;
                 $this->active_event = new CalEvent($pkey, $start_date);
                 $this->template = "templates/calendar/event.php";
             }
@@ -345,14 +425,70 @@ CAL;
         }
         else if ($this->mode == self::$JSON_MODE)
         {
-            $body = new StdClass();
+            $body = new \StdClass();
             $body->status_code = 200;
-            $body->message = $this->message;
+            $body->message = $this->config->get('message');
             $body->data = $this->data;
 
             echo json_encode($body);
         }
     }
+
+    public function render_footer()
+    {
+        if ($this->mode == self::$HTML_MODE)
+        {
+            echo "</body></html>";
+        }
+    }
+
+    public function Reset($sel_date)
+    {
+        $_SESSION['cal'] = $this->GetDefaults($sel_date);
+        $this->_cal = $_SESSION['cal'];
+        $this->InitDates();
+    }
+
+    public function SelectDate($new_date)
+    {
+        $this->_cal->sel_date = $new_date;
+        $this->InitDates();
+    }
+
+    public function SetEvent(CalEvent $event)
+    {
+        $this->active_event = $event;
+    }
+    public function SetView($new_view)
+    {
+        $this->_cal->view = $new_view;
+        $this->InitDates();
+    }
+
+    private function SideBar()
+    {
+        // $selected = $this->_cal->view_types;
+        $event_type_options = CalendarView::EventTypeOptions(0);
+
+        return <<<BAR
+        <div id='cal-left-nav' class='col col-md-2'>
+            {$this->SelectCal()}
+            <div class="mb-auto">
+                <button type='button' class='btn btn-primary' onClick="ShowEventDialog()">New Event</button>
+                </li>
+                <li class="nav-item mt-1">
+                    <a class='nav-link btn-default' onClick="ShowTaskDialog()" href="#">New Task</a>
+                </li>
+            </div>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <select id="event_type" name="event_type" class="form-control">
+                    $event_type_options
+                </select>
+            </ul>
+        </div>
+BAR;
+    }
+
 
     public function SelectCal()
     {
@@ -396,6 +532,7 @@ CAL;
 CAL;
     }
 
+
     private function TimeCells($datetime, $base_class, $show_labels = false)
     {
         $hr = $this->_cal->start_hour;
@@ -420,76 +557,6 @@ CAL;
         return $cells;
     }
 
-    private function GutterCells($datetime, $base_class)
-    {
-        $hr = $this->_cal->start_hour;
-        $start = strtotime("{$hr}:00", $datetime);
-        $hr = $this->_cal->end_hour;
-        $end = strtotime("{$hr}:00", $datetime);
-
-        $cells = "";
-        for ($time = $start; $time < $end; $time += $this->_cal->time_slot)
-        {
-            $class_list = $base_class;
-            if (date("G", $time) < $this->_cal->work_start)
-                $class_list .= " prev";
-            if (date("G", $time) > $this->_cal->work_end)
-                $class_list .= " next";
-
-            $time_text = date("g:i A", $time);
-
-            $cells .= "<div id='gutter-{$time}' class='{$class_list}'>
-                <div class='cell-lbl'>$time_text</div>
-            </div>";
-        }
-
-        return $cells;
-    }
-
-    static public function EventTypeOptions($selected = "Private")
-    {
-        if (empty($selected))
-            $selected = "Private";
-
-        $opt_ary = json_decode('
-        [
-            {"val": "Event", "text": "Event"},
-            {"val": "Task", "text": "Task"},
-            {"val": "Meeting", "text": "Meeting"},
-            {"val": "Conference Call", "text": "Conference Call"},
-            {"val": "Seminar", "text": "Seminar"},
-            {"val": "Conference", "text": "Conference"},
-            {"val": "Training", "text": "Training"},
-            {"val": "Out of Offive", "text": "Out of Office"},
-            {"val": "Vacation", "text": "Vacation"},
-            {"val": "Holiday", "text": "Holiday"},
-            {"val": "Other", "text": "Other"}
-        ]');
-
-        return CDView::OptionsList($selected, $opt_ary);
-    }
-
-    static public function OrginizerOptions($selected)
-    {
-        // TODO: Pull this using model
-        //$opt_ary = Orginizer::GetOptions($selected);
-        $opt_ary = json_decode('
-        [
-            {"val": "1", "text": "--Default--"}
-        ]');
-        return CDView::OptionsList($selected, $opt_ary);
-    }
-
-    static public function PerformerOptions($selected)
-    {
-        // TODO: Pull this using model
-        //$opt_ary = Orginizer::GetOptions($selected);
-        $opt_ary = json_decode('
-        [
-            {"val": "1", "text": "--Default--"}
-        ]');
-        return CDView::OptionsList($selected, $opt_ary);
-    }
 
     public function ViewOptions($sel_view = "m")
     {
@@ -504,5 +571,57 @@ CAL;
             {"val": "d", "text": "Day"}
         ]');
         return CDView::ListItemLinks("calendar.php?act=set_view&view", $sel_view, $opt_ary);
+    }
+
+    private function WeekView()
+    {
+        // create day cells
+        $calendar_hdr_cells = "<div class='col gutter'>&nbsp;</div>";
+
+        $calendar_day_cells = "
+            <div class='col gutter'>
+                {$this->GutterCells(0, "wv-cell")}
+            </div>
+        ";
+
+        // Add Cells for this week
+        $datetime = ($this->_cal->view == "ww") ? $this->_cal->work_week_start : $this->_cal->week_start;
+        $end_date = ($this->_cal->view == "ww") ? $this->_cal->work_week_end : $this->_cal->week_end;
+        while ($datetime <= $end_date)
+        {
+            $day_text = date("D", $datetime);
+            $day_num = date("j", $datetime);
+
+            $class_list = $this->ClassList("hdr-cell", $datetime);
+            $calendar_hdr_cells .= "<div class='col $class_list'>{$day_text}<br/>{$day_num}</div>";
+            $cell_id = "cell-" . date("Ymd", $datetime);
+
+            $class_list = $this->ClassList("flexcol", $datetime);
+            $calendar_day_cells .= "<div class='week col cal-days'>
+                <div id='{$cell_id}' class='$class_list'>
+                    {$this->TimeCells($datetime, "wv-cell")}
+                </div>
+            </div>";
+            $datetime += ONE_DAY;
+        }
+
+        return <<<CAL
+<div class='cal'>
+    {$this->Navigation()}
+    <div class='row cal-row'>
+        {$this->SideBar()}
+        <div id="MainView" class='cal-cont'>
+            <div class="row row-hdr g-0">
+                $calendar_hdr_cells
+            </div>
+            <div class='scroll-cont'>
+                <div class='scroll-y'>
+                    $calendar_day_cells
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+CAL;
     }
 }

@@ -18,6 +18,11 @@ class AdminController extends CDController {
         parent::__construct($container);
     }
 
+    static public function AddRoutes($app)
+    {
+        
+    }
+
     public function list_users(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         //$this->container->set("active_page", "home");

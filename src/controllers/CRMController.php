@@ -15,6 +15,11 @@ class CRMController extends CDController {
         parent::__construct($container);
     }
 
+    static public function AddRoutes($app)
+    {
+
+    }
+
     public function list_companies(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         //$this->container->set("active_page", "crm");

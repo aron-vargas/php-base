@@ -16,9 +16,17 @@ class API1 extends CDController
         $this->view->mode = CDView::$JSON_MODE;
     }
 
-    public function ActionHandler($action, $req)
+    static public function AddRoutes($app)
     {
-        $ModelName = get_class($this->model);
+        $app->get('/api/v1/{act}/{model}', [API1::class, 'get_act']);
+        $app->post('/api/v1/{act}/{model}', [API1::class, 'post_act']);
+        $app->put('/api/v1/{act}/{model}', [API1::class, 'put_act']);
+        $app->delete('/api/v1/{act}/{model}', [API1::class, 'delete_act']);
+    }
+
+    public function ActionHandler($model, string $action = "show", array $req = array())
+    {
+        $ModelName = get_class($model);
         $act = isset($req['act']) ? (int) $req['act'] : 1;
 
         # Perform the action

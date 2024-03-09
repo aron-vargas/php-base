@@ -1,6 +1,7 @@
 <?php
 
 use Freedom\Components\FreedomSession;
+use Freedom\Components\FreedomRoutes;
 use Freedom\Components\FreedomHtmlErrorRenderer;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
@@ -8,7 +9,7 @@ use Slim\Factory\AppFactory;
 
 # Setup auto load
 require __DIR__ . '../vendor/autoload.php';
-require __DIR__ . '/src/components/FreedomFunctions.php';
+//require __DIR__ . '/src/components/FreedomRoutes.php';
 
 # Start the Session
 session_start();
@@ -29,11 +30,14 @@ $app = AppFactory::create();
 //$callableResolver = $app->getCallableResolver();
 
 // Add Routing
-AddRoutes($app);
+FreedomRoutes::AddRoutes($app, $container->get('Controllers'));
 
 // Add Routing Middleware
 $app->addRoutingMiddleware();
 
+// TODO: Evaluate if this is realy needed
+// Using $_GET and $_POST seem to be the traditional way
+//
 // Add Body Parsing Middleware
 $app->addBodyParsingMiddleware();
 

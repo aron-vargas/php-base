@@ -27,6 +27,17 @@ class CDController {
         return $this->buffer_response($request, $response, $args);
     }
 
+    static public function AddRoutes($app)
+    {
+        // Home
+        // Static Pages
+        $app->get('/static/{page:.*}', [CDController::class, 'static']);
+        // General Get Page
+        $app->get('/{section}/{page}[/{act}[/{pkey:[0-9]+}]]', [CDController::class, 'get_act']);
+        // General Post Page
+        $app->post('/{section}/{page}[/{act}]', [CDController::class, 'post_act']);
+    }
+
     public function ActionHandler($model, string $action = "show", array $req = array())
     {
         $ModelName = get_class($model);

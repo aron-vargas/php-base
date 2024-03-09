@@ -36,6 +36,13 @@ CREATE TABLE `event` (
   `url` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `holidays` (
+  `pkey` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(125) NOT NULL DEFAULT 'Holiday',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pkey`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
  */
 class CalEvent extends CDModel {
     public $pkey;
@@ -73,15 +80,15 @@ class CalEvent extends CDModel {
 
     public static $DEFAULT_INTERVAL = "1 hour";
 
-    public function __construct($id = null, $start_date = null)
+    public function __construct($pkey = null, $start_date = null)
     {
-        $this->pkey = $id;
+        $this->pkey = $pkey;
         $this->start_date = ($start_date) ? CDModel::ParseTStamp($start_date) : date("Y-m-d H:00");
         $DEFAULT_INTERVAL = self::$DEFAULT_INTERVAL;
         $this->end_date = date("Y-m-d H:00", strtotime("+{$DEFAULT_INTERVAL}", strtotime($this->start_date)));
+        $this->dbh = DBSettings::DBConnection();
         $this->SetFieldArray();
         $this->Load();
-        $this->dbh = DBSettings::DBConnection();
     }
 
     /**
@@ -101,6 +108,94 @@ class CalEvent extends CDModel {
         {
             $this->end_date = $this->GetDate('end_date') . " " . $assoc['end_time'];
         }
+    }
+
+    public function GetMyEvents($from, $to)
+    {
+        $data = null;
+        $dbh = $this->dbh;
+        $user = $this->container->get('session')->user;
+
+        if ($user->user_id)
+        {
+            $from = CDModel::ParseTStamp($from);
+            $to = CDModel::ParseTStamp($to);
+            $sth = $dbh->prepare("SELECT
+                e.*,
+                c.first_name as creator_first_name,
+                c.last_name as creator_last_name,
+                o.first_name as orginizer_first_name,
+                o.last_name as orginizer_last_name,
+                p.first_name as performer_first_name,
+                p.last_name as performer_last_name
+            FROM event e
+            LEFT JOIN user c on e.created_by = c.user_id
+            LEFT JOIN user o on e.orginizer_id = c.user_id
+            LEFT JOIN user p on e.performer_id = c.user_id
+            WHERE (e.created_by = ? OR e.orginizer_id = ? OR e.performer_id = ?) AND e.start_date BETWEEN ? AND ?");
+            $sth->bindValue(1, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(2, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(3, $user->user_id, PDO::PARAM_INT);
+            $sth->bindValue(4, $from, PDO::PARAM_STR);
+            $sth->bindValue(5, $to, PDO::PARAM_STR);
+            $sth->execute();
+            while ($rec = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $rec->id = "event-{$rec->pkey}";
+                $rec->cell_id = '#cell-' . date("Ymd", strtotime($rec->start_date));
+                # in minutes
+                $start_time = strtotime($rec->start_date);
+                $rec->start_time = date("H", $start_time) * 60 + date("i", $start_time);
+                $end_time = strtotime($rec->end_date);
+                $rec->end_time = date("H", $end_time) * 60 + date("i", $end_time);
+                $rec->duration = ($rec->end_time - $rec->start_time);
+                $data[] = $rec;
+            }
+        }
+        else
+        {
+            throw new \Exception("User Not Authorized", 401);
+        }
+
+        return $data;
+    }
+
+    static public function isWeekend($timestamp)
+    {
+        $the_day = date("w", $timestamp);
+
+        return($the_day == 0 || $the_day == 6) ? true : false;
+    }
+
+    static public function isHoliday($timestamp)
+    {
+        $dbh = DBSettings::DBConnection();
+
+        $is_holiday = false;
+
+        if ($dbh)
+        {
+            $sth = $dbh->prepare("SELECT 1 FROM holidays WHERE timestamp = ?");
+            $sth->bindValue(1, strtotime(date("Y-m-d", $timestamp)), PDO::PARAM_INT);
+            $sth->execute();
+            $is_holiday = $sth->fetchColumn();
+        }
+
+        return (boolean) $is_holiday;
+    }
+
+    static public function isSelected($selected, $timestamp)
+    {
+        $date = date("Ymd", $timestamp);
+        $today = date("Ymd", $selected);
+        return($date == $today);
+    }
+
+    static public function isToday($timestamp)
+    {
+        $date = date("Ymd", $timestamp);
+        $today = date("Ymd");
+        return($date == $today);
     }
 
     public function Save()
@@ -147,7 +242,7 @@ class CalEvent extends CDModel {
      */
     public function Validate()
     {
-        $user = $this->controller->get('sesssion')->user;
+        $user = $this->container->get('session')->user;
 
         if (empty($user) || empty($user->user_id))
             return false;

@@ -15,7 +15,7 @@ function HandleError(jqXHR, textStatus, errorThrown)
 
 function ShowEventDialog(pkey, start_date)
 {
-    var event_url = "calendar.php?do=1&v=event&pkey="+pkey;
+    var event_url = "cal?act=event&pkey="+pkey;
     if (start_date) event_url += "&start_date="+start_date;
     event_url += " #event_form";
 
@@ -54,7 +54,7 @@ function Toggle(selector)
 function EventMgr(container, config)
 {
     this.container = '#cal-cont';
-    this.base_uri = 'calendar.php';
+    this.base_uri = 'cal';
     this.draw_args = { act : 'view' };
     this.gev_args = { act : 'getevents' };
     this.view = 'm';

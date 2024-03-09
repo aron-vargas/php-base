@@ -8,7 +8,7 @@ use Freedom\Components\DBSettings;
 class CDModel {
     public $pkey;
     public $key_name = "pkey";
-    protected $db_table;
+    protected $db_table = "blog_post";
     protected $field_array = array();
 
     protected $container;

@@ -1,5 +1,7 @@
 <?php
 
+use Freedom\Views\CalendarView;
+
 $title = ($event->pkey) ? "Edit Event" : "New Event";
 $check_all_day = ($event->all_day == 1) ? "checked" : "";
 $chk_private_y = ($event->private == 1) ? "checked" : "";
@@ -10,7 +12,7 @@ $performer_options = CalendarView::PerformerOptions($event->event_type);
 
 $delete_btn = "";
 if ($event->pkey)
-    $delete_btn = "<button type=\"act\" class=\"btn btn-primary\" type=\"button\" onClick=\"this.form.act='delete'; this.form.submit();\">Delete</button>";
+    $delete_btn = "<button type='submit' class='btn btn-secondary' name='act' value='-1'>Delete</button>";
 
 echo <<<FORM
 <style>
@@ -19,9 +21,7 @@ echo <<<FORM
 <div class='container my-5 p-5 main'>
     <div id='event_form' class="modal-dialog" role="document">
         <div id='event-modal-content' class="modal-content">
-            <form action='calendar.php' method='POST'>
-                <input type='hidden' name='act' value='Save'>
-                <input type='hidden' name='target' value='CalEvent'>
+            <form action='/calendar/save' method='POST'>
                 <input type='hidden' name='pkey' value='{$event->pkey}'>
                 <input type='hidden' name='all_day' value='{$event->all_day}'>
                 <div class='modal-header'>
@@ -130,7 +130,7 @@ echo <<<FORM
                     </div>
                 </div>
                 <div class="modal-footer text-center pt-1 mb-4 pb-1">
-                    <button type='submit' class="btn btn-primary" type="button">Submit</button>
+                    <button type='submit' class="btn btn-primary" name='act' value='1'>Submit</button>
                     {$delete_btn}
                     <button type='button'
                         class="btn btn-warning"

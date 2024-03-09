@@ -73,6 +73,11 @@ class UserProfile extends CDModel {
         return $i;
     }
 
+    static public function GetMembers()
+    {
+        return array();
+    }
+
     /**
      * "Delete" the record
      */
