@@ -265,30 +265,6 @@ class CDView {
 			</nav>
         </header>
 HEADER;
-
-        if ($user->pkey)
-        {
-            echo "
-			<nav class='navbar navbar-default navbar-fixed-top bg-light border-bottom p-0'>
-				<div class='container d-flex flex-wrap'>
-					<ul class='nav me-auto'>
-						<li class='nav-item'><a href='calendar/schedule' class='nav-link link-dark px-2 text-underline'>My Schedule</a></li>
-						<li class='nav-item'><a href='resources' class='nav-link link-dark px-2'>Resources</a></li>
-						<li class='nav-item'><a href='/crm/company/list' class='nav-link link-dark px-2'>Companies</a></li>
-						<li class='nav-item'><a href='/crm/customer/list' class='nav-link link-dark px-2'>Customers</a></li>
-                        <li class='nav-item'><a href='/crm/location/list' class='nav-link link-dark px-2'>Locations</a></li>
-                        <li class='nav-item'><a href='/admin/user/list' class='nav-link link-dark px-2'>Users</a></li>
-                        <li class='nav-item'><a href='/admin/permission/list' class='nav-link link-dark px-2'>Permissions</a></li>
-                        <li class='nav-item'><a href='/admin/role/list' class='nav-link link-dark px-2'>Roles</a></li>
-                        <li class='nav-item'><a href='/blog/blogpost/show' class='nav-link link-dark px-2'>Blogs</a></li>
-                        <li class='nav-item'><a href='/blog/blogpost/list' class='nav-link link-dark px-2'>Blogs Admin</a></li>
-					</ul>
-				</div>
-			</nav>";
-        }
-
-        echo "
-		</header>";
     }
 
     static public function OptionsList($selected, $opt_ary)

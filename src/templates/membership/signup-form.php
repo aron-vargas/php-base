@@ -1,6 +1,6 @@
 <style>
     .form-signin {
-        max-width: 600px;
+        max-width: 900px;
         padding: 15px;
     }
 
@@ -10,7 +10,7 @@
     }
 </style>
 <div role='main' class='container'>
-    <main class='form-signin w-100 m-auto'>
+    <main class='form-signin m-auto'>
         <div class="card-body p-md-5 mx-md-4">
             <form action='/membership/signup/save' method='POST'>
                 <h4>Register</h4>
