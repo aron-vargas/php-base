@@ -1,6 +1,4 @@
 <?php
-//$user = $this->config->get("session")->user;
-//$profile = $user->get('profile', false, false);
 
 $theme = $profile->theme;
 $profile_bg_url = $profile->Img('background');

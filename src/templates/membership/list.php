@@ -31,11 +31,11 @@
 <?php
 use Freedom\Models\UserProfile;
 
-    $data = UserProfile::GetMembers();
-    foreach($data as $profile)
-    {
-        include("scr/templates/profile-medium.php");
-    }
+$data = UserProfile::GetMembers();
+foreach($data as $profile)
+{
+    include("src/templates/profile-medium.php");
+}
 ?>
     </div>
 </div>
