@@ -1,22 +1,29 @@
 <?php
-
+$user = $this->config->get("session")->user;
 # Create a mega menu from the page configuration
 $menu = "<div class='mega_menu navbar-nav'>";
-$menu .= AppItem(0, $pages, $this->active_page);
+$menu .= AppItem(0, $pages, $this->active_page, $user);
 $menu .= "</div>";
 
 return $menu;
 
-function AppItem($num, $item, $active_page)
+function AppItem($num, $item, $active_page, $user)
 {
     if (is_array($item))
     {
         $html = "";
         foreach ($item as $i => $sub_item)
         {
-            $html .= AppItem($num + (int) $i, (object) $sub_item, $active_page);
+            $html .= AppItem($num + (int) $i, (object) $sub_item, $active_page, $user);
         }
         return $html;
+    }
+
+    # Check Permissions on the item
+    if (isset($item->permissions))
+    {
+        if ($user->HasPermission($item->permissions) == false)
+            return "";
     }
 
     # Add class
@@ -48,7 +55,7 @@ function AppItem($num, $item, $active_page)
     # Add anychildren
     if (isset($item->children))
     {
-        $child_html = AppItem($num + 1, $item->children, $active_page);
+        $child_html = AppItem($num + 1, $item->children, $active_page, $user);
         $html .= "<div class='submenu'>
             <div class='navbar-nav'>
                 {$child_html}
