@@ -25,6 +25,24 @@ class Role extends CDModel {
         $this->Load();
     }
 
+    static public function DefaultFilter()
+    {
+        #$example = [
+        #    ["field" => "id", "op" => "ne", "match" => "0", "type" => "int"]
+        #];
+
+        return [];
+    }
+
+    /**
+     * Find all active record
+     */
+    static public function GetALLRoles()
+    {
+        # $filter = Role::DefaultFilter();
+        return self::GetAll("roles", null);
+    }
+
     public function Save()
     {
         if (empty($this->created_at))

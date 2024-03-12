@@ -25,6 +25,11 @@ class Permission extends CDModel {
         $this->Load();
     }
 
+    static public function GetAllPermissions()
+    {
+        return self::GetAll("permissions", null);
+    }
+
     public function Save()
     {
         if (empty($this->created_at))

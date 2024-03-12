@@ -151,6 +151,11 @@ class CDModel {
         }
     }
 
+    static public function GetAllModels()
+    {
+        return array();
+    }
+
     /**
      * Find all records matching the field value
      *
