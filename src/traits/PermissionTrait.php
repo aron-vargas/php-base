@@ -4,8 +4,7 @@ namespace Freedom\Traits;
 use PDO;
 use Freedom\Models\Permission;
 
-trait PermissionTrait
-{
+trait PermissionTrait {
     public function AddModelPermission($model_id, $model_type, $permission_id)
     {
         $sth = $this->dbh->prepare("INSERT INTO role_has_permissions
@@ -40,7 +39,7 @@ trait PermissionTrait
             $this->permissions = array();
 
             $sth = $this->dbh->prepare('SELECT
-                permission_id 
+                permission_id
             FROM role_has_permissions j
             WHERE j.role_id = p.id');
             while ($data = $sth->fetch(PDO::FETCH_ASSOC))
@@ -57,7 +56,7 @@ trait PermissionTrait
             $this->permissions = array();
 
             $sth = $this->dbh->prepare('SELECT
-                permission_id 
+                permission_id
             FROM role_has_permissions j
             WHERE j.role_id = p.id');
             while ($data = $sth->fetch(PDO::FETCH_ASSOC))
@@ -69,15 +68,18 @@ trait PermissionTrait
 
     public function HasPermission(string $name)
     {
-        foreach ($this->permissions as $permission)
+        if (!empty($this->permissions))
         {
-            if ($permission->name == $name)
-                return true;
+            foreach ($this->permissions as $permission)
+            {
+                if ($permission->name == $name)
+                    return true;
+            }
         }
 
         // Supper Admin have all permissions
         if (method_exists($this, "HasRole") && $this->HasRole('Super-Admin'))
-           return true;
+            return true;
 
         return false;
     }

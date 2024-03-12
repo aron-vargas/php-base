@@ -9,10 +9,10 @@ if ($this->data)
         $tr .= "<tr>
             <td class='text-right'>{$num}</td>
             <td class='text-left'>{$row->short_name}</td>
-            <td class='text-left'>{$row->title}</td>
-            <td class='text-left'>{$row->role}</td>
-            <td class='text-left'>{$row->address_1}</td>
-            <td class='text-left'>{$row->address_2}</td>
+            <td class='hidden text-left'>{$row->title}</td>
+            <td class='hidden text-left'>{$row->role}</td>
+            <td class='hidden text-left'>{$row->address_1}</td>
+            <td class='hidden text-left'>{$row->address_2}</td>
             <td class='text-left'>{$row->city}</td>
             <td class='text-left'>{$row->state}</td>
             <td class='text-left'>{$row->zip}</td>
@@ -21,16 +21,25 @@ if ($this->data)
             <td class='text-left'>{$row->mobile}</td>
             <td class='text-left'>{$row->url}</td>
             <td class='text-left'>{$row->email}</td>
-            <td class='text-left'>{$row->description}</td>
+            <td class='text-left desc'>{$row->description}</td>
             <td class='text-left'>{$row->location_status}</td>
-            <td class='text-left'>{$row->location_type}</td>
-            <td class='text-center'>{$row->created_on}</td>
-            <td class='text-center'>{$row->last_mod}</td>
+            <td class='hidden text-left'>{$row->location_type}</td>
+            <td class='hidden text-center'>{$row->created_on}</td>
+            <td class='hidden text-center'>{$row->last_mod}</td>
             <td class='text-right'><a class='btn btn-primary btn-xs' href='/crm/location/edit/{$row->location_id}'>Edit</a></td>
         </tr>";
     }
 }
 ?>
+<style type='text/css'>
+.desc
+{
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+</style>
 <div role='main' class='container'>
     <div class='mt-4 text-left'>
         <a class='btn btn-primary' href="location/0" alt="Add New Location" title="Add New Location">New</a>
@@ -43,10 +52,10 @@ if ($this->data)
             <tr>
                 <th class='text-right'>#</th>
                 <th class='text-left'>Name</th>
-                <th class='text-left'>Title</th>
-                <th class='text-left'>Role</th>
-                <th class='text-left'>Address_1</th>
-                <th class='text-left'>Address_2</th>
+                <th class='hidden text-left'>Title</th>
+                <th class='hidden text-left'>Role</th>
+                <th class='hidden text-left'>Address_1</th>
+                <th class='hidden text-left'>Address_2</th>
                 <th class='text-left'>City</th>
                 <th class='text-left'>State</th>
                 <th class='text-left'>Zip</th>
@@ -57,9 +66,9 @@ if ($this->data)
                 <th class='text-left'>Email</th>
                 <th class='text-left'>Description</th>
                 <th class='text-left'>Status</th>
-                <th class='text-left'>Type</th>
-                <th class='text-center'>Created</th>
-                <th class='text-center'>Modified</th>
+                <th class='hidden text-left'>Type</th>
+                <th class='hidden text-center'>Created</th>
+                <th class='hidden text-center'>Modified</th>
                 <th class='text-right'>Action</th>
             </tr>
         </thead>

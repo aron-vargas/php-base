@@ -28,7 +28,7 @@ trait RoleTrait
             $this->permissions = array();
 
             $sth = $this->dbh->prepare('SELECT
-                role_id 
+                role_id
             FROM user_role_join j
             WHERE j.user_id = ?');
             while ($data = $sth->fetch(PDO::FETCH_ASSOC))
@@ -40,10 +40,13 @@ trait RoleTrait
 
     public function HasRole(string $name)
     {
-        foreach ($this->roles as $role)
+        if (!empty($this->roles))
         {
-            if (strtolower($role->name) == strtolower($name))
-                return true;
+            foreach ($this->roles as $role)
+            {
+                if (strtolower($role->name) == strtolower($name))
+                    return true;
+            }
         }
 
         return false;

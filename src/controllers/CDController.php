@@ -236,7 +236,7 @@ class CDController {
 
         # Perform action
         $display = $this->ActionHandler($model, $act, $parsed);
-        $this->AddMsg("<pre>" . print_r($model, true) . "</pre>");
+        //$this->AddMsg("<pre>" . print_r($model, true) . "</pre>");
 
         # Setup the display
         $this->view->InitDisplay($section, $page, $display);

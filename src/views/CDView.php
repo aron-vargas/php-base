@@ -1,10 +1,13 @@
 <?php
 namespace Freedom\Views;
 
+use Freedom\Traits\Breadcrumb;
 use Psr\Container\ContainerInterface;
 use DI\Container;
 
 class CDView {
+    use Breadcrumb;
+
     public $header = "src/templates/header.php";
     public $template = "src/templates/home.php";
     public $footer = "src/templates/footer.php";
@@ -266,6 +269,28 @@ class CDView {
         </header>
 HEADER;
     }
+    static public function OptionsStateList($selected, $name = true, $abv = false)
+    {
+        $opt_ary = \Freedom\Models\Location::StatesList();
+        $options = "<option value=''></option>";
+        if (is_array($opt_ary))
+        {
+            foreach ($opt_ary as $opt)
+            {
+                $sel = ($opt->val == $selected) ? "selected" : "";
+
+                $text = "{$opt->text}";
+                if ($name && $abv)
+                    $text = "{$opt->val}: {$opt->text}";
+                else if ($abv)
+                    $text = "{$opt->val}";
+
+                $options .= "<option value='{$opt->val}' $sel>{$text}</a></li>";
+            }
+        }
+
+        return $options;
+    }
 
     static public function OptionsList($selected, $opt_ary)
     {
@@ -274,7 +299,7 @@ HEADER;
         {
             foreach ($opt_ary as $opt)
             {
-                $sel = ($opt->val == $selected) ? "active" : "";
+                $sel = ($opt->val == $selected) ? "selected" : "";
                 $options .= "<option value='{$opt->val}' $sel>{$opt->text}</a></li>";
             }
         }

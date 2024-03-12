@@ -38,6 +38,10 @@ class Company extends CDModel {
     public $status = "ACTIVE";   # varchar(125) DFAULT ACTIVE
     public $description;            # meduimtext
 
+    public $primary_address;
+    public $shipping_address;
+    public $billing_address;
+
     static public $STATUS_INACTIVE = "DELETED";
 
     public function __construct($id = null)
@@ -63,6 +67,24 @@ class Company extends CDModel {
 
         return $filter;
     }
+
+    public function Copy($assoc)
+    {
+        if (isset($assoc['primary_address']))
+            $this->primary_address->Copy($assoc['primary_address']);
+        unset($assoc['primary_address']);
+
+        if (isset($assoc['billing_address']))
+            $this->billing_address->Copy($assoc['billing_address']);
+        unset($assoc['billing_address']);
+
+        if (isset($assoc['shipping_address']))
+            $this->shipping_address->Copy($assoc['shipping_address']);
+        unset($assoc['shipping_address']);
+
+        parent::Copy($assoc);
+    }
+
     static public function DefaultFilter()
     {
         return [
@@ -76,6 +98,15 @@ class Company extends CDModel {
         {
             $this->change('status', self::$STATUS_INACTIVE);
         }
+    }
+
+    public function Load()
+    {
+        parent::Load();
+
+        $this->primary_address = new Location($this->primary_address_id);
+        $this->shipping_address = new Location($this->shipping_address_id);
+        $this->billing_address = new Location($this->billing_address_id);
     }
 
     /**
@@ -97,6 +128,24 @@ class Company extends CDModel {
             $this->db_update();
         else
             $this->db_insert();
+
+        // Update the Address/Locations
+        $this->primary_address->Save();
+        if (empty($this->primary_address_id))
+        {
+            $this->Change("primary_address_id", $this->primary_address->location_id);
+            $this->AddMsg("Set primary_address_id: {$this->primary_address->location_id}");
+        }
+        $this->shipping_address->Save();
+        if (empty($this->shipping_address_id))
+        {
+            $this->change("shipping_address_id", $this->shipping_address->location_id);
+        }
+        $this->billing_address->Save();
+        if (empty($this->billing_address_id))
+        {
+            $this->change("billing_address_id", $this->billing_address->location_id);
+        }
     }
 
     private function SetFieldArray()
@@ -112,5 +161,16 @@ class Company extends CDModel {
         $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 125);
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 1025);
+    }
+
+    static public function StatusOptions()
+    {
+        $opt_ary = [
+            (object) ["val" => "Active", "text" => "Active"],
+            (object) ["val" => "InActive", "text" => "InActive"],
+            (object) ["val" => "Suspended", "text" => "Suspended"]
+        ];
+
+        return $opt_ary;
     }
 }

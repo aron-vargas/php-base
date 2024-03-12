@@ -20,12 +20,13 @@ function AppItem($num, $item, $active_page, $user)
     }
 
     # Check Permissions on the item
+    /*
     if (isset($item->permissions))
     {
         if ($user->HasPermission($item->permissions) == false)
             return "";
     }
-
+    */
     # Add class
     $class_list = "menu-item";
     if (isset($item->menuclass))
