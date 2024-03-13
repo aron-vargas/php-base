@@ -4,6 +4,7 @@ namespace Freedom\Models;
 use PDO;
 use Freedom\Components\DBField;
 use Freedom\Components\DBSettings;
+use Freedom\Traits\PermissionTrait;
 
 /**
  *
@@ -34,6 +35,8 @@ VALUES ('blog', 1, 1);
  */
 class Module extends CDModel
 {
+    use PermissionTrait;
+
     public $pkey;                # integer
     public $key_name = "pkey";   # string
     protected $db_table = "module";   # string
@@ -43,9 +46,9 @@ class Module extends CDModel
     public $updated_at;     #', PDO::PARAM_STR, false, 0);
     public $updated_by;     #` int NOT NULL
 
-    protected $name;       # VARCHAR NOT NULL
-    protected $modual_status = 'Active';       # VARCHAR NOT NULL  DEFAULT 'Active'
-    protected $hidden='0';       # TINYINT NOT NULL  DEFAULT '0'
+    public $name;       # VARCHAR NOT NULL
+    public $modual_status = 'Active';       # VARCHAR NOT NULL  DEFAULT 'Active'
+    public $hidden = '0';       # TINYINT NOT NULL  DEFAULT '0'
 
     static public $STATUS_ACTIVE = "ACTIVE";
     static public $STATUS_INACTIVE = "INACTIVE";

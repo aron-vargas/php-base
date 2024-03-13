@@ -74,7 +74,7 @@ class CalController extends CDController {
                 else
                 {
                     $this->AddMsg("CalEvent was invalid #{$this->model->pkey}");
-                    $this->AddMsg("<pre>".print_r($this->model->container, true)."</pre>");
+                    //$this->AddMsg("<pre>".print_r($this->model->container, true)."</pre>");
                 }
             }
         }

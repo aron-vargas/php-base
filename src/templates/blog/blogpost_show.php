@@ -76,7 +76,7 @@ if ($this->data)
 }
 ?>
 <div role='main' class='container'>
-    <div class='mt-4 text-left'>
+    <div class='mt-4 text-start'>
         <a class='btn btn-primary' href="/edit/blog-blogpost/blog?pkey=0" alt="Add New Post"
             title="Add New Post">New</a>
     </div>

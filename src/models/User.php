@@ -228,7 +228,7 @@ class User extends CDModel {
             {
                 foreach ($this->roles as $role)
                 {
-                    $this->LoadRolePermissions($role->pkey);
+                    $this->LoadRolePermissions($role->pkey, true);
                 }
             }
         }
@@ -269,7 +269,7 @@ class User extends CDModel {
         $this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
         $this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 128);
         $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 128);
-        $this->field_array[$i++] = new DBField('default_group', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('default_group', PDO::PARAM_INT, true, 0);
         $this->field_array[$i++] = new DBField('verified', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('block_expires', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
@@ -338,31 +338,34 @@ class User extends CDModel {
             return false;
         }
 
-        if ($this->user_name)
+        if ($this->pkey == 0 || empty($this->pkey))
         {
-            $sth = $dbh->prepare("SELECT COUNT(*) FROM user WHERE user_name = ?");
-            $sth->bindValue(1, $this->user_name, PDO::PARAM_STR);
-            $sth->execute();
-            $count = $sth->fetchColumn();
-
-            if ($count)
+            if ($this->user_name)
             {
-                $valid = false;
-                $this->AddMsg("<div>This username already exist.</div><div>Login <a href='/login'>here</a> or select another username.</div>");
+                $sth = $dbh->prepare("SELECT COUNT(*) FROM user WHERE user_name = ?");
+                $sth->bindValue(1, $this->user_name, PDO::PARAM_STR);
+                $sth->execute();
+                $count = $sth->fetchColumn();
+
+                if ($count)
+                {
+                    $valid = false;
+                    $this->AddMsg("<div>This username already exist.</div><div>Login <a href='/login'>here</a> or select another username.</div>");
+                }
             }
-        }
 
-        if ($this->email)
-        {
-            $sth = $dbh->prepare("SELECT COUNT(*) FROM user WHERE email = ?");
-            $sth->bindValue(1, $this->email, PDO::PARAM_STR);
-            $sth->execute();
-            $count = $sth->fetchColumn();
-
-            if ($count)
+            if ($this->email)
             {
-                $valid = false;
-                $this->AddMsg("<div>This email already exist.</div><div>Login <a href='/login'>here</a> or select another email.</div>");
+                $sth = $dbh->prepare("SELECT COUNT(*) FROM user WHERE email = ?");
+                $sth->bindValue(1, $this->email, PDO::PARAM_STR);
+                $sth->execute();
+                $count = $sth->fetchColumn();
+
+                if ($count)
+                {
+                    $valid = false;
+                    $this->AddMsg("<div>This email already exist.</div><div>Login <a href='/login'>here</a> or select another email.</div>");
+                }
             }
         }
 

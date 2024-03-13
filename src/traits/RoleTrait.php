@@ -37,9 +37,9 @@ trait RoleTrait
 
     protected function LoadUserRoles(bool $reload = false)
     {
-        if ($reload || empty($this->permissions))
+        if ($reload || empty($this->roles))
         {
-            $this->permissions = array();
+            $this->roles = array();
 
             $sth = $this->dbh->prepare('SELECT
                 role_id
@@ -72,6 +72,6 @@ trait RoleTrait
     {
         $sth = $this->dbh->prepare('DELETE FROM user_role_join j WHERE j.user_id = ?');
         $sth->execute(array($this->pkey));
-        $this->permissions = array();
+        $this->roles = array();
     }
 }

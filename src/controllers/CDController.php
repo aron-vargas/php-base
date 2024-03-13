@@ -72,8 +72,9 @@ class CDController {
         else if ($action == 'user_roles')
         {
             $model->RMUserRoles();
+            $model->RMGroupPermissions();
             $this->AddMsg("User Roles/Groups Cleared");
-            if (is_array($req['roles']))
+            if (isset ($req['roles']) && is_array($req['roles']))
             {
                 foreach ($req['roles'] as $role_id)
                 {
@@ -81,6 +82,7 @@ class CDController {
                     {
                         $model->AddUserRole($model->pkey, $role_id);
                         $this->AddMsg("Role ($role_id) was added");
+                        $model->LoadRolePermissions($role_id, true);
                     }
                 }
             }

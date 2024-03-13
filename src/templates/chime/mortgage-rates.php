@@ -153,7 +153,7 @@
                         </div>
                         <div><label class="">Down Payment</label>
                             <div class="mb-2 input-group"><input placeholder="?" type="text" class="form-control"
-                                    value="$60,000"><input placeholder="?" type="text" class="text-right form-control"
+                                    value="$60,000"><input placeholder="?" type="text" class="text-end form-control"
                                     value="20%" style="max-width: 42%;"></div>
                         </div>
                         <div><label class="">Loan Type</label>
@@ -186,7 +186,7 @@
                                             class="far fa-question-circle text-muted"></i></button></div>
                             </label>
                             <div class="mb-2 input-group"><input placeholder="?" type="text"
-                                    class="text-right form-control" value="6.66%"></div>
+                                    class="text-end form-control" value="6.66%"></div>
                         </div>
                     </div>
                 </div>

@@ -119,6 +119,8 @@ class CDView {
                 $this->template = "src/templates/admin/permission_{$display}.php";
             else if ($page == "usergroup")
                 $this->template = "src/templates/admin/usergroup_{$display}.php";
+            else if ($page == "module")
+                $this->template = "src/templates/admin/module_{$display}.php";
         }
         else if ($section == "blog")
         {
@@ -170,6 +172,8 @@ class CDView {
                 $this->model = new \Freedom\Models\Permission($pkey);
             else if ($page == "usergroup")
                 $this->model = new \Freedom\Models\UserGroup($pkey);
+            else if ($page == "module")
+                $this->model = new \Freedom\Models\Module($pkey);
         }
         else if ($section == "blog")
         {

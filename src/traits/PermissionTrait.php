@@ -6,6 +6,8 @@ use Freedom\Models\Permission;
 
 trait PermissionTrait {
 
+    protected $permissions;         # Permission[]
+
     public function AddPermission($role_id, $module_id, $rights)
     {
        $perm = new Permission();
@@ -58,14 +60,14 @@ trait PermissionTrait {
     {
         if ($reload || empty($this->permissions))
         {
-            $this->permissions = array();
+            //$this->permissions = array();
 
             $sth = $this->dbh->prepare('SELECT
                 pkey
             FROM permission j
             WHERE j.module_id = ?');
             $sth->execute(array($model_id));
-            while ($data = $sth->fetch(PDO::FETCH_ASSOC))
+            while ($data = $sth->fetch(PDO::FETCH_OBJ))
             {
                 $this->permissions[$data->pkey] = new Permission($data->pkey);
             }
@@ -76,7 +78,7 @@ trait PermissionTrait {
     {
         if ($reload || empty($this->permissions))
         {
-            $this->permissions = array();
+            //$this->permissions = array();
 
             $sth = $this->dbh->prepare('SELECT
                 pkey

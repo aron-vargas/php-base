@@ -14,6 +14,13 @@
         foreach ($js as $script)
             echo "$script\n";
         ?>
+        <script>
+        $(function() {
+            $(document).click(function (event) {
+                $('.dropdown-menu').collapse('hide');
+            });
+        });
+        </script>
     </head>
 
     <body>

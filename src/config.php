@@ -142,6 +142,12 @@ return [
                     "text" => "Roles",
                     "href" => "/admin/usergroup/list",
                     "permissions" => "site-admin"
+                ],
+                [
+                    "name" => "modules",
+                    "text" => "Modules",
+                    "href" => "/admin/module/list",
+                    "permissions" => "site-admin"
                 ]
             ]
         ]

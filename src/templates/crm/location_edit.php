@@ -1,5 +1,10 @@
 <?php
 $loc = $this->model;
+$this->Crumb("/home", "Home");
+$this->Crumb("/crm/location/list", "Locations\\Addresses");
+$this->Crumb(null, "Edit", true);
+
+$state_options = \Freedom\Views\CDView::OptionsStateList($loc->state);
 
 # TODO: Add breadcrumb
 echo "
@@ -15,6 +20,7 @@ echo "
 	border-radius: 8px;
 }
 </style>
+{$this->render_trail()}
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
@@ -47,7 +53,9 @@ echo "
 		</div>
         <div class='mb-4'>
 			<label class='form-label' for='state' style='margin-left: 0px;'>State</label>
-			<input type='text' id='state' name='state' class='form-control' placeholder='State' value='{$loc->state}'>
+			<select id='state' name='state' class='form-control'>
+                $state_options
+            </select>
 		</div>
         <div class='mb-4'>
 			<label class='form-label' for='zip' style='margin-left: 0px;'>Zip</label>
@@ -87,7 +95,7 @@ echo "
 		</div>
 		<div class='text-center pt-1 mb-4 pb-1'>
 			<button type='submit' class='btn btn-primary' name='act' value='1' onClick='SubmitFrom(this)'>Submit</button>
-            <button type='submit' class='btn btn-primary' name='act' value='-1'  onClick='SubmitFrom(this)'>Delete</button>
+            <button type='button' class='hidden btn btn-primary' name='act' value='-1'  onClick='SubmitFrom(this)'>Delete</button>
 		</div>
 	</form>
 </div>

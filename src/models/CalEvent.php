@@ -245,7 +245,10 @@ class CalEvent extends CDModel {
         $user = $this->container->get('session')->user;
 
         if (empty($user) || empty($user->user_id))
+        {
+            $this->AddMsg("Please login to create calendar events");
             return false;
+        }
 
         $this->last_mod_by = ($user->user_id) ? $user->user_id : 1;
         $this->last_mod = date("Y-m-d H:i:s");

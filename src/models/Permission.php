@@ -37,7 +37,7 @@ class Permission extends CDModel {
     public $updated_by;     # int
 
     public $group_name;
-    public $model_name;
+    public $module_name;
 
     static public $VIEW_PERM = 1;
     static public $EDIT_PERM = 1 << 2;
@@ -52,6 +52,23 @@ class Permission extends CDModel {
         $this->SetFieldArray();
         $this->Load();
     }
+    public function Copy($assoc)
+    {
+        parent::Copy($assoc);
+
+        if (isset($assoc['rights']))
+            $this->rights = (int)$assoc['rights'];
+        else #if (in_array(array('view_rights', 'edit_rights', 'add_rights', 'delete_rights'), array_keys($assoc)))
+        {
+            # Do some bit arithmetic
+            $view_right = (isset($assoc['view_rights'])) ? $assoc['view_rights'] & self::$VIEW_PERM : 0;
+            $edit_right = (isset ($assoc['edit_rights'])) ? $assoc['edit_rights'] & self::$EDIT_PERM : 0;
+            $add_right = (isset ($assoc['add_rights'])) ? $assoc['add_rights'] & self::$ADD_PERM : 0;
+            $delete_right = (isset ($assoc['delete_rights'])) ? $assoc['delete_rights'] & self::$DELETE_PERM : 0;
+
+            $this->rights = ($view_right | $edit_right | $add_right | $delete_right);
+        }
+    }
 
     static public function DefaultFilter()
     {
@@ -61,6 +78,37 @@ class Permission extends CDModel {
     static public function GetAllPermissions()
     {
         return self::GetAll("permission", null);
+    }
+
+    /**
+     * Find all records matching the field value
+     *
+     * @param string $table_name
+     * @param mixed $filter
+     * @return \StdClass[] | null
+     */
+    static public function GetALL($table_name, $filter)
+    {
+        $dbh = DBSettings::DBConnection();
+
+        if ($dbh)
+        {
+            $table_name = self::Clean($table_name);
+            $AND_WHERE = self::ParseFilter($filter);
+            //echo "SELECT * FROM {$table_name} {$AND_WHERE}";
+            $sth = $dbh->query("SELECT
+                p.*,
+                g.user_name as \"group_name\",
+                m.name as \"module_name\"
+            FROM permission p
+            INNER JOIN user g on p.group_id = g.user_id
+            INNER JOIN module m on p.module_id = m.pkey
+            {$AND_WHERE}");
+            $sth->execute();
+            return $sth->fetchALL(PDO::FETCH_OBJ);
+        }
+
+        return null;
     }
 
     /**
@@ -92,10 +140,10 @@ class Permission extends CDModel {
         if (empty($this->created_at))
             $this->created_at = date("c");
         if (empty($this->created_by))
-            $this->created_by = $user_id;
+            $this->created_by = (int)$user_id;
 
         $this->updated_at = date("c");
-        $this->updated_by = $user_id;
+        $this->updated_by = (int)$user_id;
 
         if ($this->pkey)
             $this->db_update();
