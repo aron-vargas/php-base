@@ -66,6 +66,7 @@ class CDModel {
     {
         return self::DefaultFilter();
     }
+
     static public function DefaultFilter()
     {
         return [];
@@ -153,7 +154,16 @@ class CDModel {
 
     static public function GetAllModels()
     {
-        return array();
+        return [
+            (object)["name" => "User"],
+            (object)["name" => "Group"],
+            (object)["name" => "Permission"],
+            (object)["name" => "Profile"],
+            (object)["name" => "Company"],
+            (object)["name" => "Customer"],
+            (object)["name" => "Location"],
+            (object)["name" => "Calendar"]
+        ];
     }
 
     /**
@@ -171,6 +181,7 @@ class CDModel {
         {
             $table_name = self::Clean($table_name);
             $AND_WHERE = self::ParseFilter($filter);
+            //echo "SELECT * FROM {$table_name} {$AND_WHERE}";
             $sth = $dbh->query("SELECT * FROM {$table_name} {$AND_WHERE}");
             $sth->execute();
             return $sth->fetchALL(PDO::FETCH_OBJ);

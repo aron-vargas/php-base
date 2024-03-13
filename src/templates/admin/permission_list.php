@@ -20,7 +20,7 @@ if ($this->data)
 ?>
 <div role='main' class='container'>
     <div class='mt-4 text-left'>
-        <a class='btn btn-primary' href="permission/0" alt="Add New Permission" title="Add New Permission">New</a>
+        <a class='btn btn-primary' href="/admin/permission/edit/0" alt="Add New Permission" title="Add New Permission">New</a>
     </div>
     <div class='mt-4 p-2 bg-secondary text-white text-center rounded shadow'>
         <h3>Administration: Permission listing</h3>

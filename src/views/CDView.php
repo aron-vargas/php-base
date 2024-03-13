@@ -117,8 +117,8 @@ class CDView {
             }
             else if ($page == "permission")
                 $this->template = "src/templates/admin/permission_{$display}.php";
-            else if ($page == "role")
-                $this->template = "src/templates/admin/role_{$display}.php";
+            else if ($page == "usergroup")
+                $this->template = "src/templates/admin/usergroup_{$display}.php";
         }
         else if ($section == "blog")
         {
@@ -168,8 +168,8 @@ class CDView {
                 $this->model = new \Freedom\Models\UserProfile($pkey);
             else if ($page == "permission")
                 $this->model = new \Freedom\Models\Permission($pkey);
-            else if ($page == "role")
-                $this->model = new \Freedom\Models\Role($pkey);
+            else if ($page == "usergroup")
+                $this->model = new \Freedom\Models\UserGroup($pkey);
         }
         else if ($section == "blog")
         {

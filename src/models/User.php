@@ -19,8 +19,9 @@ CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(255) DEFAULT NULL,
-  `user_type` varchar(255) NOT NULL DEFAULT 'SYSTEM',
+  `user_type` enum('USER','GROUP','TEMPLATE','SYSTEM') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'USER',
   `status` varchar(255) NOT NULL DEFAULT 'NEW',
+  `default_group` int NULL DEFAULT NULL,
   `verification` varchar(255) DEFAULT NULL,
   `verified` tinyint(1) DEFAULT '0',
   `login_attempts` int DEFAULT '0',
@@ -47,7 +48,7 @@ class User extends CDModel {
     public $key_name = "user_id";   # string
     protected $db_table = "user";   # string
     public $user_id;                # string
-    public $user_type;              # string
+    public $user_type = 'USER';              # string
     public $user_name;              # string
     public $first_name;             # string
     public $last_name;              # string
@@ -55,6 +56,7 @@ class User extends CDModel {
     public $email;                  # string
     public $phone;                  # string
     public $status;                 # string
+    public $default_group;          # int
     public $created_on;             # int
     public $last_mod;               # int
 
@@ -75,9 +77,13 @@ class User extends CDModel {
 
     static public $STATUS_ACTIVE = "ACTIVE";
     static public $STATUS_INACTIVE = "INACTIVE";
+    static public $TYPE_USER = "USER";
+    static public $TYPE_GROUP = "GROUP";
+    static public $TYPE_TEMPLATE = "TEMPLATE";
+    static public $TYPE_SYSTEM = "SYSTEM";
     static public $PERM_ADMIN = 1;
 
-    static public $USER_nick_name = 1;
+    static public $USER_NICK_NAME = 1;
     static public $USER_FULLNAME = 0;
 
     static public $SUPER_ADMIN_ROLE = "super-admin";
@@ -88,7 +94,7 @@ class User extends CDModel {
      * @param integer
      * @param string
      */
-    public function __construct($user_id = null, $type = 'SYSTEM')
+    public function __construct($user_id = null, $type = 'USER')
     {
         $this->SetFieldArray();
         $this->pkey = $user_id;
@@ -149,6 +155,11 @@ class User extends CDModel {
         return $valid;
     }
 
+    public function BuildFilter($params)
+    {
+        return User::DefaultFilter();
+    }
+
     public function Copy($assoc)
     {
         if (is_array($assoc))
@@ -168,7 +179,8 @@ class User extends CDModel {
     static public function DefaultFilter()
     {
         return [
-            ["field" => "status", "op" => "ne", "match" => "DELETED", "type" => "string"]
+            ["field" => "status", "op" => "ne", "match" => "DELETED", "type" => "string"],
+            ["field" => "user_type", "op" => "eq", "match" => User::$TYPE_USER, "type" => "string"]
         ];
     }
 
@@ -191,12 +203,13 @@ class User extends CDModel {
 
         if ($dbh)
         {
-            if ($options == self::$USER_nick_name)
+            if ($options == self::$USER_NICK_NAME)
                 $order_by = "ORDER BY nick_name";
             else
                 $order_by = "ORDER BY first_name, last_name";
 
-            $sth = $dbh->query("SELECT * FROM user WHERE user_id > 1 $order_by");
+            $type = User::$TYPE_USER;
+            $sth = $dbh->query("SELECT * FROM user WHERE user_type = $type $order_by");
             $list = $sth->fetchAll(PDO::FETCH_OBJ);
         }
         else
@@ -230,15 +243,16 @@ class User extends CDModel {
 
         foreach ($user_list as $usr)
         {
-            if ($options == User::$USER_nick_name)
+            if ($options == User::$USER_NICK_NAME)
                 $text = "{$usr->nick_name}";
             else
                 $text = "{$usr->first_name} {$usr->last_name}";
 
+            $className = ($usr->status == self::$STATUS_INACTIVE) ? "active" : "inactive";
             $sel = ($selected == $usr->user_id) ? " selected" : "";
 
             if ($usr->status == User::$STATUS_ACTIVE || $sel)
-                $option_list .= "<option value='{$usr->user_id}'{$sel}>$text</option>";
+                $option_list .= "<option class='{$className}' value='{$usr->user_id}'{$sel}>$text</option>";
         }
 
         return $option_list;
@@ -247,7 +261,7 @@ class User extends CDModel {
     private function SetFieldArray()
     {
         $i = 0;
-        $this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('user_type', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('user_name', PDO::PARAM_STR, false, 128);
         $this->field_array[$i++] = new DBField('first_name', PDO::PARAM_STR, false, 128);
         $this->field_array[$i++] = new DBField('last_name', PDO::PARAM_STR, false, 128);
@@ -255,6 +269,7 @@ class User extends CDModel {
         $this->field_array[$i++] = new DBField('email', PDO::PARAM_STR, true, 128);
         $this->field_array[$i++] = new DBField('phone', PDO::PARAM_STR, true, 128);
         $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 128);
+        $this->field_array[$i++] = new DBField('default_group', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('verified', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('block_expires', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
@@ -312,6 +327,10 @@ class User extends CDModel {
         {
             $this->nick_name = $this->user_name;
         }
+        if (empty($this->email))
+        {
+            $this->email = $this->user_name;
+        }
 
         if (empty($dbh))
         {
@@ -330,6 +349,20 @@ class User extends CDModel {
             {
                 $valid = false;
                 $this->AddMsg("<div>This username already exist.</div><div>Login <a href='/login'>here</a> or select another username.</div>");
+            }
+        }
+
+        if ($this->email)
+        {
+            $sth = $dbh->prepare("SELECT COUNT(*) FROM user WHERE email = ?");
+            $sth->bindValue(1, $this->email, PDO::PARAM_STR);
+            $sth->execute();
+            $count = $sth->fetchColumn();
+
+            if ($count)
+            {
+                $valid = false;
+                $this->AddMsg("<div>This email already exist.</div><div>Login <a href='/login'>here</a> or select another email.</div>");
             }
         }
 

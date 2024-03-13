@@ -128,19 +128,19 @@ return [
                 [
                     "name" => "users",
                     "text" => "Users",
-                    "href" => "/crm/user/list",
+                    "href" => "/admin/user/list",
                     "permissions" => "site-admin"
                 ],
                 [
                     "name" => "permissions",
                     "text" => "Permissions",
-                    "href" => "/crm/permission/list",
+                    "href" => "/admin/permission/list",
                     "permissions" => "site-admin"
                 ],
                 [
                     "name" => "roles",
                     "text" => "Roles",
-                    "href" => "/crm/role/list",
+                    "href" => "/admin/usergroup/list",
                     "permissions" => "site-admin"
                 ]
             ]

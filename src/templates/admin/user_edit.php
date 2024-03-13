@@ -1,60 +1,65 @@
 <?php
 $usr = $this->model;
+$this->Crumb("/home", "Home");
+$this->Crumb("/admin/user/list", "Users");
+$this->Crumb(null, "Edit", true);
 
-$all_roles = \Freedom\Models\Role::GetAllRoles();
-$all_models = \Freedom\Models\CDModel::GetAllModels();
-$all_perms = \Freedom\Models\Permission::GetAllPermissions();
+$all_roles = \Freedom\Models\UserGroup::GetAllGroups();
+$all_perms = $usr->Get('permissions', false, false);
+
+$has_view = \Freedom\Models\Permission::$VIEW_PERM;
+$has_edit = \Freedom\Models\Permission::$EDIT_PERM;
+$has_add = \Freedom\Models\Permission::$ADD_PERM;
+$has_delete = \Freedom\Models\Permission::$DELETE_PERM;
 
 $role_items = "";
 if (!empty($all_roles))
 {
-	foreach ($all_roles as $role)
-	{
-		$role_items .= "<li class='nav-item'>{$role->name}</li>";
+    foreach ($all_roles as $role)
+    {
+        $checked = $usr->hasRole($role->user_name)?"checked":"";
 
-		$perm_items = "";
-		if (!empty($all_perms))
-		{
-			foreach ($all_perms as $perm)
-			{
-				$chked = $usr->HasPermission("{$role->name}-{$perm->name}") ? "checked" : "";
-				$perm_items .= "<li><input type='checkbox' name='{$role->name}-{$perm->name}' $chked>{$perm->name}</li>";
-			}
-		}
-
-		$role_panes .= "
-		<div class='tab-pane' id='{$role->name}' role='tabpanel' aria-labelledby='{$role->name}-tab'>
-			<ul>
-				$perm_items
-			</ul>
-		</div>";
-	}
+        $role_items .= "<div class='list-item'>
+            <input type='checkbox' id='roles_{$role->user_id}' name='roles[$role->user_id]' value='{$role->user_id}' $checked>
+            <label for='roles_{$role->user_id}'>{$role->user_name}</label>
+        </div>";
+    }
+}
+else
+{
+    $perm_items .= "<div class='info'>No roles available</div>";
 }
 
-$model_items = "";
-if (!empty($all_model))
+$perm_items = "";
+if (!empty($all_perms))
 {
-	foreach ($all_model as $model)
-	{
-		$model_items .= "<li class='nav-item'>{$model->name}</li>";
+    foreach ($all_perms as $perm)
+    {
+        $chk_view = ($perm->rights & $has_view) ? "checked" : "";
+        $chk_edit = ($perm->rights & $has_edit) ? "checked" : "";
+        $chk_add = ($perm->rights & $has_add) ? "checked" : "";
+        $chk_delete = ($perm->rights & $has_delete) ? "checked" : "";
 
-		$perm_items = "";
-		if (!empty($all_perms))
-		{
-			foreach ($all_perms as $perm)
-			{
-				$chked = $usr->HasPermission("{$model->name}-{$perm->name}") ? "checked" : "";
-				$perm_items .= "<li><input type='checkbox' name='{$model->name}-{$perm->name}' $chked>{$perm->name}</li>";
-			}
-		}
+        $perm_items .= "
+        <div class='list-item'>
+            <span class='nav-text'>{$perm->group_name} {$perm->module_name}</span>
+            <input type='checkbox' id='roles_{$role->user_id}_has_view' name='permissions[$role->user_id][has_view]' value='$has_view' $chk_view />
+            <label for='roles_{$role->user_id}_has_view'>{$role->user_name}</label>
 
-		$model_panes .= "
-		<div class='tab-pane' id='{$model->name}' role='tabpanel' aria-labelledby='{$model->name}-tab'>
-			<ul>
-				$perm_items
-			</ul>
-		</div>";
-	}
+            <input type='checkbox' id='roles_{$role->user_id}_has_edit' name='permissions[$role->user_id][has_edit]' value='$has_edit' $chk_edit />
+            <label for='roles_{$role->user_id}_has_edit'>{$role->user_name}</label>
+
+            <input type='checkbox' id='roles_{$role->user_id}_has_add' name='permissions[$role->user_id][has_add]' value='$has_add' $chk_add />
+            <label for='roles_{$role->user_id}_has_add'>{$role->user_name}</label>
+
+            <input type='checkbox' id='roles_{$role->user_id}_has_delete' name='permissions[$role->user_id][has_delete]' value='$has_delete' $chk_delete />
+            <label for='roles_{$role->user_id}_has_delete'>{$role->user_name}</label>
+        </div>";
+    }
+}
+else
+{
+     $perm_items .= "<div class='info'>No Permissions found</div>";
 }
 
 echo "
@@ -65,9 +70,10 @@ echo "
 	border-radius: 8px;
 }
 </style>
+{$this->render_trail()}
 <div role='main' class='container'>
 	<main class='form-signin w-100 m-auto'>
-		<div class='card-body'>
+		<div class='card-body p-2'>
 			<form action='/admin/user/save' method='POST'>
 				<input type='hidden' name='pkey' value='{$usr->pkey}'>
 				<h4 class='card-title'>User Edit</h4>
@@ -96,25 +102,28 @@ echo "
 					<input type='tel' id='phone' name='phone' class='form-control' placeholder='Phone Number' value='{$usr->phone}'>
 				</div>
 				<div class='text-center buttons'>
-					<button type='submit' class='btn btn-primary' type='button' onClick='SubmitFrom(this)''>Submit</button>
+					<button type='submit' class='btn btn-primary' type='button' onClick='SubmitFrom(this)'>Submit</button>
 				</div>
 			</form>
 		</div>
 	</main>
-	<div class='container'>
-		<ul class='nav nav-tabs' id='role-tabs' role='tablist'>
-			$role_items
-		</ul>
-		<div class='tab-content' id='role-permissions'>
-			$role_panes
-		</div>
+	<div class='container mt-2'>
+        <form action='/admin/user/user_roles' method='POST'>
+            <input type='hidden' name='pkey' value='{$usr->pkey}' />
+            <input type='hidden' name='user_id' value='{$usr->pkey}' />
+            <div class='card-body p-2'>
+                <h4 class='card-title'>Roles/Groups</h4>
+                $role_items
+                <div class='text-center buttons'>
+					<button type='submit' class='btn btn-primary' type='button' onClick='SubmitFrom(this)'>Update</button>
+				</div>
+            </div>
+        </form>
 	</div>
-	<div class='container'>
-		<ul class='nav nav-tabs' id='model-tabs' role='tablist'>
-			$model_items
-		</ul>
-		<div class='tab-content' id='model-permissions'>
-			$model_panes
-		</div>
+    <div class='container mt-2'>
+        <div class='card-body p-2'>
+            <h4 class='card-title'>Permissions</h4>
+    		$perm_items
+        </div>
 	</div>
 </div>";

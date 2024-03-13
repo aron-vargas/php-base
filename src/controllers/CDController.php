@@ -61,10 +61,54 @@ class CDController {
             else
             {
                 $model->Copy($req);
-                $model->Save();
-                $this->AddMsg("$ModelName #{$model->pkey} was Updated");
+                if ($model->Validate())
+                {
+                    $model->Save();
+                    $this->AddMsg("$ModelName #{$model->pkey} was Updated");
+                }
                 $display = "edit";
             }
+        }
+        else if ($action == 'user_roles')
+        {
+            $model->RMUserRoles();
+            $this->AddMsg("User Roles/Groups Cleared");
+            if (is_array($req['roles']))
+            {
+                foreach ($req['roles'] as $role_id)
+                {
+                    if ($role_id)
+                    {
+                        $model->AddUserRole($model->pkey, $role_id);
+                        $this->AddMsg("Role ($role_id) was added");
+                    }
+                }
+            }
+            $display = "edit";
+        }
+        else if ($action == 'module-perms')
+        {
+            $model->RMGroupPermissions();
+            $this->AddMsg("User Roles/Groups Cleared");
+            if (is_array($req['permissions']))
+            {
+                foreach ($req['permissions'] as $module_id => $rights)
+                {
+                    if ($module_id)
+                    {
+                        # Set the bitmask
+                        $perms = 0;
+                        if (isset($rights['has_view'])) $perms |= $rights['has_view'];
+                        if (isset($rights['has_edit'])) $perms |= $rights['has_edit'];
+                        if (isset($rights['has_add'])) $perms |= $rights['has_add'];
+                        if (isset($rights['has_delete'])) $perms |= $rights['has_delete'];
+
+                        $model->AddPermission($model->pkey, $module_id, $perms);
+                        $this->AddMsg("Permissions ({$model->pkey}, $module_id, $perms) was added");
+                    }
+                }
+            }
+            $display = "edit";
         }
         else if ($action == 'create')
         {
@@ -208,6 +252,7 @@ class CDController {
         //$this->view->active_page = $view;
         $model = $this->view->InitModel($section, $page, $pkey);
         $model->Connect($this->container);
+        //$this->AddMsg("<pre>" . print_r($model, true) . "</pre>");
 
         # Perform action
         $display = $this->ActionHandler($model, $act, $_GET);
