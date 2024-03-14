@@ -124,9 +124,9 @@ class CDView {
         }
         else if ($section == "blog")
         {
-            if ($page == "comment")
+            if ($page == "blogcomment")
                 $this->template = "src/templates/blog/blogcomment_{$display}.php";
-            else if ($page == "category")
+            else if ($page == "blogcategory")
                 $this->template = "src/templates/blog/blogcategory_{$display}.php";
             else
                 $this->template = "src/templates/blog/blogpost_{$display}.php";
@@ -177,9 +177,9 @@ class CDView {
         }
         else if ($section == "blog")
         {
-            if ($page == "comment")
+            if ($page == "blogcomment")
                 $this->model = new \Freedom\Models\Blog\BlogComment($pkey);
-            else if ($page == "category")
+            else if ($page == "blogcategory")
                 $this->model = new \Freedom\Models\Blog\BlogCategory($pkey);
             else
                 $this->model = new \Freedom\Models\Blog\BlogPost($pkey);
@@ -227,8 +227,8 @@ class CDView {
         {
             $buttons = "
 			<div class='float-end'>
-				<a class='btn btn-light me-2' href='login'>Login</a>
-				<a class='btn btn-warning' href='register'>Register</a>
+				<a class='btn btn-light me-2' href='/login'>Login</a>
+				<a class='btn btn-warning' href='/register'>Register</a>
 			</div>";
         }
 

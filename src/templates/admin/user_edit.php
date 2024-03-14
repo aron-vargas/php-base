@@ -3,6 +3,8 @@ $usr = $this->model;
 
 $this->Crumb("/home", "Home");
 $this->Crumb("/admin/user/list", "Users");
+if (isset ($_SERVER['HTTP_REFERER']))
+    $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb(null, "Edit", true);
 
 $all_roles = \Freedom\Models\UserGroup::GetAllGroups();

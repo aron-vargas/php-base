@@ -23,7 +23,7 @@ class CRMController extends CDController {
     public function list_companies(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         //$this->container->set("active_page", "crm");
-        $this->model = new \Models\Company();
+        $this->model = new \Freedom\Models\Company();
         $this->model->Connect($this->container);
         $filter = $this->model->BuildFilter($args);
         $data = $this->model->GetALL("company", $filter);
@@ -38,7 +38,7 @@ class CRMController extends CDController {
         //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/company_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new \Models\Company($pkey);
+        $this->model = new \Freedom\Models\Company($pkey);
         $this->model->Connect($this->container);
         $this->view->data = $this->model;
 
@@ -53,7 +53,7 @@ class CRMController extends CDController {
         {
             $pkey = $parsed['pkey'];
             $act = isset($parsed['act']) ? (int) $parsed['act'] : 1;
-            $this->model = new \Models\Company($pkey);
+            $this->model = new \Freedom\Models\Company($pkey);
             $this->model->Connect($this->container);
             if ($act === -1) # Delete Button
             {
@@ -62,7 +62,7 @@ class CRMController extends CDController {
 
                 // Go back to listing
                 $this->view->Set("src/templates/crm/company_list.php");
-                $this->model = new \Models\Company();
+                $this->model = new \Freedom\Models\Company();
                 $this->model->Connect($this->container);
                 $filter = $this->model->BuildFilter($args);
                 $this->view->data = $this->model->GetALL("company", $filter);
@@ -88,7 +88,7 @@ class CRMController extends CDController {
         # DELETE the user
         if (isset($args['id']))
         {
-            $rm = new \Models\Company($args['id']);
+            $rm = new \Freedom\Models\Company($args['id']);
             $rm->Delete();
             $this->AddMsg("Company #{$args['id']} was Deleted");
         }
@@ -96,7 +96,7 @@ class CRMController extends CDController {
         # Show whos left
         //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/company_list.php");
-        $this->model = new \Models\Company();
+        $this->model = new \Freedom\Models\Company();
         $this->model->Connect($this->container);
         $filter = $this->model->BuildFilter($args);
         $this->view->data = $this->model->GetALL("company", $filter);
@@ -111,7 +111,7 @@ class CRMController extends CDController {
         try
         {
             //$this->container->set("active_page", "crm");
-            $this->model = new \Models\Customer();
+            $this->model = new \Freedom\Models\Customer();
             $this->model->Connect($this->container);
             $filter = $this->model->BuildFilter($args);
             $this->view->Set("src/templates/crm/customer_list.php");
@@ -130,7 +130,7 @@ class CRMController extends CDController {
         //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/customer_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new \Models\Customer($pkey);
+        $this->model = new \Freedom\Models\Customer($pkey);
         $this->model->Connect($this->container);
         $this->view->data = $this->model;
 
@@ -146,7 +146,7 @@ class CRMController extends CDController {
             $act = isset($parsed['act']) ? (int) $parsed['act'] : 1;
             $this->AddMsg("<pre>" . print_r($parsed, true) . "</pre>");
             $pkey = $parsed['pkey'];
-            $this->model = new \Models\Customer($pkey);
+            $this->model = new \Freedom\Models\Customer($pkey);
             $this->model->Connect($this->container);
             if ($act === -1) # Delete Button
             {
@@ -155,7 +155,7 @@ class CRMController extends CDController {
 
                 // Go back to listing
                 $this->view->Set("src/templates/crm/customer_list.php");
-                $this->model = new Customer();
+                $this->model = new \Freedom\Models\Customer();
                 $this->model->Connect($this->container);
                 $filter = $this->model->BuildFilter($args);
                 $this->view->data = $this->model->GetALL("customer", $filter);
@@ -181,7 +181,7 @@ class CRMController extends CDController {
         # DELETE the user
         if (isset($args['id']))
         {
-            $rm = new \Models\Customer($args['id']);
+            $rm = new \Freedom\Models\Customer($args['id']);
             $this->model->Connect($this->container);
             $rm->Delete();
             $this->AddMsg("Customer #{$args['id']} ({$this->model->account_code}) was Deleted");
@@ -190,7 +190,7 @@ class CRMController extends CDController {
         # Show whos left
         //$this->container->set("active_page", "crm");
         $this->view->Set("src/templates/crm/customer_list.php");
-        $this->model = new \Models\Customer();
+        $this->model = new \Freedom\Models\Customer();
         $this->model->Connect($this->container);
         $filter = $this->model->BuildFilter($args);
         $this->view->data = $this->model->GetALL("customer", $filter);
@@ -200,12 +200,10 @@ class CRMController extends CDController {
 
     public function list_locations(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        # This works OK. I would like to replace the ExceptionHandler with my own
-        # TODO: ^THAT^
         try
         {
             //$this->container->set("active_page", "admin");
-            $this->model = new \Models\Location();
+            $this->model = new \Freedom\Models\Location();
             $this->model->Connect($this->container);
             $this->view->Set("src/templates/crm/location_list.php");
             $filter = $this->model->BuildFilter($args);
@@ -224,7 +222,7 @@ class CRMController extends CDController {
         //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/location_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new \Models\Location($pkey);
+        $this->model = new \Freedom\Models\Location($pkey);
         $this->model->Connect($this->container);
         $this->view->data = $this->model;
 
@@ -239,7 +237,7 @@ class CRMController extends CDController {
         {
             $act = isset($parsed['act']) ? (int) $parsed['act'] : 1;
             $pkey = $parsed['pkey'];
-            $this->model = new \Models\Location($pkey);
+            $this->model = new \Freedom\Models\Location($pkey);
             $this->model->Connect($this->container);
             if ($act === -1) # Delete Button
             {
@@ -248,7 +246,7 @@ class CRMController extends CDController {
 
                 // Go back to listing
                 $this->view->Set("src/templates/crm/location_list.php");
-                $this->model = new \Models\Location();
+                $this->model = new \Freedom\Models\Location();
                 $this->model->Connect($this->container);
                 $filter = $this->model->BuildFilter($args);
                 $this->view->data = $this->model->GetALL("location", $filter);

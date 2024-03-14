@@ -3,6 +3,8 @@ $perm = $this->model;
 
 $this->Crumb("/home", "Home");
 $this->Crumb("/admin/permission/list", "Permissions");
+if (isset ($_SERVER['HTTP_REFERER']))
+    $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb(null, "Edit", true);
 
 

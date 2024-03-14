@@ -4,6 +4,8 @@ $module->LoadModulePermissions($module->pkey, true);
 
 $this->Crumb("/home", "Home");
 $this->Crumb("/admin/module/list", "Modules");
+if (isset ($_SERVER['HTTP_REFERER']))
+    $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb(null, "Edit", true);
 
 $all_groups = \Freedom\Models\UserGroup::GetAllGroups(\Freedom\Models\UserGroup::$USER_NICK_NAME);

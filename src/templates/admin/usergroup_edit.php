@@ -4,6 +4,8 @@ $group->LoadRolePermissions($group->pkey, true);
 
 $this->Crumb("/home", "Home");
 $this->Crumb("/admin/usergroup/list", "Roles");
+if (isset($_SERVER['HTTP_REFERER']))
+    $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb(null, "Edit", true);
 
 $mfilter = \Freedom\Models\Module::DefaultFilter();
@@ -55,6 +57,19 @@ else
     $module_items .= "<div class='info'>No Permissions found</div>";
 }
 
+# Get a list of users
+$all_users = $group->GetAllMembers();
+$user_list = "";
+if (!empty ($all_users))
+{
+    foreach ($all_users as $member)
+    {
+        $user_list .= "
+            <div>{$member->first_name} {$member->last_name}
+            <a href='/admin/user/edit/{$member->user_id}'><i class='fa fa-pencil'></i></a>
+        </div>";
+    }
+}
 
 echo "
 <style>
@@ -115,7 +130,6 @@ echo "
                     </div>
                 </form>
             </div>
-
             <div class='mt-2'>
                 <div class='card-body p-2'>
                     <h4 class='card-title mb-2 border-bottom'>Additional Information</h4>
@@ -135,6 +149,12 @@ echo "
                         <div class='col-4'>Last Modified:</div>
                         <div class='col-8'>{$group->last_mod}</div>
                     </div>
+                </div>
+            </div>
+            <div class='mt-2'>
+                <div class='card-body p-2'>
+                    <h4 class='card-title mb-2 border-bottom'>Group Members</h4>
+                    $user_list
                 </div>
             </div>
         </div>

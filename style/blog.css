@@ -1,0 +1,25 @@
+form
+{
+    margin: 0;
+    padding: 0;
+}
+.card-body
+{
+	border: 1px solid #CCC;
+	border-radius: 8px;
+}
+.badges
+{
+    height: 2px;
+    line-height: 2px;
+    overflow: visible;
+    position: relative;
+    top: -14px;
+    right: -10px;
+}
+
+.badge, .btn-small
+{
+    font-size: 11px;
+    padding: 2px 4px;
+}

@@ -116,4 +116,10 @@ trait PermissionTrait {
         $sth->execute(array($this->pkey));
         $this->permissions = array();
     }
+    public function RMModulePermissions()
+    {
+        $sth = $this->dbh->prepare('DELETE FROM permission j WHERE j.module_id = ?');
+        $sth->execute(array($this->pkey));
+        $this->permissions = array();
+    }
 }

@@ -2,6 +2,8 @@
 $loc = $this->model;
 $this->Crumb("/home", "Home");
 $this->Crumb("/crm/location/list", "Locations\\Addresses");
+if (isset ($_SERVER['HTTP_REFERER']))
+    $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb(null, "Edit", true);
 
 $state_options = \Freedom\Views\CDView::OptionsStateList($loc->state);

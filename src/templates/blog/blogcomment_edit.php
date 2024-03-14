@@ -6,43 +6,24 @@ if (empty($comment->user_id))
     $comment->user_id = $user->pkey;
     $comment->author_email = $user->email;
 }
-/*
-   public $title = 'New blog post'; #` varchar(255) DEFAULT 'New blog post',
-    public $subtitle;           #` varchar(255) DEFAULT '',
-    public $seo_title;          #` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    public $meta_description;   #` text COLLATE utf8mb4_unicode_ci DEFAULT '',
-    public $short_description;  #` text COLLATE utf8mb4_unicode_ci,
-    public $post_body;          #` mediumtext COLLATE utf8mb4_unicode_ci,
 
-    public $is_published;       #` tinyint(1) NOT NULL DEFAULT '0',
-    public $created_at;         #` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    public $updated_at;         #` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-*/
-/*
-$chk_published_y = $blog->is_published ? "checked" : "";
-$chk_published_n = $blog->is_published ? "" : "checked";
-*/
+if (isset ($_SERVER['HTTP_REFERER']))
+    $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
+$this->Crumb("/home", "Home");
+$this->Crumb("/blog/blogpost/show", "All Posts");
+$this->Crumb("/blog/blogpost/show?pkey={$comment->post_id}", "Post");
+$this->Crumb(null, "Edit", true);
+
 echo "
-<style>
-.form-signin
-{
-	max-width: 600px;
-	padding: 15px;
-}
-.card-body
-{
-	border: 1px solid #CCC;
-	border-radius: 8px;
-}
-</style>
+<link rel='stylesheet' type='text/css' href='//{$this->config->get('base_url')}/style/blog.css' media='all'>
+{$this->render_trail()}
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
-	<form action='/blog/blogcomment' method='POST'>
+	<form action='/blog/blogcomment/save' method='POST'>
 		<input type='hidden' name='pkey' value='{$comment->pkey}'>
         <input type='hidden' name='post_id' value='{$comment->post_id}'>
         <input type='hidden' name='user_id' value='{$comment->user_id}'>
-        <input type='hidden' name='pkey' value='{$comment->pkey}'>
 		<h4>Comment:</h4>
 		<div class='mb-4'>
 			<label class='form-label' for='title' style='margin-left: 0px;'>Email</label>

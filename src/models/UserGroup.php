@@ -68,6 +68,40 @@ class UserGroup extends User {
         return $list;
     }
 
+    public function GetAllMembers($options = 0)
+    {
+        $dbh = DBSettings::DBConnection();
+
+        if ($dbh)
+        {
+            if ($options == self::$USER_NICK_NAME)
+                $order_by = "ORDER BY u.nick_name";
+            else
+                $order_by = "ORDER BY u.first_name, u.last_name";
+
+            $type = User::$TYPE_GROUP;
+            $sth = $dbh->prepare("SELECT
+                u.user_id,
+                u.first_name,
+                u.last_name,
+                u.user_name,
+                u.nick_name,
+                u.email,
+                u.phone
+            FROM user u
+            INNER JOIN user_role_join j on u.user_id = j.user_id
+            WHERE j.role_id = ?
+            AND u.status = ?
+            $order_by");
+            $sth->execute(array($this->pkey, User::$STATUS_ACTIVE));
+            $list = $sth->fetchAll(PDO::FETCH_OBJ);
+        }
+        else
+            $list = null;
+
+        return $list;
+    }
+
     public function Load()
     {
         if ($this->pkey)

@@ -112,6 +112,34 @@ class CDController {
             }
             $display = "edit";
         }
+        else if ($action == 'group-perms')
+        {
+            $model->RMModulePermissions();
+            $this->AddMsg("Modules Cleared");
+            if (is_array($req['permissions']))
+            {
+                foreach ($req['permissions'] as $group_id => $rights)
+                {
+                    if ($group_id)
+                    {
+                        # Set the bitmask
+                        $perms = 0;
+                        if (isset ($rights['has_view']))
+                            $perms |= $rights['has_view'];
+                        if (isset ($rights['has_edit']))
+                            $perms |= $rights['has_edit'];
+                        if (isset ($rights['has_add']))
+                            $perms |= $rights['has_add'];
+                        if (isset ($rights['has_delete']))
+                            $perms |= $rights['has_delete'];
+
+                        $model->AddPermission($group_id, $model->pkey, $perms);
+                        $this->AddMsg("Permissions ($group_id, {$model->pkey}, $perms) was added");
+                    }
+                }
+            }
+            $display = "edit";
+        }
         else if ($action == 'create')
         {
             $model->Copy($req);
@@ -159,6 +187,7 @@ class CDController {
         else
         {
             # Just show it (view,edit,ect..)
+            $model->Copy($req);
             $display = $action;
         }
 
