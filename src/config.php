@@ -7,10 +7,12 @@ return [
     "Controllers" => [
         "\Freedom\Controllers\HomeController",
         "\Freedom\Controllers\API1",
-        "\Freedom\Controllers\CalController"
+        "\Freedom\Controllers\CalController",
+        "\Freedom\Controllers\Bloger"
     ],
     "CompanyName" => "Railside Kitchen",
     "CompanyAddress" => "401 Main St., Fernley, NV 89408",
+    "image_upload_dir" => "/images/usr_upload",
     "pages" => [
         [
             "name" => "home",

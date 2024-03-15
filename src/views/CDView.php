@@ -122,15 +122,6 @@ class CDView {
             else if ($page == "module")
                 $this->template = "src/templates/admin/module_{$display}.php";
         }
-        else if ($section == "blog")
-        {
-            if ($page == "blogcomment")
-                $this->template = "src/templates/blog/blogcomment_{$display}.php";
-            else if ($page == "blogcategory")
-                $this->template = "src/templates/blog/blogcategory_{$display}.php";
-            else
-                $this->template = "src/templates/blog/blogpost_{$display}.php";
-        }
         else if ($section == "crm")
         {
             if ($page == "company")
@@ -152,7 +143,7 @@ class CDView {
         {
             $this->template = "src/templates/{$page}_{$display}.php";
         }
-        else if (file_exists($this->template = "src/templates/{$page}.php"))
+        else if (file_exists("src/templates/{$page}.php"))
         {
             $this->template = "src/templates/{$page}.php";
         }
@@ -175,27 +166,14 @@ class CDView {
             else if ($page == "module")
                 $this->model = new \Freedom\Models\Module($pkey);
         }
-        else if ($section == "blog")
-        {
-            if ($page == "blogcomment")
-                $this->model = new \Freedom\Models\Blog\BlogComment($pkey);
-            else if ($page == "blogcategory")
-                $this->model = new \Freedom\Models\Blog\BlogCategory($pkey);
-            else
-                $this->model = new \Freedom\Models\Blog\BlogPost($pkey);
-        }
         else if ($section == "crm")
         {
             if ($page == "customer")
                 $this->model = new \Freedom\Models\Customer($pkey);
             else if ($page == "company")
                 $this->model = new \Freedom\Models\Company($pkey);
-            else if ($page == "category")
-                $this->model = new \Freedom\Models\Blog\BlogCategory($pkey);
             else if ($page == "location")
                 $this->model = new \Freedom\Models\Location($pkey);
-            else
-                $this->model = new \Freedom\Models\Blog\BlogPost($pkey);
         }
         else
         {

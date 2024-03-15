@@ -17,11 +17,12 @@ if ($this->data)
         $author = new User($row->user_id);
         $display_date = date("M j, Y", strtotime($row->created_at));
         $age = CDModel::human_time_diff(strtotime($row->created_at), $now);
+        $image_large_src = ($row->image_large) ? $row->image_large : "/images/Untitled design.png";
 
         $edit_btn = "";
         if ($row->user_id == $session_user->user_id)
         {
-            $edit_btn = "<a class='btn btn-small btn-primary' href='/blog/blogpost/edit?pkey={$row->pkey}'><i class='fa fa-pencil'></i></a>";
+            $edit_btn = "<a class='btn btn-small btn-primary' href='/blog/blogpost/edit/{$row->pkey}'><i class='fa fa-pencil'></i></a>";
         }
 
         $comment_count = count($row->comments);
@@ -30,7 +31,7 @@ if ($this->data)
             <div class='card col {$publised}'>
                 <div class='hidden seo'>{$row->seo_title}</div>
                 <div class='hidden meta'>{$row->meta_description}</div>
-                <img src='/images/Untitled design.png' class='card-img-top' height='200'/>
+                <img src='$image_large_src' class='card-img-top' height='200'/>
                 <div class='card-body'>
                     <div class='badges text-end'>
                         <span class='badge badge-info bg-info'>$publised</span>
