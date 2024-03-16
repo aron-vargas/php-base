@@ -104,6 +104,13 @@ class Bloger extends CDController
             $this->AddMsg("$ModelName #{$model->pkey} was changed");
             $display = "list";
         }
+        else if ($action == 'like')
+        {
+            $model->Save();
+            $blog = new \Freedom\Models\Blog\BlogPost($model->post_id);
+            $this->view->data = $blog->OBJ();
+            $display = "json";
+        }
         else if ($action == 'list')
         {
             $filter = $model->BuildFilter($req);
@@ -129,9 +136,17 @@ class Bloger extends CDController
 
             $display = "list";
         }
-        else
+        else if ($action == 'view')
         {
             # Just show it (view,edit,ect..)
+            $views = (int)$model->views + 1;
+            $model->Change('views', $views);
+            $model->Copy($req);
+            $display = $action;
+        }
+        else
+        {
+            # Just show it (look,edit,ect..)
             $model->Copy($req);
             $display = $action;
         }

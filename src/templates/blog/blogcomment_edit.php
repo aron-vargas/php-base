@@ -11,7 +11,7 @@ if (isset ($_SERVER['HTTP_REFERER']))
     $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb("/home", "Home");
 $this->Crumb("/blog/blogpost/show", "All Posts");
-$this->Crumb("/blog/blogpost/show?pkey={$comment->post_id}", "Post");
+$this->Crumb("/blog/blogpost/view/{$comment->post_id}", "Post");
 $this->Crumb(null, "Edit", true);
 
 echo "

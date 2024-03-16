@@ -54,6 +54,11 @@ class BlogView extends CDView {
             $this->footer_rendered = true;
             $this->template = "src/templates/blog/blogimage_{$display}.php";
         }
+        else if ($page == "bloglike")
+        {
+            $this->mode = self::$JSON_MODE;
+            $this->status_code = 200;
+        }
         else if (file_exists("src/templates/{$page}_{$display}.php"))
             $this->template = "src/templates/{$page}_{$display}.php";
         else if (file_exists("src/templates/{$page}.php"))
@@ -72,6 +77,8 @@ class BlogView extends CDView {
             $this->model = new \Freedom\Models\Blog\BlogCategory($pkey);
         else if ($page == "blogimage")
             $this->model = new \Freedom\Models\Blog\BlogImage($pkey);
+        else if ($page == "bloglike")
+            $this->model = new \Freedom\Models\Blog\BlogLike($pkey);
         else
             $this->model = new \Freedom\Models\Blog\BlogPost($pkey);
 

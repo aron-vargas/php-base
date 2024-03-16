@@ -528,6 +528,11 @@ class CDModel {
         }
     }
 
+    public function OBJ()
+    {
+        return (object) $this;
+    }
+
     /**
      * Update DB record
      */

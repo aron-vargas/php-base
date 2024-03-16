@@ -10,7 +10,7 @@ $this->Crumb(null, "Edit", true);
 /*
 TODO: Creat Preview containers and sync with editor real-time
 */
-$image_large_src = ($blog->image_large) ? $blog->image_large : "/images/Untitled design.png";
+$image_large_src = ($blog->image_large) ? $blog->image_large : "/images/blog_bg.png";
 $image_medium_src = ($blog->image_medium) ? $blog->image_medium : "/images/base_blue.png";
 $image_thumbnail_src = ($blog->image_thumbnail) ? $blog->image_thumbnail : "/images/base_blue.png";
 
@@ -54,37 +54,6 @@ echo "
                 <input type='text' id='subtitle' name='subtitle' class='form-control' placeholder='Title' value='{$blog->subtitle}'>
             </div>
             <div class='mb-4'>
-                <label class='form-label' for='seo_title' style='margin-left: 0px;'>SEO Title</label>
-                <input type='text' id='seo_title' name='seo_title' class='form-control' placeholder='Title' value='{$blog->seo_title}'>
-            </div>
-            <div class='mb-4'>
-                <label class='form-label' for='meta_description' style='margin-left: 0px;'>Meta Description</label>
-                <textarea id='meta_description' name='meta_description' class='form-control'>{$blog->meta_description}</textarea>
-            </div>
-<!--
-            <div class='mb-4'>
-                <label class='form-label' for='image_large' style='margin-left: 0px;'>Background Image</label>
-                <div class='mb-4 input-group'>
-                    <input type='file' id='image_large' name='image_large' class='form-control' placeholder='Add or Replace the existing Image' />
-                    <span class='input-group-text'><a class='disabled' onClick=\"ShowImagePreview('{$blog->image_large}')\"><i class='fa fa-eye'></i></a></span>
-                </div>
-            </div>
-            <div class='mb-4'>
-                <label class='form-label' for='image_medium' style='margin-left: 0px;'>User Image</label>
-                <div class='mb-4 input-group'>
-                    <input type='file' id='image_medium' name='image_medium' class='form-control' placeholder='Add or Replace the existing Image' />
-                    <span class='input-group-text'><a class='disabled' onClick=\"ShowImagePreview('{$blog->image_medium}')\"><i class='fa fa-eye'></i></a></span>
-                </div>
-            </div>
-            <div class='mb-4'>
-                <label class='form-label' for='image_thumbnail' style='margin-left: 0px;'>Thumbnail Image</label>
-                <div class='mb-4 input-group'>
-                    <input type='file' id='image_thumbnail' name='image_thumbnail' class='form-control' placeholder='Add or Replace the existing Image' />
-                    <span class='input-group-text'><a class='disabled' onClick=\"ShowImagePreview('{$blog->image_thumbnail}')\"><i class='fa fa-eye'></i></a></span>
-                </div>
-            </div>
--->
-            <div class='mb-4'>
                 <label class='form-label' for='short_description' style='margin-left: 0px;'>Short Description</label>
                 <textarea id='short_description' name='short_description' class='editor form-control'>{$blog->short_description}</textarea>
             </div>
@@ -93,8 +62,19 @@ echo "
                 <textarea id='post_body' name='post_body' class='editor form-control'>{$blog->post_body}</textarea>
             </div>
             <div class='text-center pt-1 mb-4 pb-1'>
+                <button type='button' class='btn btn-secondary btn-sm float-start' type='button' onClick=\"$('#meta_info').toggleClass('hidden')\">show meta</button>
                 <button type='submit' class='btn btn-primary' type='button' name='act' value='1' onClick='ClickSubmit(this)'>Submit</button>
                 <button type='submit' class='btn btn-primary' type='button' name='act' value='-1' onClick='ClickSubmit(this)'>Delete</button>
+            </div>
+            <div id='meta_info' class='hidden'>
+                 <div class='mb-4'>
+                    <label class='form-label' for='seo_title' style='margin-left: 0px;'>SEO Title</label>
+                    <input type='text' id='seo_title' name='seo_title' class='form-control' placeholder='Title' value='{$blog->seo_title}'>
+                </div>
+                <div class='mb-4'>
+                    <label class='form-label' for='meta_description' style='margin-left: 0px;'>Meta Description</label>
+                    <textarea id='meta_description' name='meta_description' class='form-control'>{$blog->meta_description}</textarea>
+                </div>
             </div>
         </form>
     </div>

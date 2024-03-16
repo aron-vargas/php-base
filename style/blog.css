@@ -49,6 +49,41 @@ form
     top: 50%;
 }
 
+.author-name, .author-alias, .datetime
+{
+    font-size: 12px;
+    color: black;
+}
+.author-alias
+{
+    color:#157c8a;
+}
+.dot
+{
+    vertical-align: middle;
+    font-size: 4px;
+}
+.short-description
+{
+    border-bottom: 1px solid #AAA;
+}
+.lead
+{
+    border-top: 1px solid #e1e1e1;
+    margin: 10px auto;
+    padding: 10px;
+}
+.blog-comment
+{
+    margin: 10px auto;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e1e1e1;
+}
+.blog-comment-block
+{
+    padding: 5px;
+    background-color: #f1f1f1;
+}
 .close
 {
     float: right;

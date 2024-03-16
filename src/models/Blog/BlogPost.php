@@ -26,6 +26,7 @@ CREATE TABLE `blog_post` (
   `image_medium` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `image_thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_published` tinyint(1) NOT NULL DEFAULT '0',
+  `views` int unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`pkey`)
@@ -65,6 +66,7 @@ class BlogPost extends CDModel {
 
     public $categories = array();
     public $comments = array();
+    public $views = 0;
     public $likes = array();
 
     public function __construct($id = null)
@@ -152,6 +154,7 @@ class BlogPost extends CDModel {
 
         return false;
     }
+
     public function LoadCategories($reload = false)
     {
         if ($reload || empty($this->categories))
@@ -175,14 +178,14 @@ class BlogPost extends CDModel {
         {
             $this->likes = array();
             $sth = $this->dbh->prepare("SELECT
-                j.pkey
+                j.post_id, j.created_by
             FROM blog_like j
             WHERE j.post_id = ?");
             $sth->bindValue(1, (int) $this->pkey, PDO::PARAM_INT);
             $sth->execute();
             while ($row = $sth->fetch(PDO::FETCH_OBJ))
             {
-                $this->likes[$row->like_id] = new BlogLike($row->like_id);
+                $this->likes[] = new BlogLike($row->post_id, $row->created_by);
             }
         }
     }
@@ -211,6 +214,32 @@ class BlogPost extends CDModel {
         $this->LoadCategories(true);
         $this->LoadLikes(true);
         $this->LoadComments(true);
+    }
+
+    public function OBJ()
+    {
+        $obj = new \StdClass();
+        $obj->pkey = $this->pkey;
+        $obj->user_id = $this->user_id;
+        $obj->slug = $this->slug;
+        $obj->title = $this->title;
+        $obj->subtitle = $this->subtitle;
+        $obj->seo_title = $this->seo_title;
+        $obj->meta_description = $this->meta_description;
+        $obj->short_description = $this->short_description;
+
+        $obj->post_body = $this->post_body;
+        $obj->image_large = $this->image_large;
+        $obj->image_medium = $this->image_medium;
+        $obj->image_thumbnail = $this->image_thumbnail;
+        $obj->is_published = $this->is_published;
+        $obj->created_at = $this->created_at;
+        $obj->updated_at = $this->updated_at;
+        $obj->views = $this->views;
+        $obj->categories = count($this->categories);
+        $obj->likes = count($this->likes);
+
+        return $obj;
     }
 
     public function Save()
