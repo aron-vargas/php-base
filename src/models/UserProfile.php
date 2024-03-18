@@ -41,6 +41,8 @@ class UserProfile extends CDModel {
 
     public $links;
 
+    static public $MEMBER_GROUP_ID = 10;
+
     /**
      * Create a new instance
      * @param integer
@@ -75,7 +77,51 @@ class UserProfile extends CDModel {
 
     static public function GetMembers()
     {
-        return array();
+        $MemberRole = UserProfile::$MEMBER_GROUP_ID;
+        $dbh = DBSettings::DBConnection();
+        $members = array();
+
+        if ($dbh)
+        {
+            $sth = $dbh->query("SELECT
+                p.pkey
+            FROM user_profile p
+            INNER JOIN user_role_join j on p.pkey = j.user_id AND j.role_id = $MemberRole");
+            //$sth->execute();
+            while ($row = $sth->fetch(PDO::FETCH_OBJ))
+            {
+                $members[] = new UserProfile($row->pkey);
+            }
+        }
+
+        return $members;
+    }
+
+    /**
+     * Perform database insert
+     * @return mixed
+     */
+    public function db_insert()
+    {
+        $dbh = $this->dbh;
+
+        $fields = "";
+        $holders = "";
+        foreach ($this->field_array as $field)
+        {
+            $fields .= " {$field->Name()},";
+            $holders .= " ?,";
+        }
+
+        # remove trailing ','
+        $fields = substr($fields, 0, -1);
+        $holders = substr($holders, 0, -1);
+
+        $sth = $dbh->prepare("INSERT INTO {$this->db_table} ({$fields}) VALUES ($holders)");
+        $this->BindValues($sth);
+        $sth->execute();
+
+        return $this->pkey;
     }
 
     /**
@@ -123,7 +169,7 @@ class UserProfile extends CDModel {
     private function SetFieldArray()
     {
         $i = 0;
-        //$this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('company_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('profile_image', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('image_content_type', PDO::PARAM_STR, true, 128);

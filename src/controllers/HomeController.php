@@ -67,15 +67,17 @@ class HomeController extends CDController {
     public function create(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->view->active_page = "register";
+        $this->view->template = "src/templates/register_form.php";
         $this->view->model = new User();
         $this->view->model->Connect($this->container);
-        $this->view->model->Copy($args);
+        $this->view->model->Copy($_POST);
         if ($this->view->model->Validate())
         {
             $this->view->model->Create();
             $this->view->active_page = "home";
             $this->view->template = "src/templates/home.php";
         }
+
         return $this->buffer_response($request, $response, $args);
     }
     public function login(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface

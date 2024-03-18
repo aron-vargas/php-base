@@ -17,20 +17,9 @@
 <div role='main' class='container'>
 <main class='form-signin w-100 m-auto'>
 <div class="card-body p-md-5 mx-md-4">
-	<form action='user' method='POST'>
-		<input type='hidden' name='act' value='Save'>
-		<input type='hidden' name='target' value='User'>
-		<input type='hidden' name='avatar' value='base_sucker'>
+	<form action='/register' method='POST'>
 		<h4>Register</h4>
-		<div class="mb-4">
-			<label class="form-label" for="user_name" style="margin-left: 0px;">Username</label>
-			<input type="text" id="user_name" name="user_name" class="form-control" placeholder="Username or email address" value="<?php echo $user_name; ?>">
-		</div>
-		<div class="mb-4">
-			<label class="form-label" for="password" style="margin-left: 0px;">Password</label>
-			<input type="password" id="password" name="password" class="form-control">
-		</div>
-		<div class="mb-4">
+        <div class="mb-4">
 			<label class="form-label" for="first_name" style="margin-left: 0px;">First Name</label>
 			<input type="text" id="first_name" name="first_name" class="form-control" placeholder="First Name">
 		</div>
@@ -39,12 +28,16 @@
 			<input type="text" id="last_name" name="last_name" class="form-control" placeholder="Last Name">
 		</div>
 		<div class="mb-4">
-			<label class="form-label" for="nickname" style="margin-left: 0px;">Nickname</label>
-			<input type="text" id="nickname" name="nickname" class="form-control" placeholder="What should we call you" />
-		</div>
-		<div class="mb-4">
 			<label class="form-label" for="email" style="margin-left: 0px;">Email</label>
 			<input type="email" id="email" name="email" class="form-control" placeholder="Email Address">
+		</div>
+		<div class="mb-4">
+			<label class="form-label" for="password" style="margin-left: 0px;">Password</label>
+			<input type="password" id="password" name="password" class="form-control">
+		</div>
+        <div class="mb-4">
+			<label class="form-label" for="password2" style="margin-left: 0px;">Confirm Password</label>
+			<input type="password" id="password2" name="password2" class="form-control">
 		</div>
 		<div class="mb-4">
 			<label class="form-label" for="email" style="margin-left: 0px;">Phone Number</label>

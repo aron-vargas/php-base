@@ -1,11 +1,9 @@
 <?php
 
+$user = new \Freedom\Models\User($profile->pkey);
 $theme = $profile->theme;
 $profile_bg_url = $profile->Img('background');
 $comment = "There should be some additional information here";
-$bio = json_decode($profile->bio_conf);
-$about = json_decode($profile->about_conf);
-$info = json_decode($profile->info_conf);
 
 echo <<<HTML
 <div role='main' class='container'>
@@ -34,7 +32,7 @@ echo <<<HTML
                     <div class='card-title'>About Me</div>
                     <div class='card-body'>
                         <div class='profile-comment'>
-                            {$about}
+                            {$profile->about_conf}
                         </div>
                     </div>
                 </div>
@@ -42,7 +40,15 @@ echo <<<HTML
                     <div class='card-title'>Bio</div>
                     <div class='card-body'>
                         <div class='profile-comment'>
-                            {$bio}
+                            {$profile->bio_conf}
+                        </div>
+                    </div>
+                </div>
+                <div class='card'>
+                    <div class='card-title'>Additional Info</div>
+                    <div class='card-body'>
+                        <div class='profile-comment'>
+                            {$profile->info_conf}
                         </div>
                     </div>
                 </div>

@@ -1,36 +1,34 @@
-<div role='main' class='container-fluid'>
-    <div class='text-center p-5'
-        style='font-size: 55pt; font-weight: normal; font-family: Verdana, Arial, Helvetica, sans-serif;'>
-        <i class="fa fa-utensils"></i>
-        Railside
+<div role='main' class='home container-fluid'>
+    <div class='text-center p-5'>
+        <h1><i class="fa fa-utensils"></i> Railside</h1>
     </div>
-    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div id="home-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="/images/20160204_191750.png" class="d-block h-100 w-100" alt="Image 1">
+                <img src="/images/20160204_191750.png" class="d-block" alt="Image 1">
             </div>
             <div class="carousel-item">
-                <img src="/images/20160204_191825.png" class="d-block h-100 w-100" alt="Image 2">
+                <img src="/images/20160204_191825.png" class="d-block" alt="Image 2">
             </div>
             <div class="carousel-item">
-                <img src="/images/20160204_191829.png" class="d-block h-100 w-100" alt="Image 3">
+                <img src="/images/20160204_191829.png" class="d-block" alt="Image 3">
             </div>
             <div class="carousel-item">
-                <img src="/images/20160204_192128.png" class="d-block h-100 w-100" alt="Image 4">
+                <img src="/images/20160204_192128.png" class="d-block" alt="Image 4">
             </div>
             <div class="carousel-item">
-                <img src="/images/20160204_192130.png" class="d-block h-100 w-100" alt="Image 5">
+                <img src="/images/20160204_192130.png" class="d-block" alt="Image 5">
             </div>
             <div class="carousel-item">
-                <img src="/images/20160204_192204.png" class="d-block h-100 w-100" alt="Image 6">
+                <img src="/images/20160204_192204.png" class="d-block" alt="Image 6">
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+        <button class="carousel-control-prev" type="button" data-bs-target="#home-carousel"
             data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+        <button class="carousel-control-next" type="button" data-bs-target="#home-carousel"
             data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
@@ -40,7 +38,7 @@
         <h2 class='fader'></h2>
     </div>
     <div class='mt-4 p-2 text-black text-center'>
-        <h1 class='p-4'>Welcome to the Railside Kitchen</h1>
+        <h2 class='p-4'>Welcome to the Railside Kitchen</h2>
         <p class='p-4 font-sm'>ELEVATING AND STRENGTHENING THE COMMUNITY BY <br />SUPPORTING ITS FOOD ENTREPRENEURS.
             </h4>
         <p class='p-4 font-md'>Railside Kitchen is a licensed shared kitchen available for rent to caterers, private

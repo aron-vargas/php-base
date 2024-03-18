@@ -55,7 +55,7 @@ class User extends CDModel {
     public $nick_name;               # string
     public $email;                  # string
     public $phone;                  # string
-    public $status;                 # string
+    public $status = "ACTIVE";      # string
     public $default_group;          # int
     public $created_on;             # int
     public $last_mod;               # int
@@ -134,11 +134,8 @@ class User extends CDModel {
             {
                 if (!empty($password) && password_verify($password, $data->password))
                 {
-                    $session = $this->container->get('session');
-                    $session->user = new User($data->user_id);
-                    $session->Insert();
-                    $session->auth = true;
-                    $this->container->set('session', $session);
+                    $new_user = new User($data->user_id);
+                    $this->StartSession($new_user);
                     $valid = true;
                 }
                 else
@@ -296,6 +293,17 @@ class User extends CDModel {
         $this->db_insert();
         unset($this->field_array['p']);
         unset($this->field_array['c']);
+
+        $this->StartSession($this);
+    }
+
+    public function StartSession($user)
+    {
+        $session = $this->container->get('session');
+        $session->user = $user;
+        $session->Insert();
+        $session->auth = true;
+        $this->container->set('session', $session);
     }
 
     public function Validate()
@@ -304,14 +312,21 @@ class User extends CDModel {
 
         $valid = true;
 
-        if (empty($this->user_name))
+        if (empty ($this->email))
         {
-            $this->AddMsg("<div>Missing Username</div>");
+            $valid = false;
+            $this->AddMsg("<div>Missing Email Address</div>");
         }
-        else if (empty($this->password))
+        else if (empty ($this->password))
         {
             $valid = false;
             $this->AddMsg("<div>Missing Password</div>");
+        }
+
+        if (empty($this->user_name))
+        {
+            //$this->AddMsg("<div>Missing Username</div>");
+            $this->user_name = $this->email;
         }
         if (empty($this->first_name))
         {
@@ -326,10 +341,6 @@ class User extends CDModel {
         if (empty($this->nick_name))
         {
             $this->nick_name = $this->user_name;
-        }
-        if (empty($this->email))
-        {
-            $this->email = $this->user_name;
         }
 
         if (empty($dbh))

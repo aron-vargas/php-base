@@ -372,7 +372,7 @@ HEADER;
         {
             echo "<div class='alert alert-secondary w-50 mx-auto my-1'>
                 <a class='dropdown-toggle float-end border border-white p-1' onClick=\"$('#msg-cont').toggle();\"></a>
-                <div id='msg-cont' style='display:none;'>";
+                <div id='msg-cont'>";
             if (is_array($message))
             {
                 foreach ($message as $msg)

@@ -5,15 +5,16 @@ $user_name = (isset($_REQUEST['user_name'])) ? CDModel::Clean($_REQUEST['user_na
 
 ?>
 <style>
-    .form-signin {
-        max-width: 600px;
-        padding: 15px;
-    }
-
-    .card-body {
-        border: 1px solid #CCC;
-        border-radius: 8px;
-    }
+.form-signin
+{
+    max-width: 600px;
+    padding: 15px;
+}
+.card-body
+{
+    border: 1px solid #CCC;
+    border-radius: 8px;
+}
 </style>
 <div role='main' class='container'>
     <main class='form-signin w-100 m-auto'>

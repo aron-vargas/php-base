@@ -11,11 +11,6 @@ $state_options = \Freedom\Views\CDView::OptionsStateList($loc->state);
 # TODO: Add breadcrumb
 echo "
 <style>
-.form-signin
-{
-	max-width: 600px;
-	padding: 15px;
-}
 .card-body
 {
 	border: 1px solid #CCC;
@@ -24,7 +19,7 @@ echo "
 </style>
 {$this->render_trail()}
 <div role='main' class='container'>
-<main class='form-signin w-100 m-auto'>
+<main class='w-100 m-auto'>
 <div class='card-body p-md-5 mx-md-4'>
 	<form action='/save/location/crm' method='POST'>
 		<input type='hidden' name='pkey' value='{$loc->pkey}'>

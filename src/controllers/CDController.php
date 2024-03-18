@@ -42,7 +42,7 @@ class CDController {
     {
         $ModelName = get_class($model);
         $display = "list";
-        $act = isset($req['act']) ? (int) $req['act'] : 1;
+        $act = isset ($req['act']) ? (int) $req['act'] : 1;
 
         # Perform the action
         if ($action == 'save')
@@ -100,10 +100,14 @@ class CDController {
                     {
                         # Set the bitmask
                         $perms = 0;
-                        if (isset($rights['has_view'])) $perms |= $rights['has_view'];
-                        if (isset($rights['has_edit'])) $perms |= $rights['has_edit'];
-                        if (isset($rights['has_add'])) $perms |= $rights['has_add'];
-                        if (isset($rights['has_delete'])) $perms |= $rights['has_delete'];
+                        if (isset ($rights['has_view']))
+                            $perms |= $rights['has_view'];
+                        if (isset ($rights['has_edit']))
+                            $perms |= $rights['has_edit'];
+                        if (isset ($rights['has_add']))
+                            $perms |= $rights['has_add'];
+                        if (isset ($rights['has_delete']))
+                            $perms |= $rights['has_delete'];
 
                         $model->AddPermission($model->pkey, $module_id, $perms);
                         $this->AddMsg("Permissions ({$model->pkey}, $module_id, $perms) was added");
@@ -152,8 +156,8 @@ class CDController {
         }
         else if ($action == 'change')
         {
-            $field = (isset($req['field'])) ? $req['field'] : null;
-            $value = (isset($req['value'])) ? trim($req['value']) : null;
+            $field = (isset ($req['field'])) ? $req['field'] : null;
+            $value = (isset ($req['value'])) ? trim($req['value']) : null;
 
             $model->Change($field, $value);
             $this->AddMsg("$ModelName #{$model->pkey} was changed");
@@ -263,7 +267,7 @@ class CDController {
         $this->AddMsg("Full Page: {$args['page']}");
         $this->AddMsg("dirname: {$path_i['dirname']}");
         $this->AddMsg("basename: {$path_i['basename']}");
-        if (isset($path_i['extension']))
+        if (isset ($path_i['extension']))
             $this->AddMsg("extension: {$path_i['extension']}");
         $this->AddMsg("filename: {$path_i['filename']}");
 
@@ -272,13 +276,13 @@ class CDController {
 
     public function get_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
+        //$this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
 
         # Parse the request and args
-        $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
-        $page = (isset($args['page'])) ? CDModel::Clean($args['page']) : "home";
-        $act = (isset($args['act'])) ? CDModel::Clean($args['act']) : "show";
-        $pkey = (isset($args['pkey'])) ? CDModel::Clean($args['pkey']) : 0;
+        $section = (isset ($args['section'])) ? CDModel::Clean($args['section']) : ".";
+        $page = (isset ($args['page'])) ? CDModel::Clean($args['page']) : "home";
+        $act = (isset ($args['act'])) ? CDModel::Clean($args['act']) : "show";
+        $pkey = (isset ($args['pkey'])) ? CDModel::Clean($args['pkey']) : 0;
 
         //$this->view->active_page = $view;
         $model = $this->view->InitModel($section, $page, $pkey);
@@ -295,16 +299,16 @@ class CDController {
     }
     public function post_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
+        //$this->AddMsg("<pre>" . print_r($args, true) . "</pre>");
 
         # Parse the route args
-        $section = (isset($args['section'])) ? CDModel::Clean($args['section']) : ".";
-        $page = (isset($args['page'])) ? CDModel::Clean($args['page']) : "home";
-        $act = (isset($args['act'])) ? CDModel::Clean($args['act']) : "edit";
+        $section = (isset ($args['section'])) ? CDModel::Clean($args['section']) : ".";
+        $page = (isset ($args['page'])) ? CDModel::Clean($args['page']) : "home";
+        $act = (isset ($args['act'])) ? CDModel::Clean($args['act']) : "edit";
 
         # Get pkey from POST Body
         $parsed = $request->getParsedBody();
-        $pkey = (isset($parsed['pkey'])) ? CDModel::Clean($parsed['pkey']) : 0;
+        $pkey = (isset ($parsed['pkey'])) ? CDModel::Clean($parsed['pkey']) : 0;
 
         # Create the model
         $model = $this->view->InitModel($section, $page, $pkey);

@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="row">
+    <div class="row m-4">
         <div class='col'><img src="/images/kitchen001.png" width='300'></div>
         <div class='col'><img src="/images/kitchen002.png" width='300'></div>
         <div class='col'><img src="/images/kitchen003.png" width='300'></div>
@@ -7,7 +7,7 @@
     <div class="code pt-5">
         <h2 class='fader'></h2>
     </div>
-    <div class='row'>
+    <div class='row mt-4'>
         <div class='col'>
             <h3>Membership</h3>
         </div>
@@ -21,7 +21,7 @@
                 educators.</p>
         </div>
     </div>
-    <div class='row'>
+    <div class='row mt-4'>
         <div class='col'><img src="/images/kitchen004.png" width='300'></div>
         <div class='col'>
             <h5>The Benefits</h5>
@@ -36,7 +36,7 @@
     <div class="code pt-5">
         <h2 class='fader'></h2>
     </div>
-    <div class='row'>
+    <div class='row mt-4'>
         <div class='col'>
             <h5>Requirements</h5>
             <ul>
@@ -60,7 +60,7 @@
         </ul>
         <p>Once those documents are on file, Members can reserve kitchen time and get cooking. All Members have access to our kitchen 24/7.</p>
     </div>
-    <div>
+    <div class='mt-4 mb-4'>
         <div class=''><h5>Does all that sound Good?</h5></div>
         <div>
             <div>

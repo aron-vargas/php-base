@@ -1,18 +1,14 @@
 <style>
-    .form-signin {
-        max-width: 900px;
-        padding: 15px;
-    }
-
-    .card-body {
-        border: 1px solid #CCC;
-        border-radius: 8px;
-    }
+.card-body
+{
+    border: 1px solid #CCC;
+    border-radius: 8px;
+}
 </style>
 <div role='main' class='container'>
-    <main class='form-signin m-auto'>
+    <main class='m-auto'>
         <div class="card-body p-md-5 mx-md-4">
-            <form action='/membership/signup/save' method='POST'>
+            <form action='/register' method='POST'>
                 <h4>Register</h4>
                 <div class="mb-4">
                     <label class="form-label" for="company_name" style="margin-left: 0px;">Company Name</label>
