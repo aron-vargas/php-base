@@ -68,10 +68,12 @@ class UserProfile extends CDModel {
         foreach ($this->field_array as $index => $field)
         {
             $i = $index + 1;
-            $val = $this->Val($field);
-            $sth->bindValue($i, $this->Val($field), $field->Type($val));
+            if ($field->name == "bio_conf" || $field->name == "about_conf" || $field->name == "info_conf")
+                $val = $this->Val($field, false);
+            else
+                $val = $this->Val($field);
+            $sth->bindValue($i, $val, $field->Type($val));
         }
-
         return $i;
     }
 
@@ -141,9 +143,14 @@ class UserProfile extends CDModel {
     public function Img($name)
     {
         $src = "/images/base_blue.png";
+
         if ($name == 'background')
         {
             $src = "/images/stock-dark-blue-background.jpg";
+        }
+        else if ($name == 'headshot' && $this->image_size)
+        {
+            $src = "data:image/{$this->image_content_type};base64,{$this->profile_image}";
         }
 
         return $src;

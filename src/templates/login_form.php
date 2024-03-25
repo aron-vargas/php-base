@@ -55,3 +55,8 @@ $user_name = (isset($_REQUEST['user_name'])) ? CDModel::Clean($_REQUEST['user_na
         </div>
     </main>
 </div>
+<script>
+$(() {
+    $('#user_name').focus();
+});
+</script>

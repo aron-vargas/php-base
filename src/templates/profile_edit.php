@@ -46,3 +46,41 @@ echo "
 </div>
 </main>
 </div>";
+?>
+<script type='text/javascript'>
+$(function () {
+
+    // Editor configuration.
+    var e_config =
+    {
+        removePlugins: ['Markdown', "MediaEmbedToolbar"],
+
+        toolbar: { removeItems: ['imageUpload'] }
+    };
+
+    ClassicEditor
+        .create(document.querySelector('#bio_conf'), e_config)
+        .catch(cheditorError);
+
+    ClassicEditor
+        .create(document.querySelector('#about_conf'), e_config)
+        .catch(cheditorError);
+
+    ClassicEditor
+        .create(document.querySelector('#info_conf'), e_config)
+        .catch(cheditorError);
+});
+
+function cheditorError(error)
+{
+    const issueUrl = 'https://github.com/ckeditor/ckeditor5/issues';
+
+    const message = [
+        'Oops, something went wrong!',
+        `Please, report the following error on ${issueUrl} with the build id "6lrrspxc6m2x-w3wn11v6wpsy" and the error stack trace:`
+    ].join('\n');
+
+    console.error(message);
+    console.error(error);
+}
+</script>

@@ -20,7 +20,7 @@ class CDView {
     protected $header_rendered = false;
     protected $body_rendered = false;
     protected $footer_rendered = false;
-    protected $css = array();
+    public $css = array();
     public $js = array();
 
     public $mode = "html";
@@ -110,6 +110,8 @@ class CDView {
                 $this->template = "src/templates/admin/user_{$display}.php";
             else if ($page == "userprofile")
             {
+                $this->js['ckeditor'] = "<script type='text/javascript' src='//{$this->config->get('base_url')}/js/ckeditor5-custom/build/ckeditor.js'></script>";
+                
                 if ($display == "list")
                     $this->template = "src/templates/admin/userprofile_{$display}.php";
                 else
@@ -191,10 +193,10 @@ class CDView {
         {
             $buttons = "<div class='float-end'>
 				<span class='pe-2'>
-					<a href='avatar'>
+					<a href='/profile'>
                         <span class='rounded-circle avatar {$user->avatar}'>&nbsp;</span>
                     </a>
-					<a href='/user/{$user->pkey}'>
+					<a href='/profile'>
                         {$user->first_name} {$user->last_name}
                     </a>
 				</span>
