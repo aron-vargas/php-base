@@ -15,10 +15,10 @@ CREATE TABLE `customer` (
   `billing_address_id` int DEFAULT NULL,
   `description` mediumtext DEFAULT NULL,
   `customer_status` varchar(65) NOT NULL DEFAULT 'NEW',
-  `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int NOT NULL,
-  `last_mod` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_mod_by` int NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` int NOT NULL,
   `customer_type` varchar(125),
   PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -37,10 +37,10 @@ class Customer extends CDModel {
     public $billing_address_id;      #` int DEFAULT NULL,
     public $description;             #` varchar(512) DEFAULT NULL,
     public $customer_status;         #` varchar(65) NOT NULL DEFAULT 'NEW',
-    public $created_on;              #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $created_at;              #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     public $created_by;              #` int NOT NULL,
-    public $last_mod;                #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    public $last_mod_by;             #` int NOT NULL,
+    public $updated_at;                #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $updated_by;             #` int NOT NULL,
 
     public $primary_address;
     public $shipping_address;
@@ -147,13 +147,13 @@ class Customer extends CDModel {
         if (empty($this->account_code))
             $this->GenerateAccountCode();
 
-        if (empty($this->created_on))
-            $this->created_on = date("c");
+        if (empty($this->created_at))
+            $this->created_at = date("c");
         if (empty($this->created_by))
             $this->created_by = $user_id;
 
-        $this->last_mod = date("c");
-        $this->last_mod_by = $user_id;
+        $this->updated_at = date("c");
+        $this->updated_by = $user_id;
 
         if ($this->pkey)
             $this->db_update();
@@ -191,10 +191,10 @@ class Customer extends CDModel {
         $this->field_array[$i++] = new DBField('billing_address_id', PDO::PARAM_INT, true, 0);
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 512);
         $this->field_array[$i++] = new DBField('customer_status', PDO::PARAM_STR, false, 65);
-        $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('updated_by', PDO::PARAM_INT, false, 0);
     }
 
     static public function StatusOptions()

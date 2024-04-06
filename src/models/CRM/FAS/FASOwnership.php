@@ -24,9 +24,9 @@ class FASOwnership extends BaseClass {
     public $acq_price;			# float
     public $freight_amount;		# float
     public $created_by;			# integer
-    public $created_on;			# timestamp (string)
-    public $last_mod_by;		# integer
-    public $last_mod_date;		# timestamp (string)
+    public $created_at;			# timestamp (string)
+    public $updated_by;		# integer
+    public $updated_at_date;		# timestamp (string)
     public $accumulated_depreciation; # float
     public $current_value;		# float
     public $fd_date; 			# timestamp (string)
@@ -62,9 +62,9 @@ class FASOwnership extends BaseClass {
         $this->id = $id;
         $this->verbose = 0;
         $this->created_by = isset ($user) ? $user->getID() : 1;
-        $this->created_on = $now;
-        $this->last_mod_by = isset ($user) ? $user->getID() : 1;
-        $this->last_mod_date = $now;
+        $this->created_at = $now;
+        $this->updated_by = isset ($user) ? $user->getID() : 1;
+        $this->updated_at_date = $now;
         $this->owning_acct = self::$DEFAULT002;
         $this->depreciation_start_date = $today;
         $this->active = true;
@@ -159,9 +159,9 @@ class FASOwnership extends BaseClass {
         $this->active = false;
         $this->in_service = false;
         $this->created_by = $user_id;
-        $this->created_on = $now;
-        $this->last_mod_by = $user_id;
-        $this->last_mod_date = $now;
+        $this->created_at = $now;
+        $this->updated_by = $user_id;
+        $this->updated_at_date = $now;
         $this->owning_acct = $owning_acct;
         $this->acq_date = $this->ParseDate($acq_date);
         $this->acq_price = (float) $acq_price;
@@ -566,7 +566,7 @@ class FASOwnership extends BaseClass {
 		  ownership_id integer NOT NULL,
 		  batch_id integer,
 		  asset_id integer NOT NULL,
-		  created_on timestamp with time zone NOT NULL DEFAULT now(),
+		  created_at timestamp with time zone NOT NULL DEFAULT now(),
 		  created_by integer,
 		  trans_tstamp timestamp with time zone NOT NULL DEFAULT now(),
 		  trans_type integer NOT NULL,
@@ -613,9 +613,9 @@ class FASOwnership extends BaseClass {
         $sth->bindValue($i++, $this->current_value, PDO::PARAM_STR);
         $sth->bindValue($i++, $this->fd_date, PDO::PARAM_STR);
         $sth->bindValue($i++, $this->created_by, PDO::PARAM_INT);
-        $sth->bindValue($i++, $this->created_on, PDO::PARAM_STR);
-        $sth->bindValue($i++, $this->last_mod_by, PDO::PARAM_INT);
-        $sth->bindValue($i++, $this->last_mod_date, PDO::PARAM_STR);
+        $sth->bindValue($i++, $this->created_at, PDO::PARAM_STR);
+        $sth->bindValue($i++, $this->updated_by, PDO::PARAM_INT);
+        $sth->bindValue($i++, $this->updated_at_date, PDO::PARAM_STR);
         $sth->bindValue($i++, substr($this->po_number, 0, 32), $po_type);
         $sth->bindValue($i++, substr($this->po_number, 0, 32), $so_type);
 
@@ -639,7 +639,7 @@ class FASOwnership extends BaseClass {
 		 depreciation_start_date, depreciation_cycle_date,
 		 acq_date, acq_price, freight_amount,
 		 accumulated_depreciation, current_value, fd_date,
-		 created_by, created_on, last_mod_by, last_mod_date,
+		 created_by, created_at, updated_by, updated_at_date,
 		 po_number, so_number)
 		VALUES (?,?,?,?, ?,?, ?,?,?, ?,?,?, ?,?,?,?, ?,?)");
         $this->BindValues($sth);
@@ -673,9 +673,9 @@ class FASOwnership extends BaseClass {
 			current_value = ?,
 			fd_date = ?,
 			created_by = ?,
-			created_on = ?,
-			last_mod_by = ?,
-			last_mod_date = ?,
+			created_at = ?,
+			updated_by = ?,
+			updated_at_date = ?,
 			po_number = ?,
 			so_number = ?
 		WHERE id = ?");
@@ -932,7 +932,7 @@ class FASOwnership extends BaseClass {
 				o.depreciation_start_date, o.acq_date, o.acq_price,
 				o.freight_amount, o.accumulated_depreciation, o.depreciation_cycle_date,
 				o.current_value, o.fd_date,
-				o.created_by, o.created_on, o.last_mod_by, o.last_mod_date,
+				o.created_by, o.created_at, o.updated_by, o.updated_at_date,
 				o.po_number, o.so_number,
 				date_part('years', age(o.fd_date, o.depreciation_start_date)) as lifespan
 			FROM fas_ownership o
@@ -1001,8 +1001,8 @@ class FASOwnership extends BaseClass {
         $new_fd_date = $this->ParseDate($fd_date);
         $new_dsd = $this->ParseDate($depreciation_start_date);
 
-        $this->last_mod_by = $user_id;
-        $this->last_mod_date = $now;
+        $this->updated_by = $user_id;
+        $this->updated_at_date = $now;
         $this->depreciation_start_date = $new_dsd;
         $this->acq_date = $new_acq_date;
         $this->acq_price = (float) $acq_price;
@@ -1107,8 +1107,8 @@ class FASOwnership extends BaseClass {
             $this->depreciation_start_date = $this->ParseDate($args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				depreciation_start_date = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->depreciation_start_date, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1119,8 +1119,8 @@ class FASOwnership extends BaseClass {
             $this->depreciation_cycle_date = $this->ParseDate($args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				depreciation_cycle_date = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->depreciation_cycle_date, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1131,8 +1131,8 @@ class FASOwnership extends BaseClass {
             $this->acq_date = $this->ParseDate($args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				acq_date = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->acq_date, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1152,8 +1152,8 @@ class FASOwnership extends BaseClass {
             $this->acq_price = (float) preg_replace('/[^-\d\.]/', '', $args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				acq_price = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->acq_price, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1173,8 +1173,8 @@ class FASOwnership extends BaseClass {
             $this->freight_amount = (float) preg_replace('/[^-\d\.]/', '', $args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				freight_amount = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->freight_amount, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1188,8 +1188,8 @@ class FASOwnership extends BaseClass {
             $this->accumulated_depreciation = (float) preg_replace('/[^-\d\.]/', '', $args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				accumulated_depreciation = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->accumulated_depreciation, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1200,8 +1200,8 @@ class FASOwnership extends BaseClass {
             $this->current_value = (float) preg_replace('/[^-\d\.]/', '', $args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				current_value = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->current_value, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1212,8 +1212,8 @@ class FASOwnership extends BaseClass {
             $this->fd_date = $this->ParseDate($args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				fd_date = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->fd_date, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1224,8 +1224,8 @@ class FASOwnership extends BaseClass {
             $this->po_number = trim($args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				po_number = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->po_number, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1236,8 +1236,8 @@ class FASOwnership extends BaseClass {
             $this->so_number = trim($args['value']);
             $sth = $dbh->prepare("UPDATE fas_ownership SET
 				so_number = ?,
-				last_mod_date = '$now',
-				last_mod_by = $user_id
+				updated_at_date = '$now',
+				updated_by = $user_id
 			WHERE id = ?");
             $sth->bindValue(1, $this->so_number, PDO::PARAM_STR);
             $sth->bindValue(2, $this->id, PDO::PARAM_STR);
@@ -1427,12 +1427,12 @@ class FASOwnership extends BaseClass {
     {
         $dbh = DataStor::getHandle();
         $dbh->exec("INSERT INTO fas_transaction	(id, ownership_id, batch_id, asset_id,
-			created_on, created_by, trans_tstamp, trans_type, trans_amount,
+			created_at, created_by, trans_tstamp, trans_type, trans_amount,
 			labor_amount, freight_amount, fd_date, status, po_number, so_number,
 			acct_ref_1, acct_ref_2, acct_ref_3, tran_comment, record, trans_ref_type)
 		SELECT
 			id, ownership_id, batch_id, asset_id,
-			created_on, created_by, trans_tstamp, trans_type, trans_amount,
+			created_at, created_by, trans_tstamp, trans_type, trans_amount,
 			labor_amount, freight_amount, fd_date, status, po_number, so_number,
 			acct_ref_1, acct_ref_2, acct_ref_3, tran_comment, record, trans_ref_type
 		FROM temp_fas_transaction");
@@ -1477,9 +1477,9 @@ class FASOwnership extends BaseClass {
         $this->asset_id = $asset->GetID();
         $this->in_service = false;
         $this->created_by = $user_id;
-        $this->created_on = $now;
-        $this->last_mod_by = $user_id;
-        $this->last_mod_date = $now;
+        $this->created_at = $now;
+        $this->updated_by = $user_id;
+        $this->updated_at_date = $now;
         $this->owning_acct = $owning_acct;
         $this->depreciation_start_date = $this->ParseDate($depreciation_start_date);
         $this->depreciation_cycle_date = $this->ParseDate($depreciation_start_date);
@@ -1995,21 +1995,21 @@ class FASOwnership extends BaseClass {
         $serial = $asset->GetSerial();
         $comment = "Device Ugrade (from Model:$prev_model, Serial:$prev_serial to Model:$model, Serial:$serial)";
 
-        $this->last_mod_by = $user_id;
-        $this->last_mod_date = date('Y-m-d H:i:s');
+        $this->updated_by = $user_id;
+        $this->updated_at_date = date('Y-m-d H:i:s');
         ## Dont think this is effected: $this->acq_price += (float)$added_value;
         $this->current_value += (float) $added_value;
         $new_eol = strtotime("+$added_time Months", strtotime($this->fd_date));
         $this->fd_date = date('Y-m-d', $new_eol);
         $sth = $dbh->prepare("UPDATE fas_ownership SET
-			last_mod_by = ?,
-			last_mod_date = ?,
+			updated_by = ?,
+			updated_at_date = ?,
 			asset_id = ?,
 			current_value = ?,
 			fd_date = ?
 		WHERE id = ?");
-        $sth->bindValue(1, $this->last_mod_by, PDO::PARAM_INT);
-        $sth->bindValue(2, $this->last_mod_date, PDO::PARAM_STR);
+        $sth->bindValue(1, $this->updated_by, PDO::PARAM_INT);
+        $sth->bindValue(2, $this->updated_at_date, PDO::PARAM_STR);
         $sth->bindValue(3, $this->asset_id, PDO::PARAM_INT);
         $sth->bindValue(4, $this->current_value, PDO::PARAM_STR);
         $sth->bindValue(5, $this->fd_date, PDO::PARAM_STR);
@@ -2019,7 +2019,7 @@ class FASOwnership extends BaseClass {
         $fas_trans = new FASTransaction();
         $fas_trans->ownership_id = $this->id;
         $fas_trans->asset_id = $this->asset_id;
-        $fas_trans->trans_tstamp = $this->last_mod_date;
+        $fas_trans->trans_tstamp = $this->updated_at_date;
         $fas_trans->trans_type = FASTransaction::$UPGRADE;
         $fas_trans->trans_amount = $added_value;
         $fas_trans->labor_amount = $labor_amount;

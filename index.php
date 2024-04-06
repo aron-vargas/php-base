@@ -9,7 +9,6 @@ use Slim\Factory\AppFactory;
 
 # Setup auto load
 require __DIR__ . '../vendor/autoload.php';
-//require __DIR__ . '/src/components/FreedomRoutes.php';
 
 # Start the Session
 session_start();

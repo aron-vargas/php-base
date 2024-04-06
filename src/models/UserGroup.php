@@ -137,10 +137,10 @@ class UserGroup extends User {
      */
     public function Save()
     {
-        if (empty($this->created_on))
-            $this->created_on = date("c");
+        if (empty($this->created_at))
+            $this->created_at = date("c");
 
-        $this->last_mod = date("c");
+        $this->updated_at = date("c");
 
         if ($this->pkey)
             $this->db_update();
@@ -162,7 +162,7 @@ class UserGroup extends User {
         $this->field_array[$i++] = new DBField('verified', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('block_expires', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('password', PDO::PARAM_STR, false, 128);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
-        $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, false, 0);
     }
 }

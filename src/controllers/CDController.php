@@ -10,7 +10,6 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class CDController {
     protected $container;
-    public $model;
     public $view;
 
     /**
@@ -282,7 +281,7 @@ class CDController {
         $section = (isset ($args['section'])) ? CDModel::Clean($args['section']) : ".";
         $page = (isset ($args['page'])) ? CDModel::Clean($args['page']) : "home";
         $act = (isset ($args['act'])) ? CDModel::Clean($args['act']) : "show";
-        $pkey = (isset ($args['pkey'])) ? CDModel::Clean($args['pkey']) : 0;
+        $pkey = (isset ($args['pkey'])) ? (int)$args['pkey'] : 0;
 
         //$this->view->active_page = $view;
         $model = $this->view->InitModel($section, $page, $pkey);

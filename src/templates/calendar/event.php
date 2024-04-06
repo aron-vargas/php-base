@@ -2,6 +2,8 @@
 
 use Freedom\Views\CalendarView;
 
+$event = $this->model;
+
 $title = ($event->pkey) ? "Edit Event" : "New Event";
 $check_all_day = ($event->all_day == 1) ? "checked" : "";
 $chk_private_y = ($event->private == 1) ? "checked" : "";
@@ -21,14 +23,12 @@ echo <<<FORM
 <div class='container my-5 p-5 main'>
     <div id='event_form' class="modal-dialog" role="document">
         <div id='event-modal-content' class="modal-content">
-            <form action='/calendar/save' method='POST'>
+            <form action='/calendar/event/save' method='POST'>
                 <input type='hidden' name='pkey' value='{$event->pkey}'>
                 <input type='hidden' name='all_day' value='{$event->all_day}'>
                 <div class='modal-header'>
                     <div class='title'>$title</div>
-                    <button type="button" class="close btn p-0" aria-label="Close" onClick="$('#event-dialog').modal('hide');">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn btn-close" aria-label="Close" onClick="$('#event-dialog').modal('hide');"></button>
                 </div>
                 <div id='event-modal-body' class='modal-body'>
                     <div class="form-group">
@@ -72,14 +72,12 @@ echo <<<FORM
                             {$check_all_day}" onClick="this.form.all_day.value = (this.checked) ? 1 : 0;" />
                         <label class="form-label" for="end_date">All Day</label>
                     </div>
-                    <div class="form-group>
-                        <label class="form-label" for="end_date">Public/Private</label>
-                        <div class='form-check">
-                            <input type='radion' id="private_y" name="private" class="form-check-input" $chk_private_y value=1>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type='radio' id="private_y" name="private" class="form-check-input" $chk_private_y value=1 />
                             <label class="form-check-label" for="private_y">Private</label>
-                            &nbsp;
-                            <input type='radion' id="private_n" name="private" class="form-check-input" $chk_private_n value=0>
-                            <label class="form-check-label" for="private_y">Public</label>
+                            <input type='radio' id="private_n" name="private" class="form-check-input ms-2" $chk_private_n value=0 />
+                            <label class="form-check-label" for="private_n">Public</label>
                         </div>
                     </div>
                     <div class="form-group">

@@ -26,8 +26,8 @@ CREATE TABLE `user` (
   `verified` tinyint(1) DEFAULT '0',
   `login_attempts` int DEFAULT '0',
   `block_expires` datetime DEFAULT NULL,
-  `created_on` datetime NOT NULL,
-  `last_mod` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -57,8 +57,8 @@ class User extends CDModel {
     public $phone;                  # string
     public $status = "ACTIVE";      # string
     public $default_group;          # int
-    public $created_on;             # int
-    public $last_mod;               # int
+    public $created_at;             # int
+    public $updated_at;               # int
 
     public $avatar = "base_blue";
 
@@ -269,12 +269,12 @@ class User extends CDModel {
         $this->field_array[$i++] = new DBField('default_group', PDO::PARAM_INT, true, 0);
         $this->field_array[$i++] = new DBField('verified', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('block_expires', PDO::PARAM_STR, true, 0);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
     }
 
     public function Save()
     {
-        $this->last_mod = date("c");
+        $this->updated_at = date("c");
 
         if ($this->pkey)
         {
@@ -284,12 +284,12 @@ class User extends CDModel {
 
     public function Create()
     {
-        $this->created_on = date("c");
-        $this->last_mod = date("c");
+        $this->created_at = date("c");
+        $this->updated_at = date("c");
         $this->status = self::$STATUS_ACTIVE;
 
         $this->field_array['p'] = new DBField('password', PDO::PARAM_STR, false, 128);
-        $this->field_array['c'] = new DBField('created_on', PDO::PARAM_STR, false, 0);
+        $this->field_array['c'] = new DBField('created_at', PDO::PARAM_STR, false, 0);
         $this->db_insert();
         unset($this->field_array['p']);
         unset($this->field_array['c']);
@@ -312,12 +312,12 @@ class User extends CDModel {
 
         $valid = true;
 
-        if (empty ($this->email))
+        if (empty($this->email))
         {
             $valid = false;
             $this->AddMsg("<div>Missing Email Address</div>");
         }
-        else if (empty ($this->password))
+        else if (empty($this->password))
         {
             $valid = false;
             $this->AddMsg("<div>Missing Password</div>");

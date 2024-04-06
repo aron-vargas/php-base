@@ -70,8 +70,8 @@ class Order extends BaseClass {
     protected $source = null;		# string
     protected $third_party = 0;		# int
     protected $code = null;			#string
-    protected $last_mod_tstamp = null;	# timestamp
-    protected $last_mod_by = null;		# int
+    protected $updated_at_tstamp = null;	# timestamp
+    protected $updated_by = null;		# int
     protected $lastmod = '';		# string
     protected $processed_date = 0;		# int
     protected $processed_by = null;		# int
@@ -184,7 +184,7 @@ class Order extends BaseClass {
         $this->load();
         $this->set_update_since_processed();
 
-        if (isset ($_COOKIE['session_id']))
+        if (isset($_COOKIE['session_id']))
         {
             if (class_exists('SessionHandler'))
             {
@@ -278,7 +278,7 @@ class Order extends BaseClass {
 			LEFT JOIN loaner_agreement lr ON o.contract_id = lr.contract_id AND lr.active
 			LEFT JOIN users uf ON ce.cpt_id = uf.id
 			LEFT JOIN users sb ON o.shipped_by = sb.id
-			LEFT JOIN users lm ON o.last_mod_by = lm.id
+			LEFT JOIN users lm ON o.updated_by = lm.id
 			LEFT JOIN complaint_form_equipment cf ON (o.id = cf.order_id OR o.id = cf.return_id)
             		LEFT JOIN order_web ow ON ow.id__order = o.id
 			WHERE o.id = ?");
@@ -499,23 +499,23 @@ class Order extends BaseClass {
         }
 
         # determine if this is a string date or unix date
-        if (isset ($new['ship_date']))
+        if (isset($new['ship_date']))
         {
             if (preg_match('/[\-\/]/', $new['ship_date']))
                 $this->ship_date = strtotime($new['ship_date']);
             else
                 $this->ship_date = $new['ship_date'];
         }
-        if (isset ($new['tracking_num']))
+        if (isset($new['tracking_num']))
             $this->tracking_num = strtoupper($new['tracking_num']);
-        if (isset ($new['ret_tracking_num']))
+        if (isset($new['ret_tracking_num']))
             $this->ret_tracking_num = strtoupper($new['ret_tracking_num']);
 
         # Set the install Date
         $method = $this->ship_method;
         if (!$method || $method == 'Freight')
             $method = 'Ground';
-        if (isset ($new['inst_date']))
+        if (isset($new['inst_date']))
         {
             # (-1) Set Date from Shipping Carrier Estimate
             if ($new['inst_date'] == -1)
@@ -610,8 +610,8 @@ class Order extends BaseClass {
 				source = main.source,
 				third_party = main.third_party,
 				code = main.code,
-				last_mod_tstamp = main.last_mod_tstamp,
-				last_mod_by = main.last_mod_by,
+				updated_at_tstamp = main.updated_at_tstamp,
+				updated_by = main.updated_by,
 				ordered_by = main.ordered_by
 			FROM orders main
 			WHERE main.id = {$this->id} AND orders.id IN (" . implode(', ', $this->order_group) . ")";
@@ -666,7 +666,7 @@ class Order extends BaseClass {
         $form['order_date'] = $this->order_date;
 
         # Copy address info from facility
-        if (!isset ($form['facility_id']))
+        if (!isset($form['facility_id']))
             $form['facility_id'] = $this->facility_id;
         $customer = new CustomerEntity($form['facility_id']);
 
@@ -702,15 +702,15 @@ class Order extends BaseClass {
             $user = new User(1);
 
         # Get user id
-        if (!isset ($form['user_id']))
+        if (!isset($form['user_id']))
             $form['user_id'] = $user->getId();
 
         if (!$this->order_date)
             $form['order_date'] = time();
 
         # Used to detect multiple user updates
-        $load_tstamp = (isset ($form['load_tstamp'])) ? $form['load_tstamp'] : 0;
-        $last_mod_tstamp = strtotime($this->last_mod_tstamp);
+        $load_tstamp = (isset($form['load_tstamp'])) ? $form['load_tstamp'] : 0;
+        $updated_at_tstamp = strtotime($this->updated_at_tstamp);
 
         # Keep status_id unchanged
         $original_status = $this->status_id;
@@ -722,11 +722,11 @@ class Order extends BaseClass {
         $this->status_id = $original_status;
 
         # Used to determine if order status is to be changed
-        $status_id = (isset ($form['status_id'])) ? $form['status_id'] : $this->status_id;
+        $status_id = (isset($form['status_id'])) ? $form['status_id'] : $this->status_id;
 
         # Set new values
-        $this->last_mod_tstamp = date('Y-m-d G:i:s');
-        $this->last_mod_by = $user->getId();
+        $this->updated_at_tstamp = date('Y-m-d G:i:s');
+        $this->updated_by = $user->getId();
 
         # Make sure ship method is set
         if (!$this->ship_method)
@@ -774,8 +774,8 @@ class Order extends BaseClass {
             'third_party' => PDO::PARAM_INT,
             'po_number' => PDO::PARAM_STR,
             'code' => $code_type,
-            'last_mod_tstamp' => PDO::PARAM_STR,
-            'last_mod_by' => PDO::PARAM_INT,
+            'updated_at_tstamp' => PDO::PARAM_STR,
+            'updated_by' => PDO::PARAM_INT,
             'ordered_by' => $ordered_by_type,
             'service_level' => PDO::PARAM_INT,
             'shipping_company_id' => PDO::PARAM_INT,
@@ -797,7 +797,7 @@ class Order extends BaseClass {
 
         if ($this->shipping_company_id)
         {
-            if (empty ($this->bill_to_acct))
+            if (empty($this->bill_to_acct))
                 $this->SetDefaultAccount();
         }
 
@@ -866,7 +866,7 @@ class Order extends BaseClass {
 
         # Printing nothing else to be done
         #
-        if (isset ($form['print']) && $form['print'] > 0)
+        if (isset($form['print']) && $form['print'] > 0)
         {
             $this->load();
             return true;
@@ -904,7 +904,7 @@ class Order extends BaseClass {
         }
 
         # Detect if the order was modified by another user
-        if ($load_tstamp && $load_tstamp < $last_mod_tstamp)
+        if ($load_tstamp && $load_tstamp < $updated_at_tstamp)
         {
             echo "<p class='error' style='background-color:#E0C0C0;'>This order has been modified by {$this->lastmod}. Please verify your changes and re-save.</p>";
             return false;
@@ -965,7 +965,7 @@ class Order extends BaseClass {
 
         # Update comments for this order only
         # Keep other order in group unchanged
-        if (isset ($form['comments']))
+        if (isset($form['comments']))
         {
             $this->comments = strip_tags(trim($form['comments']));
             $sth = $this->dbh->prepare("UPDATE orders SET comments = ? WHERE id = ?");
@@ -976,7 +976,7 @@ class Order extends BaseClass {
 
         # Update tax_amount for this order only
         # Keep other order in group unchanged
-        if (isset ($form['tax_amount']))
+        if (isset($form['tax_amount']))
         {
             $this->tax_amount = $form['tax_amount'];
             $tax_type = ($this->tax_amount) ? PDO::PARAM_STR : PDO::PARAM_NULL;
@@ -1001,8 +1001,8 @@ class Order extends BaseClass {
         global $sh;
 
         # Used to determine if order status is to be changed
-        $status_id = (isset ($form['status_id'])) ? $form['status_id'] : $this->status_id;
-        $printing = (isset ($form['print']) && $form['print'] > 0);
+        $status_id = (isset($form['status_id'])) ? $form['status_id'] : $this->status_id;
+        $printing = (isset($form['print']) && $form['print'] > 0);
 
         # Need to verify asset and update status
         $check_asset = ($status_id == self::$SHIPPED || ($status_id == self::$PROCESSED && $this->in_asset));
@@ -1017,7 +1017,7 @@ class Order extends BaseClass {
         $update = true;
 
         # Do an update if have model and serial for the order items
-        if (isset ($form['items']))
+        if (isset($form['items']))
         {
             $temporary_asset_record_created = false;
             $this->dbh->query("DELETE FROM order_item WHERE order_id IN (" . implode(',', $this->order_group) . ")");
@@ -1158,7 +1158,7 @@ class Order extends BaseClass {
     {
         # Do some item number validation
         # Must be > 0 and unique
-        $item_num = (isset ($item['item_num']) && $item['item_num'] > 0) ? $item['item_num'] : 1;
+        $item_num = (isset($item['item_num']) && $item['item_num'] > 0) ? $item['item_num'] : 1;
 
         while (in_array($item_num, $unique_numbers))
             $item_num++;
@@ -1168,13 +1168,13 @@ class Order extends BaseClass {
         $item['item_num'] = $item_num;
 
         # Maintain valid order id
-        if (!isset ($item['order_id']))
+        if (!isset($item['order_id']))
             $item['order_id'] = $this->id;
         else if ($item['order_id'] == 0)
             $item['order_id'] = $this->id;
 
         # Force integer value
-        if (!isset ($item['shipped']))
+        if (!isset($item['shipped']))
             $item['shipped'] = 0;
         else
             $item['shipped'] = (int) $item['shipped'];
@@ -1191,27 +1191,27 @@ class Order extends BaseClass {
         # Validate price
         # Empty or missing price is null
         # Other values icluding 0 gets saved as float
-        if (!isset ($item['price']) || $item['price'] === '')
+        if (!isset($item['price']) || $item['price'] === '')
             $item['price'] = null;
         else
             $item['price'] = (float) $item['price'];
 
         # Add missing whse_id
-        if (!isset ($item['whse_id']))
+        if (!isset($item['whse_id']))
             $item['whse_id'] = '';
 
         # Add missing upsell
-        if (!isset ($item['upsell']))
+        if (!isset($item['upsell']))
             $item['upsell'] = 0;
 
         # Add missing product info
-        if (!isset ($item['code']))
+        if (!isset($item['code']))
             $item['code'] = "";
-        if (!isset ($item['name']))
+        if (!isset($item['name']))
             $item['name'] = "";
-        if (!isset ($item['description']))
+        if (!isset($item['description']))
             $item['description'] = "";
-        if (!isset ($item['item_lot']))
+        if (!isset($item['item_lot']))
             $item['item_lot'] = "";
 
         # Set defaults
@@ -1219,7 +1219,7 @@ class Order extends BaseClass {
         $item['unit_type'] = EquipmentModel::$BASEUNIT;
 
         # Match model id to product id
-        if (isset ($item['model']) && $item['model'] > 0)
+        if (isset($item['model']) && $item['model'] > 0)
         {
             # Find the product id, code, and unit type for this model
             $prod_sth = $this->dbh->query("SELECT
@@ -1265,7 +1265,7 @@ class Order extends BaseClass {
             }
         }
 
-        $item['serial_number'] = (isset ($item['serial_number'])) ? strtoupper($item['serial_number']) : "";
+        $item['serial_number'] = (isset($item['serial_number'])) ? strtoupper($item['serial_number']) : "";
         $item['bar_code'] = "";
     }
 
@@ -1280,7 +1280,7 @@ class Order extends BaseClass {
         # Declare and assign 0
         $converted_serial = 0;
         $asset_id = false;
-        $swap_asset_id = isset ($item['swap_asset_id']) ? (int) $item['swap_asset_id'] : 0;
+        $swap_asset_id = isset($item['swap_asset_id']) ? (int) $item['swap_asset_id'] : 0;
         $temp = false;
 
         # No message by default
@@ -1288,7 +1288,7 @@ class Order extends BaseClass {
         $error_msg = "";
 
         # If this is a barcode convert it to a serial number
-        if (!empty ($item['serial_number']))
+        if (!empty($item['serial_number']))
         {
             # Convert barcode
             $converted_serial = LeaseAsset::BarcodeToSerial($item['serial_number']);
@@ -1306,7 +1306,7 @@ class Order extends BaseClass {
         }
 
         # Purchases are limited to "Purchase Pool" and serials must be confirmed
-        if (!empty ($item['confirm_serial']))
+        if (!empty($item['confirm_serial']))
         {
             if ($item['confirm_serial'] <> $item['serial_number'])
             {
@@ -1344,7 +1344,7 @@ class Order extends BaseClass {
         {
             if ($item['unit_type'] == EquipmentModel::$BASEUNIT)
             {
-                if (isset ($item['barcode']) && $item['barcode'])
+                if (isset($item['barcode']) && $item['barcode'])
                     $error_msg .= "<p class='error' style='background-color:#E0C0C0;'>
 					Item: {$item['e_model']}, Serial: {$item['serial_number']}, Barcode: {$item['barcode']} was not found!</p>";
                 else if ($item['serial_number'])
@@ -1694,13 +1694,13 @@ END;
         $user = $this->session_user;
 
         # Set order type_id and status_id
-        $type_id = (isset ($form['type_id'])) ? $form['type_id'] : 1;
+        $type_id = (isset($form['type_id'])) ? $form['type_id'] : 1;
         $status_id = self::$QUEUED;
         $user_type = get_class($user);
 
         # Credit hold will be queued otherwise straight to processed.
         if ($type_id == self::$CUSTOMER_ORDER || $type_id == self::$SUPPLY_ORDER || $type_id == self::$WEB_ORDER)
-            $status_id = (isset ($form['status_id'])) ? $form['status_id'] : self::$PROCESSED;
+            $status_id = (isset($form['status_id'])) ? $form['status_id'] : self::$PROCESSED;
 
         $form['status_id'] = $status_id;
         $form['comments'] = $this->comments;
@@ -1719,7 +1719,7 @@ END;
         # Save the estimated shipping cost
         if ($is_complaint_based)
             $this->change('shipping_cost', 0);
-        else if (isset ($form['shipping_cost']))
+        else if (isset($form['shipping_cost']))
             $this->change('shipping_cost', $form['shipping_cost']);
 
         # Avoid conflicts with multiple users editing this order
@@ -2230,7 +2230,7 @@ YAHOO.util.Event.onDOMReady(Init);
                         $base_unit = new LeaseAsset($base_unit_asset_id);
                         $accessories = $base_unit->getAccessoryUnits();
 
-                        if (isset ($accessories[$model_id]))
+                        if (isset($accessories[$model_id]))
                         {
                             $accessory = new LeaseAsset($accessories[$model_id]);
                             $serial = $accessory->getSerial();
@@ -2250,7 +2250,7 @@ YAHOO.util.Event.onDOMReady(Init);
                     if ($this->type_id == self::$CANCELLATION_ORDER)
                     {
                         # Match model+serial otherwise the Nth occurrence of this model
-                        if (!isset ($serial_match[$model_id]))
+                        if (!isset($serial_match[$model_id]))
                             $serial_match[$model_id] = 1;
                         else
                             $serial_match[$model_id]++;
@@ -2856,7 +2856,7 @@ END;
                         $base_unit = new LeaseAsset($base_unit_asset_id);
                         $accessories = $base_unit->getAccessoryUnits();
 
-                        if (isset ($accessories[$model_id]))
+                        if (isset($accessories[$model_id]))
                         {
                             $accessory = new LeaseAsset($accessories[$model_id]);
                             $serial = $accessory->getSerial();
@@ -2876,7 +2876,7 @@ END;
                     if ($this->type_id == self::$CANCELLATION_ORDER)
                     {
                         # Match model+serial otherwise the Nth occurrence of this model
-                        if (!isset ($serial_match[$model_id]))
+                        if (!isset($serial_match[$model_id]))
                             $serial_match[$model_id] = 1;
                         else
                             $serial_match[$model_id]++;
@@ -3286,9 +3286,9 @@ END;
 
         if ($this->status_id != self::$SHIPPED && is_array($orderItems))
         {
-            if (isset ($orderItems["items"]))
+            if (isset($orderItems["items"]))
             {
-                $ship_method = empty ($orderItems["shipVia"]) ? $this->ship_method : $orderItems["shipVia"];
+                $ship_method = empty($orderItems["shipVia"]) ? $this->ship_method : $orderItems["shipVia"];
 
                 $assetSearchSQL = "SELECT serial_num
 				FROM lease_asset_status las
@@ -3300,7 +3300,7 @@ END;
                 {
                     $products[$product["item_num"]]["shipped"] = (int) $product["shipped"];
 
-                    if (isset ($product["serial_number"]))
+                    if (isset($product["serial_number"]))
                     {
                         $asset_sth->bindValue(1, $product["serial_number"], PDO::PARAM_STR);
                         $asset_sth->execute();
@@ -3337,7 +3337,7 @@ END;
             $address .= "<br>{$this->address5}";
 
         $country_output = "";
-        if (isset ($this->country) && !in_array(strtolower($this->country), array("", "us", "usa")))
+        if (isset($this->country) && !in_array(strtolower($this->country), array("", "us", "usa")))
             $country_output = $this->country;
 
         # Order placed by the facility
@@ -3395,7 +3395,7 @@ END;
                 $zone = $row['zone'];
             }
 
-            $serial_num = isset ($products[$prod_row["item_num"]]["serial_number"]) ? $products[$prod_row["item_num"]]["serial_number"] : "";
+            $serial_num = isset($products[$prod_row["item_num"]]["serial_number"]) ? $products[$prod_row["item_num"]]["serial_number"] : "";
 
             # From the model_id of the item
             if ($prod_row['asset_id'] > 0)
@@ -3432,7 +3432,7 @@ END;
                     $base_unit = new LeaseAsset($base_unit_asset_id);
                     $accessories = $base_unit->getAccessoryUnits();
 
-                    if (isset ($accessories[$model_id]))
+                    if (isset($accessories[$model_id]))
                     {
                         $accessory = new LeaseAsset($accessories[$model_id]);
                         $serial_num = $accessory->getSerial();
@@ -4097,13 +4097,13 @@ WHERE order_id = {$order_id}";
         $sth->execute();
         while ($info = $sth->fetch(PDO::FETCH_OBJ))
         {
-            if (empty ($tracking_num))
+            if (empty($tracking_num))
                 $tracking_num = trim($info->trackingnumber);
 
-            if (empty ($ship_method))
+            if (empty($ship_method))
                 $ship_method = self::DSto_SM($info->requestedservice);
 
-            if (empty ($shipping_company_id))
+            if (empty($shipping_company_id))
                 $shipping_company_id = (int) $info->carrier_id;
 
             ## Add charge for all packages
@@ -4825,7 +4825,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
 			(	status_id, parent_order,
 				order_date, inst_date, user_id, comments, ship_method, ship_to, urgency, facility_id,
 				address, address2, city, state, zip, sname, ship_attn, email, type_id, mas_sales_order,
-				phone, po_number, last_mod_tstamp, last_mod_by, ordered_by, fax, contract_id )
+				phone, po_number, updated_at_tstamp, updated_by, ordered_by, fax, contract_id )
 			SELECT
 				?, -- status_id
 				?, -- parent_order
@@ -5021,7 +5021,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
 
             while (list($order_id) = $orderItemCheckSTH->fetch(PDO::FETCH_NUM))
             {
-                if (!isset ($useOrderIDNumber))
+                if (!isset($useOrderIDNumber))
                 {
                     $productDueBackSTH->bindValue(1, $order_id, PDO::PARAM_INT);
                     $productDueBackSTH->execute();
@@ -5235,7 +5235,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
         {
             $server_port = '';
             # For uncommon html port
-            if (isset ($_SERVER['SERVER_PORT']))
+            if (isset($_SERVER['SERVER_PORT']))
                 $server_port = ($_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443') ? ":{$_SERVER['SERVER_PORT']}" : "";
 
             # Set the path of the image file
@@ -5282,7 +5282,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
                 //$alt = "No Picture";
                 $alt = "$img_path/$img_name";
 
-                if (isset ($_SERVER['SERVER_NAME']))
+                if (isset($_SERVER['SERVER_NAME']))
                     $server_name = $_SERVER['SERVER_NAME'];
                 else
                     $server_name = "localhost.localdomain";
@@ -5408,7 +5408,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
                 if (is_array($accessory_units))
                 {
                     foreach ($accessory_units as $key => $accessory_id)
-                        if (isset ($accessory_id))
+                        if (isset($accessory_id))
                             $accessories .= ($accessories != "") ? ", {$accessory_id}" : $accessory_id;
                 }
 
@@ -5472,10 +5472,10 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
 
         list($current_parent, $next_parent) = $sth->fetch(PDO::FETCH_NUM);
 
-        if (isset ($next_parent) && $next_parent != 0)
+        if (isset($next_parent) && $next_parent != 0)
             return $this->GetBaseOrder($next_parent);
 
-        if (isset ($current_parent))
+        if (isset($current_parent))
             return $current_parent;
 
         return $order_id;
@@ -5674,8 +5674,8 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
         $swap_asset = NULL;
         $base_unit = NULL;
         $temporaryCreated = NULL;
-        $order_id = (isset ($item['order_id'])) ? $item['order_id'] : $this->id;
-        $contract_id = (isset ($item['contract_id'])) ? $item['contract_id'] : $this->contract_id;
+        $order_id = (isset($item['order_id'])) ? $item['order_id'] : $this->id;
+        $contract_id = (isset($item['contract_id'])) ? $item['contract_id'] : $this->contract_id;
 
         # Define swap Unit
         if ($item['swap_asset_id'] > 0)
@@ -5755,7 +5755,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
             if ($purchased || $calibration_uptodate)
             {
                 ## On installs accessories may be not be clearly set if not attached to a base
-                if (empty ($sub_status))
+                if (empty($sub_status))
                     $sub_status = $place_sub;
 
                 ## Going to customer => Placed:$sub_status
@@ -5901,7 +5901,7 @@ AND substring(ltrim(rtrim(R.Sm_referenceNum)),1,7) = ?";
      */
     private function UpdateComplaintForm($item)
     {
-        $order_id = (isset ($item['order_id'])) ? $item['order_id'] : $this->id;
+        $order_id = (isset($item['order_id'])) ? $item['order_id'] : $this->id;
 
         # Update the Complaint Form
         # NOTE: An assumption is made, there will be only one device per swap order

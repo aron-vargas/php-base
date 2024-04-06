@@ -15,7 +15,7 @@ function HandleError(jqXHR, textStatus, errorThrown)
 
 function ShowEventDialog(pkey, start_date)
 {
-    var event_url = "cal?act=event&pkey="+pkey;
+    var event_url = "/cal?act=event&pkey="+pkey;
     if (start_date) event_url += "&start_date="+start_date;
     event_url += " #event_form";
 
@@ -187,7 +187,7 @@ EventMgr.prototype.GetEvents = function(add_args)
     // Remove all existing events
     $(".cal-event").remove();
 
-    //var url = "calendar.php?act=getevents&start="+start+"&end="+end;
+    //var url = "/cal?act=getevents&start="+start+"&end="+end;
     $.get(self.base_uri, args, 'json')
         .done(function(resp, textStatus, jqXHR) {  self.AddEvents(resp, textStatus, jqXHR); })
         .fail(HandleError);

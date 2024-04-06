@@ -1,43 +1,15 @@
 <?php
+use Freedom\Models\Schedule\Event;
+use Freedom\Models\User;
 
-$start = (isset($_REQUEST['start'])) ? CDModel::Clean($_REQUEST['start']) : date("Y-m-d", strtotime("-1 Month"));
-$end = (isset($_REQUEST['end'])) ? CDModel::Clean($_REQUEST['end']) : date("Y-m-d", strtotime("+1 Month"));
-$search = (isset($_REQUEST['search'])) ? CDModel::Clean($_REQUEST['search']) : "";
+$start = (isset($_REQUEST['start'])) ? Event::Clean($_REQUEST['start']) : date("Y-m-d", strtotime("-1 Month"));
+$end = (isset($_REQUEST['end'])) ? Event::Clean($_REQUEST['end']) : date("Y-m-d", strtotime("+1 Month"));
+$search = (isset($_REQUEST['search'])) ? Event::Clean($_REQUEST['search']) : "";
 
-$model = $_SESSION['APPCONTROLLER']->model;
-$filter = [
-    0 => [
-        'field' => 'event_status',
-        'type' => 'str',
-        'op' => 'ne',
-        'match' => 'DELETED'
-    ],
-    1 => [
-        'field' => 'event_type',
-        'type' => 'str',
-        'op' => 'eq',
-        'match' => 'Public'
-    ]
-];
-if (strtotime($start))
-{
-    $filter[] = [
-        'field' => 'start_date',
-        'type' => 'str',
-        'op' => 'gt',
-        'match' => $start
-    ];
-}
-if (strtotime($end))
-{
-    $filter[] = [
-        'field' => 'start_date',
-        'type' => 'str',
-        'op' => 'lt',
-        'match' => $end
-    ];
-}
+$model = $this->model;
+$filter = $model->BuildFilter($_REQUEST);
 $events = $model->GetAll('event', $filter);
+
 if ($events)
 {
     $event_list = "";
@@ -69,7 +41,7 @@ if ($events)
             <h2 class='fst-italic border-bottom p-2'>
                 {$e->title}
 
-                <a class='float-end' href='calendar.php?v=event&pkey={$e->pkey}'>
+                <a class='float-end' href='/calendar/event/{$e->pkey}'>
                     <i class='fs-6 fa fa-pencil'></i>
                 </a>
             </h2>

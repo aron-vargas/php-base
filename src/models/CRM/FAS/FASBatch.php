@@ -14,7 +14,7 @@ class FASBatch {
     protected $id;				# Integer
     public $trans_type;			# character varying(32) NOT NULL,
     public $trans_date;			# date NOT NULL,
-    protected $created_on;		# timestamp with time zone NOT NULL DEFAULT now(),
+    protected $created_at;		# timestamp with time zone NOT NULL DEFAULT now(),
     protected $created_by;		# integer
     public $entry_count;		# integer NOT NULL,
     public $total_credit;		# numeric(15,3),
@@ -48,8 +48,8 @@ class FASBatch {
 
         # Set defaults
         $today = date('Y-m-d H:i:s');
-        $this->created_by = isset ($user) ? $user->getID() : 1;
-        $this->created_on = $today;
+        $this->created_by = isset($user) ? $user->getID() : 1;
+        $this->created_at = $today;
         $this->trans_date = $today;
         $this->entry_count = 0;
         $this->total_credit = 0;
@@ -681,7 +681,7 @@ class FASBatch {
             return;
 
         if (is_null($this->created_by))
-            $this->created_by = isset ($user) ? $user->getID() : 1;
+            $this->created_by = isset($user) ? $user->getID() : 1;
 
         if (is_null($this->trans_date))
             $this->trans_date = date('Y-m-d');
@@ -799,7 +799,7 @@ class FASBatch {
         if ($this->id)
         {
             $sth = $dbh->prepare("SELECT
-				trans_type, trans_date, created_on, created_by,
+				trans_type, trans_date, created_at, created_by,
 				entry_count, total_credit, total_debit,
 				status, posted_tstamp, committed_tstamp,
 				acct_ref_1, acct_ref_2, acct_ref_3

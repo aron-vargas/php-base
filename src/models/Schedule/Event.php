@@ -1,20 +1,21 @@
 <?php
-namespace Freedom\Models;
+namespace Freedom\Models\Schedule;
 
 use PDO;
+use Freedom\Models\CDModel;
 use Freedom\Components\DBField;
 use Freedom\Components\DBSettings;
 
 /**
  *
 CREATE TABLE `event` (
-  `pkey` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `pkey` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `description` varchar(512) DEFAULT NULL,
-  `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int NOT NULL,
-  `last_mod` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_mod_by` int NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` int NOT NULL,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
   `all_day` tinyint NOT NULL DEFAULT '0',
@@ -44,17 +45,17 @@ CREATE TABLE `holidays` (
   PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
  */
-class CalEvent extends CDModel {
+class Event extends CDModel {
     public $pkey;
     public $key_name = "pkey";
     protected $db_table = "event";
 
     public $title;          #` varchar(255) DEFAULT NULL,
     public $description;    #` varchar(512) DEFAULT NULL,
-    public $created_on;     #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $created_at;     #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     public $created_by;     #` int NOT NULL,
-    public $last_mod;       #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    public $last_mod_by;    #` int NOT NULL,
+    public $updated_at;       #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $updated_by;    #` int NOT NULL,
     public $start_date;     #` datetime NOT NULL,
     public $end_date;       #` datetime NOT NULL,
     public $all_day;        #` tinyint NOT NULL DEFAULT '0',
@@ -91,6 +92,37 @@ class CalEvent extends CDModel {
         $this->Load();
     }
 
+    public function BuildFilter($params)
+    {
+        $filter = self::DefaultFilter();
+
+        $start = (isset($params['start'])) ? Event::Clean($params['start']) : date("Y-m-d", strtotime("-1 Month"));
+        $end = (isset($params['end'])) ? Event::Clean($params['end']) : date("Y-m-d", strtotime("+1 Month"));
+        $search = (isset($params['search'])) ? Event::Clean($params['search']) : "";
+
+
+        if (strtotime($start))
+        {
+            $filter[] = [
+                'field' => 'start_date',
+                'type' => 'str',
+                'op' => 'gt',
+                'match' => $start
+            ];
+        }
+        if (strtotime($end))
+        {
+            $filter[] = [
+                'field' => 'start_date',
+                'type' => 'str',
+                'op' => 'lt',
+                'match' => $end
+            ];
+        }
+
+        return $filter;
+    }
+
     /**
      * Copy attributes from array
      * @param array
@@ -108,6 +140,26 @@ class CalEvent extends CDModel {
         {
             $this->end_date = $this->GetDate('end_date') . " " . $assoc['end_time'];
         }
+    }
+
+    static public function DefaultFilter()
+    {
+        $filter = [
+            0 => [
+                'field' => 'event_status',
+                'type' => 'str',
+                'op' => 'ne',
+                'match' => 'DELETED'
+            ],
+            1 => [
+                'field' => 'event_type',
+                'type' => 'str',
+                'op' => 'eq',
+                'match' => 'Event'
+            ]
+        ];
+
+        return $filter;
     }
 
     public function GetMyEvents($from, $to)
@@ -164,7 +216,7 @@ class CalEvent extends CDModel {
     {
         $the_day = date("w", $timestamp);
 
-        return($the_day == 0 || $the_day == 6) ? true : false;
+        return ($the_day == 0 || $the_day == 6) ? true : false;
     }
 
     static public function isHoliday($timestamp)
@@ -188,14 +240,14 @@ class CalEvent extends CDModel {
     {
         $date = date("Ymd", $timestamp);
         $today = date("Ymd", $selected);
-        return($date == $today);
+        return ($date == $today);
     }
 
     static public function isToday($timestamp)
     {
         $date = date("Ymd", $timestamp);
         $today = date("Ymd");
-        return($date == $today);
+        return ($date == $today);
     }
 
     public function Save()
@@ -212,10 +264,10 @@ class CalEvent extends CDModel {
         $this->field_array[$i++] = new DBField('pkey', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('title', PDO::PARAM_STR, true, 255);
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 512);
-        $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('updated_by', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('start_date', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('end_date', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('all_day', PDO::PARAM_INT, false, 0);
@@ -250,14 +302,14 @@ class CalEvent extends CDModel {
             return false;
         }
 
-        $this->last_mod_by = ($user->user_id) ? $user->user_id : 1;
-        $this->last_mod = date("Y-m-d H:i:s");
+        $this->updated_by = ($user->user_id) ? $user->user_id : 1;
+        $this->updated_at = date("Y-m-d H:i:s");
 
         if (!$this->created_by)
             $this->created_by = ($user->user_id) ? $user->user_id : 1;
 
-        if (!$this->created_on)
-            $this->created_on = date("Y-m-d H:i:s");
+        if (!$this->created_at)
+            $this->created_at = date("Y-m-d H:i:s");
 
         return true;
     }
@@ -269,7 +321,7 @@ class CalEvent extends CDModel {
 
     public function ModifiedBy()
     {
-        return new User($this->last_mod_by);
+        return new User($this->updated_by);
     }
 
     public function Orginizer()

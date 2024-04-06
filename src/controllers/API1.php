@@ -34,30 +34,30 @@ class API1 extends CDController
         {
             if ($act === -1) # Delete Button
             {
-                $this->model->Delete();
-                $this->AddMsg("$ModelName #{$this->model->pkey}Deleted");
+                $model->Delete();
+                $this->AddMsg("$ModelName #{$model->pkey}Deleted");
 
                 // Go back to listing
-                $this->model->Clear();
-                $filter = $this->model->BuildFilter($req);
-                $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+                $model->Clear();
+                $filter = $model->BuildFilter($req);
+                $this->view->data = $model->GetALL($model->GetTable(), $filter);
             }
             else
             {
-                $this->model->Copy($req);
-                $this->model->Save();
-                $this->AddMsg("$ModelName #{$this->model->pkey} was Updated");
-                $this->view->data = $this->model;
+                $model->Copy($req);
+                $model->Save();
+                $this->AddMsg("$ModelName #{$model->pkey} was Updated");
+                $this->view->data = $model;
             }
         }
         else if ($action == 'create')
         {
-            $this->model->Copy($req);
-            if ($this->model->Validate())
+            $model->Copy($req);
+            if ($model->Validate())
             {
-                $this->model->Create();
+                $model->Create();
                 $this->AddMsg("$ModelName was Created");
-                $this->view->data = $this->model;
+                $this->view->data = $model;
             }
         }
         else if ($action == 'change')
@@ -65,34 +65,32 @@ class API1 extends CDController
             $field = (isset($req['field'])) ? $req['field'] : null;
             $value = (isset($req['value'])) ? trim($req['value']) : null;
 
-            $this->model->Change($field, $value);
-            $this->AddMsg("$ModelName #{$this->model->pkey} was changed");
-            $this->view->data = $this->model;
+            $model->Change($field, $value);
+            $this->AddMsg("$ModelName #{$model->pkey} was changed");
+            $this->view->data = $model;
         }
         else if ($action == 'list')
         {
-            $filter = $this->model->BuildFilter($req);
-            $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+            $filter = $model->BuildFilter($req);
+            $this->view->data = $model->GetALL($model->GetTable(), $filter);
         }
         else if ($action == 'show')
         {
-            $filter = $this->model->BuildFilter($req);
-            $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+            $filter = $model->BuildFilter($req);
+            $this->view->data = $model->GetALL($model->GetTable(), $filter);
         }
         else if ($action == 'delete')
         {
-            $this->model->Delete();
-            $this->AddMsg("$ModelName #{$this->model->pkey} was Deleted");
+            $model->Delete();
+            $this->AddMsg("$ModelName #{$model->pkey} was Deleted");
 
-            // Go back to listing
-            $display = "list";
-            $this->model->Clear();
-            $filter = $this->model->BuildFilter($req);
-            $this->view->data = $this->model->GetALL($this->model->GetTable(), $filter);
+            $model->Clear();
+            $filter = $model->BuildFilter($req);
+            $this->view->data = $model->GetALL($model->GetTable(), $filter);
         }
         else if ($action == 'edit')
         {
-            $this->view->data = $this->model;
+            $this->view->data = $model;
         }
 
         return "data";
@@ -113,10 +111,5 @@ class API1 extends CDController
     public function delete_act(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         return parent::post_act($request, $response, $args);
-    }
-
-    protected function SetupView(array $args, string $display)
-    {
-        $this->AddMsg("OK");
     }
 }

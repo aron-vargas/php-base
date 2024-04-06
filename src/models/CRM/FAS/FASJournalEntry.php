@@ -11,7 +11,7 @@
  */
 class FASJournalEntry {
     protected $id;				# integer
-    protected $created_on;		# timestamp with time zone NOT NULL DEFAULT now(),
+    protected $created_at;		# timestamp with time zone NOT NULL DEFAULT now(),
     protected $created_by;		# integer
     public $batch_id;			# integer NOT NULL
     public $company_id;			# character varying(32) NOT NULL
@@ -68,7 +68,7 @@ class FASJournalEntry {
         $this->batch_id = $batch_id;
         $this->fas_trans_id = $fas_trans_id;
         $this->created_by = isset ($user) ? $user->getID() : 1;
-        $this->created_on = $today;
+        $this->created_at = $today;
         $this->trans_date = $today;
         $this->trans_type = self::$DEBIT_TYPE;
         $this->amount = 0;
@@ -184,7 +184,7 @@ class FASJournalEntry {
         if ($this->id)
         {
             $sth = $dbh->prepare("SELECT
-				created_on, created_by, batch_id, company_id, accounting_id,
+				created_at, created_by, batch_id, company_id, accounting_id,
        			fas_trans_id, gl_account_id, amount, post_date, trans_type, trans_date,
        			tran_comment, acct_ref_1, acct_ref_2, acct_ref_3
 			FROM fas_journal_entry

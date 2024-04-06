@@ -16,8 +16,8 @@ CREATE TABLE `user_profile` (
   `bio_conf` text,
   `about_conf` text,
   `info_conf` text,
-  `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`pkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
  */
@@ -34,8 +34,8 @@ class UserProfile extends CDModel {
     public $bio_conf;       #` text,
     public $about_conf;     #` text,
     public $info_conf;      #` text,
-    public $createdAt;      #` datetime DEFAULT NULL,
-    public $updatedAt;      #` datetime DEFAULT NULL,
+    public $created_at;      #` datetime DEFAULT NULL,
+    public $updated_at;      #` datetime DEFAULT NULL,
 
     public $theme = "elegant";
 
@@ -160,14 +160,14 @@ class UserProfile extends CDModel {
     {
         $this->Delete();
 
-        if (empty($this->createdAt))
+        if (empty($this->created_at))
         {
-            $this->createdAt = date("c");
-            $this->AddMsg("Set createdAt ({$this->createdAt})");
+            $this->created_at = date("c");
+            $this->AddMsg("Set created_at ({$this->created_at})");
         }
 
-        $this->updatedAt = date("c");
-        $this->AddMsg("Set updatedAt ({$this->updatedAt})");
+        $this->updated_at = date("c");
+        $this->AddMsg("Set updated_at ({$this->updated_at})");
 
         $this->db_insert();
         $this->AddMsg("Inserted ({$this->pkey})");
@@ -184,7 +184,7 @@ class UserProfile extends CDModel {
         $this->field_array[$i++] = new DBField('bio_conf', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('about_conf', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('info_conf', PDO::PARAM_STR, true, 0);
-        $this->field_array[$i++] = new DBField('createdAt', PDO::PARAM_STR, true, 0);
-        $this->field_array[$i++] = new DBField('updatedAt', PDO::PARAM_STR, true, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, true, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, true, 0);
     }
 }

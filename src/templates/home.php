@@ -39,7 +39,8 @@
     </div>
     <div class='mt-4 p-2 text-black text-center'>
         <h2 class='p-4'>Welcome to the Railside Kitchen</h2>
-        <p class='p-4 font-sm'>ELEVATING AND STRENGTHENING THE COMMUNITY BY <br />SUPPORTING ITS FOOD ENTREPRENEURS.
+        <p class='p-4 font-sm'>ELEVATING AND STRENGTHENING THE COMMUNITY BY
+            SUPPORTING ITS FOOD ENTREPRENEURS.
             </h4>
         <p class='p-4 font-md'>Railside Kitchen is a licensed shared kitchen available for rent to caterers, private
             chefs, food production companies and food trucks.</p>

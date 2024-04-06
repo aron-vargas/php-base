@@ -18,7 +18,7 @@ $has_edit = \Freedom\Models\Permission::$EDIT_PERM;
 $has_delete = \Freedom\Models\Permission::$DELETE_PERM;
 
 $module_items = "";
-if (!empty ($all_models))
+if (!empty($all_models))
 {
     foreach ($all_models as $module)
     {
@@ -60,7 +60,7 @@ else
 # Get a list of users
 $all_users = $group->GetAllMembers();
 $user_list = "";
-if (!empty ($all_users))
+if (!empty($all_users))
 {
     foreach ($all_users as $member)
     {
@@ -143,11 +143,11 @@ echo "
                     </div>
                     <div class='row'>
                         <div class='col-4'>Created On:</div>
-                        <div class='col-8'>{$group->created_on}</div>
+                        <div class='col-8'>{$group->created_at}</div>
                     </div>
                     <div class='row'>
                         <div class='col-4'>Last Modified:</div>
-                        <div class='col-8'>{$group->last_mod}</div>
+                        <div class='col-8'>{$group->updated_at}</div>
                     </div>
                 </div>
             </div>

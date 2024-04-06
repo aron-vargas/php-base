@@ -6,8 +6,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class HomeController extends CDController {
-
+class HomeController extends CDController
+{
     /**
      * Create a new instance
      */
@@ -36,7 +36,7 @@ class HomeController extends CDController {
         $app->get('/reset-password/{token}', [HomeController::class, 'reset_create'])->setName('password.reset');
         $app->post('/reset-password', [HomeController::class, 'reset_store'])->setName('password.store');
 
-        $app->get('/profile', [HomeController::class, 'profile'])->setName('register');
+        $app->get('/profile', [HomeController::class, 'profile'])->setName('profile');
         $app->post('/profile[/{action}]', [HomeController::class, 'profile']);
     }
 
@@ -106,12 +106,12 @@ class HomeController extends CDController {
         $user_name = (isset ($data['user_name'])) ? $data['user_name'] : null;
         $password = (isset ($data['password'])) ? $data['password'] : null;
 
-        $this->model = new User();
-        $this->model->Connect($this->container);
-        if ($this->model->authenticate($user_name, $password))
+        $this->view->model = new User();
+        $this->view->model->Connect($this->container);
+        if ($this->view->model->authenticate($user_name, $password))
         {
-            $user = $this->model;
-            $this->view->template = "src/templates/profile.php";
+            $user = $this->view->model;
+            $this->view->template = "src/templates/profile_view.php";
         }
 
         return $this->buffer_response($request, $response, $args);
@@ -139,32 +139,32 @@ class HomeController extends CDController {
         $this->view->js['jsuites'] = "<script type='text/javascript' src='//{$config->get('base_url')}/node_modules/jsuites/dist/jsuites.js'></script>";
         $this->view->js['cropper'] = "<script type='text/javascript' src='https://cdn.jsdelivr.net/npm/@jsuites/cropper/cropper.min.js'></script>";
         $this->view->active_page = "profile";
-        $this->view->template = "src/templates/profile.php";
+        $this->view->template = "src/templates/profile_view.php";
 
-        $this->model = $config->get("session")->user;
+        $this->view->model = $config->get("session")->user;
 
         $action = isset ($args['action']) ? \Freedom\Models\CDModel::Clean($args['action']) : "";
         if (isset ($args['pkey']))
         {
             $pkey = \Freedom\Models\CDModel::Clean($args['pkey']);
-            $this->model = new User($pkey);
+            $this->view->model = new User($pkey);
         }
         else if (isset ($_POST['pkey']))
         {
             $pkey = \Freedom\Models\CDModel::Clean($_POST['pkey']);
-            $this->model = new User($pkey);
+            $this->view->model = new User($pkey);
         }
-        $this->model->Connect($this->container);
+        $this->view->model->Connect($this->container);
 
         if ($action == 'save')
         {
-            $profile = $this->model->get('profile', false, false);
+            $profile = $this->view->model->get('profile', false, false);
             $profile->Copy($_POST);
             $profile->Save();
         }
         else if ($action == 'save-img')
         {
-            $profile = $this->model->get('profile', false, false);
+            $profile = $this->view->model->get('profile', false, false);
 
             if (isset ($_FILES["image_file"]))
             {

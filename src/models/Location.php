@@ -25,10 +25,10 @@ CREATE TABLE `location` (
   `description` varchar(255) DEFAULT NULL,
   `location_status` varchar(45) DEFAULT NULL,
   `location_type` varchar(45) DEFAULT NULL,
-  `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int DEFAULT NULL,
-  `last_mod` datetime NOT NULL,
-  `last_mod_by` int DEFAULT NULL,
+  `updated_at` datetime NOT NULL,
+  `updated_by` int DEFAULT NULL,
   PRIMARY KEY (`location_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
  */
@@ -55,10 +55,10 @@ class Location extends CDModel {
     public $description;    #` varchar(255) DEFAULT NULL,
     public $location_status = 'Active';    #` varchar(45) DEFAULT NULL,
     public $location_type;  #` varchar(45) DEFAULT NULL,
-    public $created_on;     #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $created_at;     #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     public $created_by;     #` int DEFAULT NULL,
-    public $last_mod;       #` datetime NOT NULL,
-    public $last_mod_by;    #` int DEFAULT NULL,
+    public $updated_at;       #` datetime NOT NULL,
+    public $updated_by;    #` int DEFAULT NULL,
 
     static public $STATUS_INACTIVE = "DELETED";
 
@@ -112,13 +112,13 @@ class Location extends CDModel {
     {
         $user_id = ($this->container) ? $this->container->get("session")->user->pkey : 1;
 
-        if (empty($this->created_on))
-            $this->created_on = date("c");
+        if (empty($this->created_at))
+            $this->created_at = date("c");
         if (empty($this->created_by))
             $this->created_by = $user_id;
 
-        $this->last_mod = date("c");
-        $this->last_mod_by = $user_id;
+        $this->updated_at = date("c");
+        $this->updated_by = $user_id;
 
         if ($this->pkey)
             $this->db_update();
@@ -145,10 +145,10 @@ class Location extends CDModel {
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 255);
         $this->field_array[$i++] = new DBField('location_status', PDO::PARAM_STR, true, 45);
         $this->field_array[$i++] = new DBField('location_type', PDO::PARAM_STR, true, 45);
-        $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('updated_by', PDO::PARAM_INT, false, 0);
     }
 
     static public function StatesList()

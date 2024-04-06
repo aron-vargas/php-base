@@ -21,8 +21,8 @@ class CorporateOffice {
     public $orientation = 0;				# bool
     public $nursing_homes = 0;			# int
     public $acp_nursing_homes = 0;		# int
-    public $last_mod = null;				# date
-    public $last_mod_by = null;			# int
+    public $updated_at = null;				# date
+    public $updated_by = null;			# int
     public $account_executive = null;	# int
     public $slp_cpc_id = null;			# int
 
@@ -453,7 +453,7 @@ class CorporateOffice {
     {
         global $user;
 
-        $contact_id = (isset ($this->contacts[0])) ? $this->contacts[0]->getId() : '';
+        $contact_id = (isset($this->contacts[0])) ? $this->contacts[0]->getId() : '';
 
         $act = ($user->inPermGroup(User::$ACCOUNT_EXECUTIVE)) ? "save" : "view";
 
@@ -857,7 +857,7 @@ $(document).ready(function() {
         $rows = "";
 
         $rc = 'dt-tr-on';
-        if (isset ($_REQUEST['contract_id']))
+        if (isset($_REQUEST['contract_id']))
         {
             $sth = $this->dbh->prepare("SELECT
 				i.line_num,
@@ -1100,31 +1100,31 @@ $(document).ready(function() {
      */
     public function copyFromArray($new = array())
     {
-        if (isset ($new['parent_id']))
+        if (isset($new['parent_id']))
             $this->parent_id = (int) $new['parent_id'];
 
-        if (isset ($new['corporate_office_id']))
+        if (isset($new['corporate_office_id']))
             $this->corporate_office_id = (int) $new['corporate_office_id'];
 
-        if (isset ($new['office_name']))
+        if (isset($new['office_name']))
             $this->office_name = trim($new['office_name']);
 
-        if (isset ($new['account_id']))
+        if (isset($new['account_id']))
             $this->account_id = trim($new['account_id']);
 
-        if (isset ($new['status']))
+        if (isset($new['status']))
             $this->status = (int) $new['status'];
 
-        if (isset ($new['orientation']))
+        if (isset($new['orientation']))
             $this->orientation = (int) $new['orientation'];
 
-        if (isset ($new['nursing_homes']))
+        if (isset($new['nursing_homes']))
             $this->nursing_homes = (int) $new['nursing_homes'];
 
-        if (isset ($new['acp_nursing_homes']))
+        if (isset($new['acp_nursing_homes']))
             $this->acp_nursing_homes = (int) $new['acp_nursing_homes'];
 
-        if (isset ($new['account_executive']))
+        if (isset($new['account_executive']))
             $this->account_executive = (int) $new['account_executive'];
 
         # We always have one main office contact which we need to update
@@ -1135,7 +1135,7 @@ $(document).ready(function() {
         # Either have modified old data or newly changed data
 
         # New detail attributes
-        if (isset ($new['new_detail']))
+        if (isset($new['new_detail']))
         {
             foreach ($new['new_detail'] as $section => $section_ary)
             {
@@ -1156,7 +1156,7 @@ $(document).ready(function() {
             }
         }
         # Previously saved detail
-        if (isset ($new['detail']))
+        if (isset($new['detail']))
         {
             foreach ($new['detail'] as $section => $section_ary)
             {
@@ -1470,7 +1470,7 @@ $(document).ready(function() {
         }
 
         $cert_btn = "";
-        if (!empty ($equipment))
+        if (!empty($equipment))
         {
             $equipment_js = json_encode($equipment);
             $cert_btn = "
@@ -1690,7 +1690,7 @@ $(document).ready(function() {
         # Add links to the install checklist
         $tags = BaseClass::BuildATags($tags);
         $cklist = InstallChecklist::AddLinks($this->office_id, $this->is_office);
-        if (!empty ($cklist) && is_array($cklist))
+        if (!empty($cklist) && is_array($cklist))
         {
             foreach ($cklist as $lnk)
             {
@@ -1767,7 +1767,7 @@ $(document).ready(function() {
 
         # Default to addon pricing
         $pricing_method = $contract->GetVar('pricing_method');
-        if (empty ($pricing_method))
+        if (empty($pricing_method))
             $contract->SetVar('pricing_method', 'add');
 
         $visit_text = $contract->GetVisitFrequencyText();
@@ -2247,7 +2247,7 @@ $(document).ready(function() {
      */
     public function getAddress1($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getAddress1($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getAddress1($edit) : '';
     }
 
 
@@ -2258,7 +2258,7 @@ $(document).ready(function() {
      */
     public function getAddress2($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getAddress2($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getAddress2($edit) : '';
     }
 
 
@@ -2269,7 +2269,7 @@ $(document).ready(function() {
      */
     public function getCity($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getCity($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getCity($edit) : '';
     }
 
 
@@ -2280,7 +2280,7 @@ $(document).ready(function() {
      */
     public function getCountry($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getCountry($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getCountry($edit) : '';
     }
 
     /**
@@ -2545,7 +2545,7 @@ $(document).ready(function() {
      */
     public function getEmail($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getEmail($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getEmail($edit) : '';
     }
 
 
@@ -2556,7 +2556,7 @@ $(document).ready(function() {
      */
     public function getPhone($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getPhone($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getPhone($edit) : '';
     }
 
 
@@ -2567,7 +2567,7 @@ $(document).ready(function() {
      */
     public function getMobile($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getMobile($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getMobile($edit) : '';
     }
 
 
@@ -2578,7 +2578,7 @@ $(document).ready(function() {
      */
     public function getFax($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getFax($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getFax($edit) : '';
     }
 
 
@@ -2589,7 +2589,7 @@ $(document).ready(function() {
      */
     public function getState($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getState($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getState($edit) : '';
     }
 
 
@@ -2600,7 +2600,7 @@ $(document).ready(function() {
      */
     public function getZip($edit = 0)
     {
-        return isset ($this->contacts[0]) ? $this->contacts[0]->getZip($edit) : '';
+        return isset($this->contacts[0]) ? $this->contacts[0]->getZip($edit) : '';
     }
 
 
@@ -3240,7 +3240,7 @@ btn_state = $btns;
     {
         $ret = null;
 
-        if (isset ($this->contacts[$index]))
+        if (isset($this->contacts[$index]))
         {
             $ret = $this->contacts[$index];
         }
@@ -3274,7 +3274,7 @@ btn_state = $btns;
      */
     public function getWebsite($edit = 0)
     {
-        return isset ($this->detail['Website']['Website']['Website']) ? $this->detail['Website']['Website']['Website']['value'] : '';
+        return isset($this->detail['Website']['Website']['Website']) ? $this->detail['Website']['Website']['Website']['value'] : '';
     }
 
     /**
@@ -3291,7 +3291,7 @@ btn_state = $btns;
         $html = "";
         $goal = new CustomerGoal();
 
-        if (isset ($_REQUEST['goal_id']))
+        if (isset($_REQUEST['goal_id']))
         {
             $goal->setVar('goal_id', $_REQUEST['goal_id']);
             $goal->loadNotes();
@@ -3384,7 +3384,7 @@ btn_state = $btns;
         $rows = "";
 
         $rc = 'dt-tr-on';
-        if (isset ($_REQUEST['invoice_num']))
+        if (isset($_REQUEST['invoice_num']))
         {
             $sth = $this->dbh->prepare("SELECT
 				i.invoice_line_num,
@@ -3468,12 +3468,12 @@ btn_state = $btns;
     public function Invoice_bm_Lines(&$html, &$count)
     {
 
-        $fp = isset ($_REQUEST['facility_pays']) ? $_REQUEST['facility_pays'] : false;
+        $fp = isset($_REQUEST['facility_pays']) ? $_REQUEST['facility_pays'] : false;
         $facility_pays = ($fp == 'Yes') ? true : false;
 
-        $invoice_date = isset ($_REQUEST['invoice_date']) ? $_REQUEST['invoice_date'] : null;
-        $invoice_type = isset ($_REQUEST['invoice_type']) ? $_REQUEST['invoice_type'] : 'lease';
-        $consolidate_month = isset ($_REQUEST['consolidate_month']) ? (bool) $_REQUEST['consolidate_month'] : false;
+        $invoice_date = isset($_REQUEST['invoice_date']) ? $_REQUEST['invoice_date'] : null;
+        $invoice_type = isset($_REQUEST['invoice_type']) ? $_REQUEST['invoice_type'] : 'lease';
+        $consolidate_month = isset($_REQUEST['consolidate_month']) ? (bool) $_REQUEST['consolidate_month'] : false;
 
         $ci = new ConsolidatedInvoice($this->account_id, $invoice_date);
         $contents = $ci->generate_cm_Invoice($invoice_type, $consolidate_month, $facility_pays);
@@ -3976,7 +3976,7 @@ SQL;
         $html = "";
         $issue = new CorpIssue();
 
-        if (isset ($_REQUEST['issue_id']))
+        if (isset($_REQUEST['issue_id']))
         {
             $issue->setVar('issue_id', $_REQUEST['issue_id']);
             $issue->loadAttachments();
@@ -4096,7 +4096,7 @@ $(function() {
         $html = "";
         $issue = new CorpIssue();
 
-        if (isset ($_REQUEST['issue_id']))
+        if (isset($_REQUEST['issue_id']))
         {
             $issue->setVar('issue_id', $_REQUEST['issue_id']);
             $issue->loadAttachments();
@@ -4421,7 +4421,7 @@ $(function() {
         global $user, $page;
 
         # Dont have office_id but we have an account_id then find our office_id
-        if (empty ($this->office_id) && $this->account_id)
+        if (empty($this->office_id) && $this->account_id)
         {
             $sth = $this->dbh->prepare('
 				SELECT office_id FROM corporate_office where account_id = ?');
@@ -4447,8 +4447,8 @@ $(function() {
 					account_id,
 					status,
 					s.office_status AS s_status,
-					last_mod,
-					last_mod_by,
+					updated_at,
+					updated_by,
 					office_name,
 					orientation,
 					nursing_homes,
@@ -4467,8 +4467,8 @@ $(function() {
                 $this->account_id = trim($row['account_id']);
                 $this->status = $row['status'];
                 $this->s_status = trim($row['s_status']);
-                $this->last_mod = $row['last_mod'];
-                $this->last_mod_by = $row['last_mod_by'];
+                $this->updated_at = $row['updated_at'];
+                $this->updated_by = $row['updated_by'];
                 $this->office_name = trim($row['office_name']);
                 $this->orientation = trim($row['orientation']);
                 $this->nursing_homes = trim($row['nursing_homes']);
@@ -4507,7 +4507,7 @@ $(function() {
         else
         {
             # We will always need one office contact
-            if (!isset ($this->contacts[0]))
+            if (!isset($this->contacts[0]))
             {
                 $this->contacts[0] = new Contact();
                 $this->contacts[0]->setIsOffice(true);
@@ -4522,7 +4522,7 @@ $(function() {
          * Resides in DB table with office_id 0
          */
         $this->LoadDetail(TRUE);
-        if (!isset ($_REQUEST['skip_mas']))
+        if (!isset($_REQUEST['skip_mas']))
         {
             $this->SetPaymentTerms();
         }
@@ -4700,10 +4700,10 @@ $(function() {
                 $row['updatetbl'] = '2';
 
                 # Load mock fa contact
-                if (!isset ($this->contacts['fa']))
+                if (!isset($this->contacts['fa']))
                 {
                     $key = 'fa';
-                    if (!isset ($this->contacts[$key]))
+                    if (!isset($this->contacts[$key]))
                     {
                         $this->contacts[$key] = new Contact();
                         $this->contacts[$key]->setVar('facility_id', $this->office_id);
@@ -4711,10 +4711,10 @@ $(function() {
                     $this->contacts[$key]->LoadFacilityInfo($key, $row);
                 }
                 # Load mock don contact
-                if (!isset ($this->contacts['don']))
+                if (!isset($this->contacts['don']))
                 {
                     $key = 'don';
-                    if (!isset ($this->contacts[$key]))
+                    if (!isset($this->contacts[$key]))
                     {
                         $this->contacts[$key] = new Contact();
                         $this->contacts[$key]->setVar('facility_id', $this->office_id);
@@ -4722,10 +4722,10 @@ $(function() {
                     $this->contacts[$key]->LoadFacilityInfo($key, $row);
                 }
                 # Load mock mm contact
-                if (!isset ($this->contacts['mm']))
+                if (!isset($this->contacts['mm']))
                 {
                     $key = 'mm';
-                    if (!isset ($this->contacts[$key]))
+                    if (!isset($this->contacts[$key]))
                     {
                         $this->contacts[$key] = new Contact();
                         $this->contacts[$key]->setVar('facility_id', $this->office_id);
@@ -4733,10 +4733,10 @@ $(function() {
                     $this->contacts[$key]->LoadFacilityInfo($key, $row);
                 }
                 # Load mock fdr contact
-                if (!isset ($this->contacts['frd']))
+                if (!isset($this->contacts['frd']))
                 {
                     $key = 'frd';
-                    if (!isset ($this->contacts[$key]))
+                    if (!isset($this->contacts[$key]))
                     {
                         $this->contacts[$key] = new Contact();
                         $this->contacts[$key]->setVar('facility_id', $this->office_id);
@@ -4744,10 +4744,10 @@ $(function() {
                     $this->contacts[$key]->LoadFacilityInfo($key, $row);
                 }
                 # Load mock fdr_rm contact
-                if (!isset ($this->contacts['frd rm']))
+                if (!isset($this->contacts['frd rm']))
                 {
                     $key = 'frd rm';
-                    if (!isset ($this->contacts[$key]))
+                    if (!isset($this->contacts[$key]))
                     {
                         $this->contacts[$key] = new Contact();
                         $this->contacts[$key]->setVar('facility_id', $this->office_id);
@@ -4755,10 +4755,10 @@ $(function() {
                     $this->contacts[$key]->LoadFacilityInfo($key, $row);
                 }
                 # Load mock mds contact
-                if (!isset ($this->contacts['mds']))
+                if (!isset($this->contacts['mds']))
                 {
                     $key = 'mds';
-                    if (!isset ($this->contacts[$key]))
+                    if (!isset($this->contacts[$key]))
                     {
                         $this->contacts[$key] = new Contact();
                         $this->contacts[$key]->setVar('facility_id', $this->office_id);
@@ -4812,7 +4812,7 @@ $(function() {
                 $match = "co.office_id";
 
             ## Getting much better performance using f.id set as a filter
-            if (isset ($_SESSION['crm']['set'][$match][$this->office_id]))
+            if (isset($_SESSION['crm']['set'][$match][$this->office_id]))
                 $facility_list = $_SESSION['crm']['set'][$match][$this->office_id];
             else
                 $facility_list = $this->SetCustomerList();
@@ -4947,7 +4947,7 @@ $(function() {
             {
                 list($detail_id, $section, $attribute, $field, $field_type, $value, $show_lable) = $row;
 
-                if (!isset ($this->detail[$section][$attribute][$field]))
+                if (!isset($this->detail[$section][$attribute][$field]))
                     $this->detail[$section][$attribute][$field] = array('id' => $detail_id, 'type' => $field_type, 'options' => $value, 'value' => $value, 'show_lable' => $show_lable);
                 else
                 {
@@ -4983,7 +4983,7 @@ $(function() {
                 $match = "co.office_id";
 
             ## Getting much better performance using f.id set as a filter
-            if (isset ($_SESSION['crm']['set'][$match][$this->office_id]))
+            if (isset($_SESSION['crm']['set'][$match][$this->office_id]))
                 $facility_list = $_SESSION['crm']['set'][$match][$this->office_id];
             else
                 $facility_list = $this->SetCustomerList();
@@ -5168,7 +5168,7 @@ $(function() {
         $this->med_a_beds = 0;
         $this->med_b_beds = 0;
         $this->other_beds = 0;
-        $this->last_mod = null;
+        $this->updated_at = null;
         $this->po_required = false;
         $this->rehab_provider_other = null;
         $this->rehab_provider = null;
@@ -5213,7 +5213,7 @@ $(function() {
 				fd.med_a_beds,
 				fd.med_b_beds,
 				fd.other_beds,
-				fd.last_mod,
+				fd.updated_at,
 				fd.rehab_provider_other,
 				fd.po_required,
 				rp.name as rehab_provider,
@@ -5246,7 +5246,7 @@ $(function() {
                 $this->med_a_beds = $row['med_a_beds'];
                 $this->med_b_beds = $row['med_b_beds'];
                 $this->other_beds = $row['other_beds'];
-                $this->last_mod = $row['last_mod'];
+                $this->updated_at = $row['updated_at'];
                 $this->po_required = $row['po_required'];
                 $this->rehab_provider_other = $row['rehab_provider_other'];
                 $this->rehab_provider = $row['rehab_provider'];
@@ -5263,7 +5263,7 @@ $(function() {
                 $this->has_dock = (boolean) $row['has_dock'];
 
                 # Load mock office contact
-                if (!isset ($this->contacts[0]))
+                if (!isset($this->contacts[0]))
                 {
                     $contact = new Contact();
                     $contact->setIsOffice(true);
@@ -5284,7 +5284,7 @@ $(function() {
         else
         {
             # We will always need one office contact
-            if (!isset ($this->contacts[0]))
+            if (!isset($this->contacts[0]))
             {
                 $this->contacts[0] = new Contact();
                 $this->contacts[0]->setIsOffice(true);
@@ -5299,7 +5299,7 @@ $(function() {
          * Resides in DB table with office_id 0
          */
         $this->LoadDetail(TRUE);
-        if (!isset ($_REQUEST['skip_mas']))
+        if (!isset($_REQUEST['skip_mas']))
         {
             $this->SetPaymentTerms();
         }
@@ -5361,7 +5361,7 @@ $(function() {
 					FROM customer_goal
 					WHERE type_id = $type_id
 					AND corporate_office_id = {$this->corporate_office_id}
-					ORDER BY last_mod_date DESC
+					ORDER BY updated_at_date DESC
 					LIMIT 1)";
                     else
                         $match_customer = "";
@@ -5382,8 +5382,8 @@ $(function() {
 				s.status_desc,
 				cb.firstname as created_by_first,
 				cb.lastname as created_by_last,
-				lm.firstname as last_mod_by_first,
-				lm.lastname as last_mod_by_last,
+				lm.firstname as updated_by_first,
+				lm.lastname as updated_by_last,
 				at.firstname as assigned_to_first,
 				at.lastname as assigned_to_last,
 				COUNT(*) OVER () as row_count
@@ -5391,7 +5391,7 @@ $(function() {
 			INNER JOIN customer_goal_type t ON g.type_id = t.type_id
 			INNER JOIN customer_goal_status s ON g.status_id = s.status_id
 			LEFT JOIN users cb ON g.created_by = cb.id
-			LEFT JOIN users lm ON g.last_mod_by = lm.id
+			LEFT JOIN users lm ON g.updated_by = lm.id
 			LEFT JOIN users at ON g.assigned_to = at.id
 			WHERE g.type_id = ?
 			$match_customer
@@ -5497,13 +5497,13 @@ $(function() {
             $sth->bindValue(1, $this->office_id, PDO::PARAM_INT);
             $sth->execute();
             $totals = $sth->fetch(PDO::FETCH_OBJ);
-            if (empty ($totals->facility_list))
+            if (empty($totals->facility_list))
                 $totals->facility_list = "0";
-            if (empty ($totals->invoice_total))
+            if (empty($totals->invoice_total))
                 $totals->invoice_total = 0;
-            if (empty ($totals->product_total))
+            if (empty($totals->product_total))
                 $totals->product_total = 0;
-            if (empty ($totals->row_count))
+            if (empty($totals->row_count))
                 $totals->row_count = 0;
 
             # Query for invoices
@@ -5586,8 +5586,8 @@ $(function() {
 				i.issue_id,
 				i.open_by,
 				i.open_date,
-				i.last_mod_by,
-				i.last_mod_date,
+				i.updated_by,
+				i.updated_at_date,
 				i.closed_by,
 				i.closed_date,
 				i.office_id,
@@ -5603,8 +5603,8 @@ $(function() {
 				cf.complaint_id,
 				ob.firstname as open_by_first,
 				ob.lastname as open_by_last,
-				lm.firstname as last_mod_first,
-				lm.lastname as last_mod_last,
+				lm.firstname as updated_at_first,
+				lm.lastname as updated_at_last,
 				cb.firstname as closed_by_first,
 				cb.lastname as closed_by_last,
 				COUNT(*) OVER() as row_count
@@ -5615,7 +5615,7 @@ $(function() {
 			LEFT JOIN complaint_form cf ON i.issue_id = cf.issue_id
 			LEFT JOIN corporate_office o ON i.corporate_office_id = o.office_id
 			LEFT JOIN users ob ON i.open_by = ob.id
-			LEFT JOIN users lm ON i.last_mod_by = lm.id
+			LEFT JOIN users lm ON i.updated_by = lm.id
 			LEFT JOIN users cb ON i.closed_by = cb.id
 			WHERE $match = ?
 			$status_clause
@@ -5689,7 +5689,7 @@ $(function() {
                 $match = "co.office_id";
 
             ## Getting much better performance using f.id set as a filter
-            if (isset ($_SESSION['crm']['set'][$match][$this->office_id]))
+            if (isset($_SESSION['crm']['set'][$match][$this->office_id]))
                 $facility_list = $_SESSION['crm']['set'][$match][$this->office_id];
             else
                 $facility_list = $this->SetCustomerList();
@@ -5827,8 +5827,8 @@ $(function() {
 			s.status_desc,
 			cb.firstname as created_by_first,
 			cb.lastname as created_by_last,
-			lm.firstname as last_mod_by_first,
-			lm.lastname as last_mod_by_last,
+			lm.firstname as updated_by_first,
+			lm.lastname as updated_by_last,
 			at.firstname as assigned_to_first,
 			at.lastname as assigned_to_last,
 			COUNT(*) OVER () as row_count
@@ -5836,7 +5836,7 @@ $(function() {
 		INNER JOIN customer_goal_type t ON g.type_id = t.type_id
 		INNER JOIN customer_goal_status s ON g.status_id = s.status_id
 		LEFT JOIN users cb ON g.created_by = cb.id
-		LEFT JOIN users lm ON g.last_mod_by = lm.id
+		LEFT JOIN users lm ON g.updated_by = lm.id
 		LEFT JOIN users at ON g.assigned_to = at.id
 		WHERE g.type_id = ?
 		$match_customer
@@ -6002,20 +6002,20 @@ $(function() {
 				t.due_date,
 				t.closed_date,
 				t.customer_id,
-				t.last_mod_by,
-				t.last_mod_date,
+				t.updated_by,
+				t.updated_at_date,
 				t.open_by,
 				t.important,
 				t.required,
 				ob.firstname as open_by_first,
 				ob.lastname as open_by_last,
-				lm.firstname as last_mod_by_first,
-				lm.lastname as last_mod_by_last,
+				lm.firstname as updated_by_first,
+				lm.lastname as updated_by_last,
 				COUNT(*) OVER() as row_count
 			FROM task t
 			INNER JOIN corporate_office o ON t.customer_id = o.office_id
 			LEFT JOIN users ob ON t.open_by = ob.id
-			LEFT JOIN users lm ON t.last_mod_by = lm.id
+			LEFT JOIN users lm ON t.updated_by = lm.id
 			WHERE t.customer_id = ?
 			$required_clause
 			$important_clause
@@ -6082,7 +6082,7 @@ $(function() {
 		        t.city,
 		        t.state,
 				t.add_time::Date as add_time,
-				date_trunc('second', t.last_mod) as last_mod,
+				date_trunc('second', t.updated_at) as updated_at,
 		        tp.profession,
 		        tf.active AS active,
 				COUNT(*) OVER() as row_count
@@ -6178,7 +6178,7 @@ $(function() {
 				v.pending_review,
 				v.followup_made,
 				v.heartbeat_time,
-				v.last_mod,
+				v.updated_at,
 				v.formulary_compliance,
 				v.temp_reference,
 				v.visit_status,
@@ -6205,7 +6205,7 @@ $(function() {
 				me.event_date AS me_event_date,
 				me.from_phone_number AS me_from_phone,
 				me.from_email_id AS me_from_email,
-				me.last_mod_time AS me_last_mod,
+				me.updated_at_time AS me_updated_at,
 				COUNT(*) OVER () as row_count
 			FROM events e
 			INNER JOIN facilities f on e.facility_id = f.id
@@ -6243,7 +6243,7 @@ $(function() {
                 $match = "co.office_id";
 
             ## Getting much better performance using f.id set as a filter
-            if (isset ($_SESSION['crm']['set'][$match][$this->office_id]))
+            if (isset($_SESSION['crm']['set'][$match][$this->office_id]))
                 $facility_list = $_SESSION['crm']['set'][$match][$this->office_id];
             else
                 $facility_list = $this->SetCustomerList();
@@ -6265,8 +6265,8 @@ $(function() {
 				w.work_order,
 				w.open_date,
 				w.open_by,
-				w.last_mod_date,
-				w.last_mod_by,
+				w.updated_at_date,
+				w.updated_by,
 				w.close_date,
 				w.close_by,
 				w.model as \"model_id\",
@@ -6279,7 +6279,7 @@ $(function() {
 				f.accounting_id AS \"cust_id\",
 				ob.firstname || ' ' || ob.lastname as \"open_by_name\",
 				cb.firstname || ' ' || cb.lastname as \"close_by_name\",
-				mb.firstname || ' ' || mb.lastname as \"last_mod_by_name\",
+				mb.firstname || ' ' || mb.lastname as \"updated_by_name\",
 				COUNT(*) OVER () as total_records
 			FROM work_order w
 			INNER JOIN work_order_status ws ON w.status = ws.status_id
@@ -6288,7 +6288,7 @@ $(function() {
 			LEFT JOIN corporate_office co ON f.parent_office = co.account_id
 			LEFT JOIN users ob ON w.open_by = ob.id
 			LEFT JOIN users cb ON w.close_by = cb.id
-			LEFT JOIN users mb ON w.last_mod_by = mb.id
+			LEFT JOIN users mb ON w.updated_by = mb.id
 			WHERE f.id IN ($facility_list)
 			$model_clause
 			$status_clause
@@ -6409,7 +6409,7 @@ $(function() {
             foreach ($this->equipment as $dev)
             {
                 ## Remove the item from mismatched array
-                if (isset ($mismatched[$dev->asset_id]) && $dev->model == $ary[1])
+                if (isset($mismatched[$dev->asset_id]) && $dev->model == $ary[1])
                 {
                     unset($mismatched[$dev->asset_id]);
                     break;
@@ -6591,7 +6591,7 @@ $(function() {
             foreach ($args['search_fields'] as $idx => $field)
             {
                 $is_int = in_array($field, $int_fields);
-                $is_date = ($field == 'co.last_mod'); ## Future use
+                $is_date = ($field == 'co.updated_at'); ## Future use
 
                 #if ($is_date)
                 #	$field = "to_timestamp($field)";
@@ -6816,7 +6816,7 @@ $(function() {
     {
         global $user;
 
-        $this->last_mod_by = ($user) ? $user->getId() : 0;
+        $this->updated_by = ($user) ? $user->getId() : 0;
 
         if ($this->office_id)
         {
@@ -6830,8 +6830,8 @@ $(function() {
 			SET parent_id   = {$this->parent_id},
 			    account_id  = '{$this->account_id}',
 			    status      = {$this->status},
-				last_mod    = CURRENT_TIMESTAMP,
-			    last_mod_by = {$this->last_mod_by},
+				updated_at    = CURRENT_TIMESTAMP,
+			    updated_by = {$this->updated_by},
 			    office_name = '" . $this->validateName($this->office_name) . "',
 				orientation = {$this->orientation},
 				nursing_homes = {$this->nursing_homes},
@@ -6843,11 +6843,11 @@ $(function() {
         else
         {
             $sth = $this->dbh->exec("INSERT INTO corporate_office
-				(parent_id, account_id, status, last_mod, last_mod_by,
+				(parent_id, account_id, status, updated_at, updated_by,
 				office_name, orientation, nursing_homes, acp_nursing_homes,
 				corporate_office_id, account_executive)
 		 	VALUES ( {$this->parent_id}, '{$this->account_id}', {$this->status}, CURRENT_TIMESTAMP,
-				{$this->last_mod_by}, '" . $this->validateName($this->office_name) . "', {$this->orientation},
+				{$this->updated_by}, '" . $this->validateName($this->office_name) . "', {$this->orientation},
 				{$this->nursing_homes}, {$this->acp_nursing_homes},
 				{$this->corporate_office_id}, {$this->account_executive} )");
         }
@@ -6880,7 +6880,7 @@ $(function() {
         # Set/Reset Breadcrumb
         $this->setBreadCrumb();
 
-        if (isset ($this->contacts[0]))
+        if (isset($this->contacts[0]))
         {
             $this->contacts[0]->setVar('office_id', $this->office_id);
             $this->contacts[0]->save();
@@ -6888,7 +6888,7 @@ $(function() {
 
         # Save details for this company
         # But only store real values
-        if (is_array($this->detail) && isset ($_REQUEST['save_detail']))
+        if (is_array($this->detail) && isset($_REQUEST['save_detail']))
         {
             $this->dbh->exec("DELETE FROM corporate_office_detail WHERE office_id = {$this->office_id}");
 
@@ -6949,17 +6949,17 @@ $(function() {
     {
         global $dbh, $preferences;
 
-        $search_type = (isset ($params['search_type'])) ? $params['search_type'] : '';
-        $search = (isset ($params['search'])) ? $params['search'] : '';
-        $active = (isset ($params['active'])) ? $params['active'] : 1;
-        $ctype = (isset ($params['ctype'])) ? $params['ctype'] : 'a';
-        $parent_id = (isset ($params['parent_id'])) ? (int) $params['parent_id'] : null;
-        $ORDER = (isset ($params['order'])) ? $params['order'] : "";
-        $DIR = (isset ($params['dir'])) ? $params['dir'] : "";
+        $search_type = (isset($params['search_type'])) ? $params['search_type'] : '';
+        $search = (isset($params['search'])) ? $params['search'] : '';
+        $active = (isset($params['active'])) ? $params['active'] : 1;
+        $ctype = (isset($params['ctype'])) ? $params['ctype'] : 'a';
+        $parent_id = (isset($params['parent_id'])) ? (int) $params['parent_id'] : null;
+        $ORDER = (isset($params['order'])) ? $params['order'] : "";
+        $DIR = (isset($params['dir'])) ? $params['dir'] : "";
         $page = 0;
         $LIMIT = 0;
         $OFFSET = 0;
-        if (isset ($params['page']))
+        if (isset($params['page']))
         {
             $LIMIT = $preferences->get('general', 'results_per_page');
             $OFFSET = ($params['page'] - 1) * $LIMIT;
@@ -6997,7 +6997,7 @@ $(function() {
 			co.office_name as cust_name,
 			co.account_id as cust_id,
 			cs.office_status as status,
-			co.last_mod,
+			co.updated_at,
 			co.provnum,
 			co.orientation,
 			co.nursing_homes,
@@ -7039,8 +7039,8 @@ $(function() {
 				co.office_name as cust_name,
 				co.account_id as cust_id,
 				co.status,
-				co.last_mod,
-				co.last_mod_by,
+				co.updated_at,
+				co.updated_by,
 				NULL as provnum,
 				co.orientation,
 				co.nursing_homes,
@@ -7077,8 +7077,8 @@ $(function() {
 				f.facility_name cust_name,
 				f.accounting_id as cust_id,
 				CASE WHEN f.cancelled THEN 0 ELSE 1 END as status,
-				f.last_mod,
-				0 as last_mod_by,
+				f.updated_at,
+				0 as updated_by,
 				f.provnum,
 				0 as orientation,
 				1 as nursing_homes,
@@ -7107,7 +7107,7 @@ $(function() {
 		INNER JOIN corporate_office_status cs ON co.status = cs.status_id
 		INNER JOIN corporate_office cp ON co.corporate_office_id = cp.office_id
 		LEFT JOIN users ae ON co.account_executive = ae.id
-		LEFT JOIN users lm ON co.last_mod_by = lm.id
+		LEFT JOIN users lm ON co.updated_by = lm.id
 		LEFT JOIN v_users_primary_group upg on ae.id = upg.user_id
 		LEFT JOIN users g on upg.group_id = g.id
 		LEFT JOIN (
@@ -7161,9 +7161,9 @@ $(function() {
             # Show the editing form
             if ($this->office_id == 0)
             {
-                if (isset ($form['parent_id']))
+                if (isset($form['parent_id']))
                     $this->parent_id = (int) $form['parent_id'];
-                if (isset ($form['corporate_office_id']))
+                if (isset($form['corporate_office_id']))
                     $this->corporate_office_id = (int) $form['corporate_office_id'];
 
                 $this->copyFromParent($this->parent_id);
@@ -7264,7 +7264,7 @@ $(function() {
                 $add_clin = "CRMLoader.Add($clin_conf);";
                 $add_thrp = "CRMLoader.Add($therapist_conf);";
             }
-            if (!isset ($_REQUEST['skip_mas']))
+            if (!isset($_REQUEST['skip_mas']))
             {
                 $office_form .= $this->MemoSection();
             }
@@ -7477,7 +7477,7 @@ function ToggleAffix()
      */
     public function SetCustomerList()
     {
-        if (isset ($_SESSION))
+        if (isset($_SESSION))
         {
             if (!$this->is_office)
             {
@@ -7504,7 +7504,7 @@ function ToggleAffix()
             $sth->bindValue(1, $this->office_id, PDO::PARAM_INT);
             $sth->execute();
             $facility_list = $sth->fetchColumn();
-            if (empty ($facility_list))
+            if (empty($facility_list))
                 $facility_list = "0";
 
             $_SESSION['crm']['set'][$match][$this->office_id] = $facility_list;
@@ -7667,7 +7667,7 @@ function ToggleAffix()
 
             $task->open_date = date($date_format, $task->open_date);
             $task->due_date = ($task->due_date) ? date($date_format, $task->due_date) : "";
-            $task->last_mod_date = ($task->last_mod_date) ? date($date_format, $task->last_mod_date) : "";
+            $task->updated_at_date = ($task->updated_at_date) ? date($date_format, $task->updated_at_date) : "";
             $task->closed_date = ($task->closed_date) ? date($date_format, $task->closed_date) : "";
             $task->important = ($task->important) ? "Yes" : "No";
             $task->required = ($task->required) ? "Yes" : "No";
@@ -7821,7 +7821,7 @@ function ToggleAffix()
             $ia = ($therapist->active) ? "" : " faded";
 
             $add_time = date($date_format, strtotime($therapist->add_time));
-            $last_mod = date($date_format, strtotime($therapist->last_mod));
+            $updated_at = date($date_format, strtotime($therapist->updated_at));
             $active = ($therapist->active) ? "Yes" : "No";
 
             $sec_conf->rows .= "<tr class='{$rc}{$ia}' ondblclick=\"window.location='{$req_url}';\">";
@@ -8034,7 +8034,7 @@ function ToggleAffix()
             $visit->start_time = date($date_format, $visit->start_time);
             $visit->end_time = date($date_format, $visit->end_time);
             $visit->lock_date = date($date_format, $visit->lock_date);
-            $visit->last_mod = date($date_format, strtotime($visit->last_mod));
+            $visit->updated_at = date($date_format, strtotime($visit->updated_at));
             $visit->valid = ($visit->valid) ? "Yes" : "No";
             $visit->mailed = ($visit->mailed) ? "Yes" : "No";
 

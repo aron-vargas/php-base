@@ -7,7 +7,7 @@ return [
     "Controllers" => [
         "\Freedom\Controllers\HomeController",
         "\Freedom\Controllers\API1",
-        "\Freedom\Controllers\CalController",
+        "\Freedom\Controllers\Scheduler",
         "\Freedom\Controllers\Bloger"
     ],
     "CompanyName" => "Railside Kitchen",
@@ -89,7 +89,9 @@ return [
                     ]
                 ]
             ]
-        ],
+        ]
+    ],
+    "side_menu" => [
         [
             "name" => "crm",
             "text" => "CRM",

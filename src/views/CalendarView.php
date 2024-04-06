@@ -1,7 +1,7 @@
 <?php
 namespace Freedom\Views;
 
-use Freedom\Models\CalEvent;
+use Freedom\Models\Schedule\Event;
 
 # 1 Day = 86400 seconds
 define('ONE_DAY', 86400);
@@ -45,11 +45,11 @@ class CalendarView extends CDView {
     public function ClassList($base, $datetime)
     {
         $class_list = array($base);
-        if (CalEvent::isWeekend($datetime))
+        if (Event::isWeekend($datetime))
             $class_list[] = "weekend";
-        if (CalEvent::isHoliday($datetime))
+        if (Event::isHoliday($datetime))
             $class_list[] = "holiday";
-        if (CalEvent::isToday($datetime))
+        if (Event::isToday($datetime))
             $class_list[] = "today";
 
         if ($datetime < $this->_cal->month_first)
@@ -57,7 +57,7 @@ class CalendarView extends CDView {
         if ($datetime > $this->_cal->month_last)
             $class_list[] = "next";
 
-        if (CalEvent::isSelected($this->_cal->sel_date, $datetime))
+        if (Event::isSelected($this->_cal->sel_date, $datetime))
             $class_list[] = "selected";
 
         return implode(" ", $class_list);
@@ -144,7 +144,7 @@ SCRIPT;
     /**
      * Set the cal data structure
      * @param integer
-     * @return StdClass
+     * @return \StdClass
      */
     private function GetDefaults($sel_date)
     {
@@ -219,7 +219,22 @@ SCRIPT;
 
     public function InitDisplay($section, $page, $display)
     {
+        if ($page == 'event')
+        {
+            $this->template = "src/templates/calendar/event.php";
+        }
+        else if ($page == 'list')
+        {
+            $this->template = "src/templates/calendar/event_list.php";
+        }
+
         return;
+    }
+
+    public function InitModel($section, $page, $pkey, $start_date = null)
+    {
+        $this->model = new Event($pkey, $start_date);
+        return $this->model;
     }
 
     private function MonthView()
@@ -295,10 +310,10 @@ CAL;
                     <span class='h3 text-primary mx-3'>Calendar Events</span>
                 </div>
                 <div class="col col-md-4 mx-auto text-center">
-                    <a class="mx-2 col btn btn-light" href="?act=today">Today</a>
-                    <a class="mx-2 col btn btn-light" href="?act=prev"><i class='fa fa-caret-left'></i></a>
+                    <a class="mx-2 col btn btn-light" href="/calendar/today">Today</a>
+                    <a class="mx-2 col btn btn-light" href="/calendar/prev"><i class='fa fa-caret-left'></i></a>
                     <span class='col nav-text h4'>{$selected_month} {$selected_year}</span>
-                    <a class="mx-2 col btn btn-light" href="?act=next"><i class='fa fa-caret-right'></i></a>
+                    <a class="mx-2 col btn btn-light" href="/calendar/next"><i class='fa fa-caret-right'></i></a>
                     <span class="mx-2 col dropdown">
                         <button class="btn btn-light dropdown-toggle" type="button" id="view-btn" data-bs-toggle="dropdown" aria-expanded="false">
                             View
@@ -324,8 +339,8 @@ CAL;
                         aria-label="Search">
                         <i class='fa fa-search'></i>
                     </button>
-                    <a class="btn btn-light me-2" href="?v=support"><i class="fa fa-circle-question"></i></a>
-                    <a class="btn btn-light me-2" href="?v=settings"><i class='fa fa-gear'></i></a>
+                    <a class="btn btn-light me-2" href="/calendar/support"><i class="fa fa-circle-question"></i></a>
+                    <a class="btn btn-light me-2" href="/calendar/settings"><i class='fa fa-gear'></i></a>
                 </div>
             </div>
         </nav>
@@ -380,15 +395,15 @@ NAV;
         $this->InitDates();
     }
 
-    public function process($req)
+    public function _process($req)
     {
         if (isset($req['v']))
         {
             if ($req['v'] == 'event')
             {
-                $pkey = (isset($req['pkey'])) ? CalEvent::Clean($req['pkey']) : 0;
-                $start_date = (isset($req['start_date'])) ? CalEvent::Clean($req['start_date']) : null;
-                $this->active_event = new CalEvent($pkey, $start_date);
+                $pkey = (isset($req['pkey'])) ? Event::Clean($req['pkey']) : 0;
+                $start_date = (isset($req['start_date'])) ? Event::Clean($req['start_date']) : null;
+                $this->active_event = new Event($pkey, $start_date);
                 $this->template = "templates/calendar/event.php";
             }
             else if ($req['v'] == 'list')
@@ -407,7 +422,7 @@ NAV;
             if ($this->template)
             {
                 $event = $this->active_event;
-                include($this->template);
+                include ($this->template);
             }
             else if ($this->_cal->view == "d")
                 echo $this->DayView();
@@ -455,7 +470,7 @@ NAV;
         $this->InitDates();
     }
 
-    public function SetEvent(CalEvent $event)
+    public function SetEvent(Event $event)
     {
         $this->active_event = $event;
     }
@@ -505,7 +520,7 @@ BAR;
             for ($i = 0; $i < 7; $i++)
             {
                 $day_num = date("j", $datetime);
-                $day_num = "<a href='calendar.php?act=sel&date=$datetime' alt='Select Date' title='Select Date'>{$day_num}</a>";
+                $day_num = "<a href='/calendar/sel?date=$datetime' alt='Select Date' title='Select Date'>{$day_num}</a>";
                 $calendar_day_cells .= "
                     <div class='col'>
                         <div class='full-num'>{$day_num}</div>

@@ -24,7 +24,7 @@ if ($this->data)
             <td class='text-end{$protected}'>{$row->verified}</td>
             <td class='text-end{$protected}'>
                 <a class='btn btn-primary btn-xs' href='/admin/user/edit/{$row->user_id}'>Edit</a>
-                <a class='btn btn-primary btn-xs' href='/admin/userprofile/edit/{$row->user_id}'>Profile</a>
+                <a class='btn btn-primary btn-xs' href='/admin/userprofile/view/{$row->user_id}'>Profile</a>
             </td>
         </tr>";
     }

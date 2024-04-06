@@ -22,9 +22,9 @@ class Issue {
     public $open_by = 0;				# int4
     public $open_by_name = null;		# string
     public $open_date = 0;			# int4
-    public $last_mod_by = 0;			# int4
-    public $last_mod_by_name = null;	#string
-    public $last_mod_date = 0;		# int4
+    public $updated_by = 0;			# int4
+    public $updated_by_name = null;	#string
+    public $updated_at_date = 0;		# int4
     public $closed_by = 0;			# int4
     public $cloded_by_name = null;	#string
     public $closed_date = 0;			# int4
@@ -125,7 +125,7 @@ class Issue {
         }
 
         // office_id key will be passed as 'entry'
-        if (isset ($new['entry']))
+        if (isset($new['entry']))
             $this->office_id = $new['entry'];
     }
 
@@ -176,13 +176,13 @@ class Issue {
 
 
     /**
-     * Returns Formated Date String represented by last_mod_date value
+     * Returns Formated Date String represented by updated_at_date value
      *
      * @return string
      */
     public function getLastModDateString($format = 'D, M d Y h:i A')
     {
-        return date($format, $this->last_mod_date);
+        return date($format, $this->updated_at_date);
     }
 
 
@@ -211,9 +211,9 @@ class Issue {
 				SELECT open_by,
 				       u_o.firstname || ' ' ||	u_o.lastname AS open_by_name,
 				       open_date,
-				       i.last_mod_by,
-				       u_l.firstname || ' ' ||	u_l.lastname AS last_mod_by_name,
-				       last_mod_date,
+				       i.updated_by,
+				       u_l.firstname || ' ' ||	u_l.lastname AS updated_by_name,
+				       updated_at_date,
 				       closed_by,
 				       u_c.firstname || ' ' || u_c.lastname AS closed_by_name,
 				       closed_date,
@@ -233,7 +233,7 @@ class Issue {
 				       i.patient_facility_id
 				FROM issue i
 				  LEFT JOIN users u_o ON i.open_by = u_o.id
-				  LEFT JOIN users u_l ON i.last_mod_by = u_l.id
+				  LEFT JOIN users u_l ON i.updated_by = u_l.id
 				  LEFT JOIN users u_c ON i.closed_by = u_c.id
 				  LEFT JOIN users u_a ON i.closed_by = u_a.id
 				  LEFT JOIN issue_priority p ON i.priority = p.priority
@@ -275,7 +275,7 @@ class Issue {
             if ($row = $sth->fetch(PDO::FETCH_ASSOC))
             {
                 $this->office_name = $row['office_name'];
-                $this->accounting_id = isset ($row['cust_id']) ? $row['cust_id'] : null;
+                $this->accounting_id = isset($row['cust_id']) ? $row['cust_id'] : null;
             }
 
             # Find complaint form for this issue
@@ -341,7 +341,7 @@ class Issue {
 
         # Integer fields should not be typecast to text
         $int_fields = array('i.issue_id ', 'i.office_id', 'i.corporate_office_id');
-        $date_fields = array('i.open_date', 'i.last_mod_date', 'i.closed_date', "i.due_date");
+        $date_fields = array('i.open_date', 'i.updated_at_date', 'i.closed_date', "i.due_date");
 
         # All Valid SM status
         $WHERE = "";
@@ -477,7 +477,7 @@ class Issue {
                     {
                         $date_str = date('Y-m-d', $time);
                         $WHERE .= " OR to_timestamp(i.open_date)::Date = '$date_str'";
-                        $WHERE .= " OR to_timestamp(i.last_mod_date)::Date = '$date_str'";
+                        $WHERE .= " OR to_timestamp(i.updated_at_date)::Date = '$date_str'";
                         $WHERE .= " OR to_timestamp(i.closed_date)::Date = '$date_str'";
                         $WHERE .= " OR to_timestamp(i.due_date)::Date = '$date_str'";
                         $OR = "OR"; # Use OR for remaining elements
@@ -514,10 +514,10 @@ class Issue {
             $this->open_date = $timestamp;
         }
 
-        # Set last_mod on every save
-        $this->last_mod_by = $user->getId();
-        $this->last_mod_by_name = $user->getName();
-        $this->last_mod_date = $timestamp;
+        # Set updated_at on every save
+        $this->updated_by = $user->getId();
+        $this->updated_by_name = $user->getName();
+        $this->updated_at_date = $timestamp;
 
         # Set closed_by and date is issue_status is CLOSED
         # ISSUE_CLOSED needs to set to the appropiate DB index
@@ -544,8 +544,8 @@ class Issue {
 				UPDATE issue
 				SET open_by = ?,
 				    open_date = ?,
-				    last_mod_by = ?,
-				    last_mod_date = ?,
+				    updated_by = ?,
+				    updated_at_date = ?,
 				    closed_by = ?,
 				    closed_date = ?,
 				    office_id = ?,
@@ -561,8 +561,8 @@ class Issue {
 				WHERE issue_id = ?");
             $sth->bindValue(1, (int) $this->open_by, PDO::PARAM_INT);
             $sth->bindValue(2, (int) $this->open_date, PDO::PARAM_INT);
-            $sth->bindValue(3, (int) $this->last_mod_by, PDO::PARAM_INT);
-            $sth->bindValue(4, (int) $this->last_mod_date, PDO::PARAM_INT);
+            $sth->bindValue(3, (int) $this->updated_by, PDO::PARAM_INT);
+            $sth->bindValue(4, (int) $this->updated_at_date, PDO::PARAM_INT);
             $sth->bindValue(5, (int) $this->closed_by, PDO::PARAM_INT);
             $sth->bindValue(6, (int) $this->closed_date, PDO::PARAM_INT);
             $sth->bindValue(7, (int) $this->office_id, PDO::PARAM_INT);
@@ -581,15 +581,15 @@ class Issue {
         {
             $sth = $this->dbh->prepare("
 				INSERT INTO issue (
-				  open_by, open_date, last_mod_by, last_mod_date,
+				  open_by, open_date, updated_by, updated_at_date,
 				  closed_by, closed_date, office_id, corporate_office_id,
 				  priority, category, issue_status, subject, assigned_to,
 				  office_issue, patient_facility_id, due_date)
 			 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $sth->bindValue(1, (int) $this->open_by, PDO::PARAM_INT);
             $sth->bindValue(2, (int) $this->open_date, PDO::PARAM_INT);
-            $sth->bindValue(3, (int) $this->last_mod_by, PDO::PARAM_INT);
-            $sth->bindValue(4, (int) $this->last_mod_date, PDO::PARAM_INT);
+            $sth->bindValue(3, (int) $this->updated_by, PDO::PARAM_INT);
+            $sth->bindValue(4, (int) $this->updated_at_date, PDO::PARAM_INT);
             $sth->bindValue(5, (int) $this->closed_by, PDO::PARAM_INT);
             $sth->bindValue(6, (int) $this->closed_date, PDO::PARAM_INT);
             $sth->bindValue(7, (int) $this->office_id, PDO::PARAM_INT);
@@ -610,15 +610,15 @@ class Issue {
         }
 
         # If we have a new note to add to this issue
-        if (isset ($new['new_note']) && strlen($new['new_note']) > 0)
+        if (isset($new['new_note']) && strlen($new['new_note']) > 0)
         {
             # Dont save note when complaint button is clicked
-            if (!isset ($new['open_complaint']))
+            if (!isset($new['open_complaint']))
             {
                 $new_note = new Note();
                 if ($this->mod_fields)
                     $new['new_note'] = $this->mod_fields . $new['new_note'];
-                if (isset ($new['send_email']))
+                if (isset($new['send_email']))
                 {
                     $new_note->setEmailSent(time());
                     $new['new_note'] = "<span style='font-size:x-small;'>Email Sent On {$new_note->getEmailSentDateString()} To: {$new['email_to']}</span><br />\n" . $new['new_note'];
@@ -629,7 +629,7 @@ class Issue {
             }
         }
         # No new_note to add so create simple note to record recipient and time sent
-        else if (isset ($new['send_email']))
+        else if (isset($new['send_email']))
         {
             $new_note = new Note();
             $new_note->setEmailSent(time());
@@ -640,7 +640,7 @@ class Issue {
         }
 
         # Adding a complaint form to this issue
-        if (isset ($new['open_complaint']) && !$this->office_issue)
+        if (isset($new['open_complaint']) && !$this->office_issue)
         {
             # Issue id wont be set untill issue is saved
             $complaint = new ComplaintForm($this->issue_id);
@@ -664,7 +664,7 @@ class Issue {
             }
         }
 
-        if (isset ($new['attachment_id']))
+        if (isset($new['attachment_id']))
         {
             $att = new Attachment($new['attachment_id']);
             $att->copyFromArray($new);
@@ -685,11 +685,11 @@ class Issue {
 
         $dbh = DataStor::getHandle();
 
-        $ORDER = (isset ($params['order'])) ? $params['order'] : "";
-        $DIR = (isset ($params['dir'])) ? $params['dir'] : "";
+        $ORDER = (isset($params['order'])) ? $params['order'] : "";
+        $DIR = (isset($params['dir'])) ? $params['dir'] : "";
         $LIMIT = 0;
         $OFFSET = 0;
-        if (isset ($params['page']))
+        if (isset($params['page']))
         {
             $LIMIT = $preferences->get('general', 'results_per_page');
             $OFFSET = ($params['page'] - 1) * $LIMIT;
@@ -705,8 +705,8 @@ class Issue {
 			i.issue_id as document_id,
 			i.open_by,
 			to_timestamp(i.open_date)::date as open_date,
-			i.last_mod_by,
-			to_timestamp(i.last_mod_date)::date as last_mod_date,
+			i.updated_by,
+			to_timestamp(i.updated_at_date)::date as updated_at_date,
 			i.closed_by,
 			to_timestamp(i.closed_date)::date as closed_date,
 			i.office_id,
@@ -720,8 +720,8 @@ class Issue {
 			i.due_date,
 			u_o.firstname as open_by_first,
 			u_o.lastname as open_by_last,
-			u_l.firstname as last_mod_by_first,
-			u_l.lastname as last_mod_by_last,
+			u_l.firstname as updated_by_first,
+			u_l.lastname as updated_by_last,
 			u_c.firstname as closed_by_first,
 			u_c.lastname as closed_by_last,
 			u_a.firstname as assigned_to_first,
@@ -736,7 +736,7 @@ class Issue {
 			COUNT(*) OVER() as total_rows
 		FROM issue i
 		LEFT JOIN users u_o ON i.open_by = u_o.id
-		LEFT JOIN users u_l ON i.last_mod_by = u_l.id
+		LEFT JOIN users u_l ON i.updated_by = u_l.id
 		LEFT JOIN users u_c ON i.closed_by = u_c.id
 		LEFT JOIN users u_a ON i.assigned_to = u_a.id
 		LEFT JOIN issue_priority p ON i.priority = p.priority
@@ -821,13 +821,13 @@ class Issue {
 
         # Values for hidden properties.
         # Precedence 1) our value 2) posted array value 3) default value
-        $office_id = ($this->office_id > 0) ? $this->office_id : (isset ($form['office_id']) ? $form['office_id'] : 0);
-        $object = (isset ($form['object'])) ? $form['object'] : 'office';
-        $corporate_office_id = ($this->corporate_office_id > 0) ? $this->corporate_office_id : (isset ($form['corporate_office_id']) ? $form['corporate_office_id'] : 0);
-        $patient_facility_id = ($this->patient_facility_id > 0) ? $this->patient_facility_id : (isset ($form['patient_facility_id']) ? $form['patient_facility_id'] : 0);
-        $office_name = ($this->office_name) ? $this->office_name : (isset ($form['office_name']) ? $form['office_name'] : '');
+        $office_id = ($this->office_id > 0) ? $this->office_id : (isset($form['office_id']) ? $form['office_id'] : 0);
+        $object = (isset($form['object'])) ? $form['object'] : 'office';
+        $corporate_office_id = ($this->corporate_office_id > 0) ? $this->corporate_office_id : (isset($form['corporate_office_id']) ? $form['corporate_office_id'] : 0);
+        $patient_facility_id = ($this->patient_facility_id > 0) ? $this->patient_facility_id : (isset($form['patient_facility_id']) ? $form['patient_facility_id'] : 0);
+        $office_name = ($this->office_name) ? $this->office_name : (isset($form['office_name']) ? $form['office_name'] : '');
         $entity_type = 0;
-        if (isset ($form['office_id']))
+        if (isset($form['office_id']))
         {
             $sth = $this->dbh->prepare("SELECT cust_id, entity_type FROM v_customer_entity WHERE id = ?");
             $sth->bindValue(1, $form['office_id'], PDO::PARAM_INT);
@@ -857,14 +857,14 @@ class Issue {
         # Only show "by" rows if they have been set
         # No inputs needed we derive them at save()
         $open_by = ($this->open_by > 0) ? "		<tr><th class='form'>Created by</th><td class='form'>{$this->getVar('open_by_name')}</td><th class='form' colspan='4'>{$this->getOpenDateString()}</th></tr>" : "";
-        $last_mod_by = ($this->last_mod_by > 0) ? "		<tr><th class='form'>Last&nbsp;Modified&nbsp;by</th><td class='form'>{$this->getVar('last_mod_by_name')}</td><th class='form' colspan='4'>{$this->getLastModDateString()}</th></tr>" : "";
+        $updated_by = ($this->updated_by > 0) ? "		<tr><th class='form'>Last&nbsp;Modified&nbsp;by</th><td class='form'>{$this->getVar('updated_by_name')}</td><th class='form' colspan='4'>{$this->getLastModDateString()}</th></tr>" : "";
         $closed_by = ($this->closed_by > 0) ? "		<tr><th class='form'>Closed by</th><td class='form'>{$this->getVar('closed_by_name')}</td><th class='form' colspan='4'>{$this->getClosedDateString()}</th></tr>" : "";
 
         $header = ($this->issue_id > 0) ? "Issue #{$this->issue_id}" : "New Issue";
         $header .= " for ";
         if ($patient_access)
             $header .= htmlentities($office_name, ENT_QUOTES);
-        $header .= isset ($this->accounting_id) ? " ({$this->accounting_id})" : "";
+        $header .= isset($this->accounting_id) ? " ({$this->accounting_id})" : "";
 
         $email_to = "";
         $email_cc = "";
@@ -897,7 +897,7 @@ class Issue {
         $show_to_cc = "";
         $check_email = "checked";
         $save_action = "Save & Email";
-        if (isset ($form['save_action']) && $form['save_action'] == 'Save')
+        if (isset($form['save_action']) && $form['save_action'] == 'Save')
         {
             $show_to_cc = "style='display:none'";
             $check_email = "";
@@ -929,7 +929,7 @@ class Issue {
                 $c_b_onclick = "onClick='return NewComplaint();'";
         }
 
-        if (isset ($form['open_complaint']))
+        if (isset($form['open_complaint']))
         {
             $OpenCCFormJS = "OpenComplaintWindow('submit_action=edit_cf&issue_id={$this->issue_id}');";
             $c_b_onclick = "onClick=\"OpenComplaintWindow('submit_action=edit_cf&issue_id={$this->issue_id}'); this.blur();\"";
@@ -990,7 +990,7 @@ function InitIssue()
 			</td>
 		</tr>
 		{$open_by}
-		{$last_mod_by}
+		{$updated_by}
 		{$closed_by}
 		<tr>
 			<th class='form'>Send Email</th>
@@ -1057,18 +1057,18 @@ function InitIssue()
         $date_format = $preferences->get('general', 'dateformat');
         $calendar_format = str_replace(array('Y', 'd', 'm', 'M'), array('%Y', '%d', '%m', '%b'), $date_format);
 
-        $entry = (isset ($form['entry'])) ? $form['entry'] : 0;
-        $issue_num = (isset ($form['issue_num'])) ? $form['issue_num'] : '';
-        $object = (isset ($form['object'])) ? $form['object'] : 'office';
-        $corporate_office_id = (isset ($form['corporate_office_id'])) ? $form['corporate_office_id'] : 0;
-        $patient_facility_id = (isset ($form['patient_facility_id'])) ? $form['patient_facility_id'] : 0;
-        $office_name = (isset ($form['office_name'])) ? urlencode($form['office_name']) : 'Unk';
-        $issue_status = (isset ($form['issue_status'])) ? $form['issue_status'] : '';
-        $category = (isset ($form['category'])) ? $form['category'] : '';
-        $priority = (isset ($form['priority'])) ? $form['priority'] : '';
-        $from_date = (isset ($form['from_date'])) ? $form['from_date'] : '';
-        $to_date = (isset ($form['to_date'])) ? $form['to_date'] : '';
-        $show_issues = isset ($form['show_issues']) ? $form['show_issues'] : 'office';
+        $entry = (isset($form['entry'])) ? $form['entry'] : 0;
+        $issue_num = (isset($form['issue_num'])) ? $form['issue_num'] : '';
+        $object = (isset($form['object'])) ? $form['object'] : 'office';
+        $corporate_office_id = (isset($form['corporate_office_id'])) ? $form['corporate_office_id'] : 0;
+        $patient_facility_id = (isset($form['patient_facility_id'])) ? $form['patient_facility_id'] : 0;
+        $office_name = (isset($form['office_name'])) ? urlencode($form['office_name']) : 'Unk';
+        $issue_status = (isset($form['issue_status'])) ? $form['issue_status'] : '';
+        $category = (isset($form['category'])) ? $form['category'] : '';
+        $priority = (isset($form['priority'])) ? $form['priority'] : '';
+        $from_date = (isset($form['from_date'])) ? $form['from_date'] : '';
+        $to_date = (isset($form['to_date'])) ? $form['to_date'] : '';
+        $show_issues = isset($form['show_issues']) ? $form['show_issues'] : 'office';
         $sel_issue_office = "selected";
         $sel_issue_company = "";
         if ($show_issues == 'company')
@@ -1362,7 +1362,7 @@ function InitIssue()
     {
         $recipients_list = "";
 
-        if (!isset ($form_name))
+        if (!isset($form_name))
             $form_name = "issue_email_form";
 
         # Find all active users
@@ -1412,7 +1412,7 @@ function InitIssue()
 
         # Setup To and CC arrays
         $to_addresses = array();
-        if (isset ($_POST['email_to']) && trim($_POST['email_to']) != '')
+        if (isset($_POST['email_to']) && trim($_POST['email_to']) != '')
         {
             $to_addresses = array_map('trim', preg_split('/,/', strtr($_POST['email_to'], ";", ","), -1, PREG_SPLIT_NO_EMPTY));
         }

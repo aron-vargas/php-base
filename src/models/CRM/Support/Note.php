@@ -83,7 +83,7 @@ class Note {
         }
 
         // new_note will the form input not contents
-        if (isset ($new['new_note']))
+        if (isset($new['new_note']))
             $this->contents = $new['new_note'];
     }
 
@@ -179,12 +179,12 @@ class Note {
             $history = "[" . BaseClass::BuildATags($tag) . "]";
         }
 
-        $created_on = date('D, M d Y h:i A', $note->creation_date);
+        $created_at = date('D, M d Y h:i A', $note->creation_date);
 
         return "<div class='snote'>
 			<div class='nleft'>
 				By <b>{$note->author_name}</b><br/>
-				{$created_on}
+				{$created_at}
 				<div class='nested'>$edit_note $history</div>
 			</div>
 			<div class='nright'>{$note->contents}</div>
@@ -409,9 +409,9 @@ class Note {
     public function showForm($edit = 1, $form = null)
     {
         ## Assign new values to allowed fields
-        if (isset ($form['note_id']))
+        if (isset($form['note_id']))
             $this->note_id = $form['note_id'];
-        if (isset ($form['office_id']))
+        if (isset($form['office_id']))
             $this->office_id = $form['office_id'];
 
         return $this->ShowDialog();

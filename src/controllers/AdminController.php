@@ -5,6 +5,12 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use Freedom\Models\CDModel;
+use Freedom\Models\User;
+use Freedom\Models\UserProfile;
+use Freedom\Models\Role;
+use Freedom\Models\Permission;
+
 class AdminController extends CDController {
     protected $act = "view";
     protected $target = "home";
@@ -20,7 +26,7 @@ class AdminController extends CDController {
 
     static public function AddRoutes($app)
     {
-        
+
     }
 
     public function list_users(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
@@ -41,7 +47,7 @@ class AdminController extends CDController {
             $filter[] = ["field" => "user_type", "op" => "eq", "match" => $match, "type" => "string"];
         }
 
-        $data = $this->model->GetALL("user", $filter);
+        $data = CDModel::GetALL("user", $filter);
         $this->view->Set("src/templates/user_list.php");
         $this->view->data = $data;
 
@@ -53,8 +59,8 @@ class AdminController extends CDController {
         //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/user_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new User($pkey);
-        $this->view->data = $this->model;
+        $usr = new User($pkey);
+        $this->view->data = $usr;
 
         return $this->buffer_response($request, $response, $args);
     }
@@ -66,14 +72,14 @@ class AdminController extends CDController {
         if (isset($parsed['pkey']))
         {
             $pkey = (isset($parsed['pkey'])) ? $parsed['pkey'] : null;
-            $this->model = new User($pkey);
-            $this->model->Copy($parsed);
-            $this->model->Save();
+            $model = new User($pkey);
+            $model->Copy($parsed);
+            $model->Save();
 
             $filter = [
                 ["field" => "status", "op" => "ne", "match" => "INVALID", "type" => "string"]
             ];
-            $this->view->data = $this->model->GetALL("user", $filter);
+            $this->view->data = $model->GetALL("user", $filter);
         }
         else
         {
@@ -98,7 +104,7 @@ class AdminController extends CDController {
         $filter = [
             ["field" => "status", "op" => "ne", "match" => "INVALID", "type" => "string"]
         ];
-        $this->view->data = $this->model->GetALL("user", $filter);
+        $this->view->data = CDModel::GetALL("user", $filter);
         return $this->buffer_response($request, $response, $args);
     }
 
@@ -111,7 +117,7 @@ class AdminController extends CDController {
             ["field" => "company_id", "op" => "gt", "match" => 0, "type" => "int"]
         ];
 
-        $data = $this->model->GetALL("user_profile", $filter);
+        $data = CDModel::GetALL("user_profile", $filter);
         $this->view->Set("src/templates/profile_list.php");
         $this->view->data = $data;
 
@@ -123,8 +129,8 @@ class AdminController extends CDController {
         //$this->container->set("active_page", "home");
         $this->view->Set("src/templates/profile_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new UserProfile($pkey);
-        $this->view->data = $this->model;
+        $model = new UserProfile($pkey);
+        $this->view->data = $model;
 
         return $this->buffer_response($request, $response, $args);
     }
@@ -136,14 +142,14 @@ class AdminController extends CDController {
         if (isset($parsed['pkey']))
         {
             $pkey = $parsed['pkey'];
-            $this->model = new UserProfile($pkey);
-            $this->model->Copy($parsed);
-            $this->model->Save();
+            $model = new UserProfile($pkey);
+            $model->Copy($parsed);
+            $model->Save();
 
             $filter = [
                 ["field" => "company_id", "op" => "gt", "match" => 0, "type" => "int"]
             ];
-            $this->view->data = $this->model->GetALL("user_profile", $filter);
+            $this->view->data = CDModel::GetALL("user_profile", $filter);
         }
         else
         {
@@ -168,24 +174,19 @@ class AdminController extends CDController {
         $filter = [
             ["field" => "company_id", "op" => "gt", "match" => 0, "type" => "int"]
         ];
-        $this->view->data = $this->model->GetALL("user", $filter);
+        $this->view->data = CDModel::GetALL("user", $filter);
         return $this->buffer_response($request, $response, $args);
     }
 
     ## Permission handlers ##
     public function list_permissions(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        # This works OK. I would like to replace the ExceptionHandler with my own
-        # TODO: ^THAT^
         try
         {
-            //$this->container->set("active_page", "admin");
-            $this->model = new Permission();
-            $this->model->Connect($this->container);
             $this->view->Set("src/templates/crm/permission_list.php");
-            $this->view->data = $this->model->GetALL("permissions", null);
+            $this->view->data = CDModel::GetALL("permissions", null);
         }
-        catch (Throwable $exp)
+        catch (\Throwable $exp)
         {
             $this->HandleException($exp);
         }
@@ -198,9 +199,9 @@ class AdminController extends CDController {
         //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/permission_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new Permission($pkey);
-        $this->model->Connect($this->container);
-        $this->view->data = $this->model;
+        $model = new Permission($pkey);
+        $model->Connect($this->container);
+        $this->view->data = $model;
 
         return $this->buffer_response($request, $response, $args);
     }
@@ -213,25 +214,25 @@ class AdminController extends CDController {
         {
             $act = isset($parsed['act']) ? (int) $parsed['act'] : 1;
             $pkey = $parsed['pkey'];
-            $this->model = new Permission($pkey);
-            $this->model->Connect($this->container);
+            $model = new Permission($pkey);
+            $model->Connect($this->container);
             if ($act === -1) # Delete Button
             {
-                $this->model->Delete();
+                $model->Delete();
                 $this->AddMsg("Permission #{$pkey} was Deleted");
 
                 // Go back to listing
                 $this->view->Set("src/templates/crm/permission_list.php");
-                $this->model = new Permission();
-                $this->model->Connect($this->container);
-                $this->view->data = $this->model->GetALL("permissions", null);
+                $model = new Permission();
+                $model->Connect($this->container);
+                $this->view->data = $model->GetALL("permissions", null);
             }
             else
             {
-                $this->model->Copy($parsed);
-                $this->model->Save();
+                $model->Copy($parsed);
+                $model->Save();
                 $this->AddMsg("Permission #{$pkey} was Updated");
-                $this->view->data = $this->model;
+                $this->view->data = $model;
             }
         }
         else
@@ -244,17 +245,12 @@ class AdminController extends CDController {
 
     public function list_roles(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        # This works OK. I would like to replace the ExceptionHandler with my own
-        # TODO: ^THAT^
         try
         {
-            //$this->container->set("active_page", "admin");
-            $this->model = new Role();
-            $this->model->Connect($this->container);
             $this->view->Set("src/templates/crm/role_list.php");
-            $this->view->data = $this->model->GetALL("roles", null);
+            $this->view->data = CDModel::GetALL("roles", null);
         }
-        catch (Throwable $exp)
+        catch (\Throwable $exp)
         {
             $this->HandleException($exp);
         }
@@ -267,9 +263,9 @@ class AdminController extends CDController {
         //$this->container->set("active_page", "admin");
         $this->view->Set("src/templates/crm/role_edit.php");
         $pkey = (isset($args['id'])) ? $args['id'] : null;
-        $this->model = new Role($pkey);
-        $this->model->Connect($this->container);
-        $this->view->data = $this->model;
+        $model = new Role($pkey);
+        $model->Connect($this->container);
+        $this->view->data = $model;
 
         return $this->buffer_response($request, $response, $args);
     }
@@ -282,25 +278,25 @@ class AdminController extends CDController {
         {
             $act = isset($parsed['act']) ? (int) $parsed['act'] : 1;
             $pkey = $parsed['pkey'];
-            $this->model = new Role($pkey);
-            $this->model->Connect($this->container);
+            $model = new Role($pkey);
+            $model->Connect($this->container);
             if ($act === -1) # Delete Button
             {
-                $this->model->Delete();
+                $model->Delete();
                 $this->AddMsg("Role #{$pkey} was Deleted");
 
                 // Go back to listing
                 $this->view->Set("src/templates/crm/role_list.php");
-                $this->model = new Role();
-                $this->model->Connect($this->container);
-                $this->view->data = $this->model->GetALL("roles", null);
+                $model = new Role();
+                $model->Connect($this->container);
+                $this->view->data = $model->GetALL("roles", null);
             }
             else
             {
-                $this->model->Copy($parsed);
-                $this->model->Save();
+                $model->Copy($parsed);
+                $model->Save();
                 $this->AddMsg("Role #{$pkey} was Updated");
-                $this->view->data = $this->model;
+                $this->view->data = $model;
             }
         }
         else

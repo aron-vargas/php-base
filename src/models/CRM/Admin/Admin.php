@@ -180,7 +180,7 @@ class Admin {
      */
     public function DeleteTConf($args)
     {
-        $var_name = isset ($args['var']) ? $args['var'] : null;
+        $var_name = isset($args['var']) ? $args['var'] : null;
 
         if ($var_name)
         {
@@ -243,7 +243,7 @@ class Admin {
         $full_name = $app_arr['full_name'];
         $short_name = $app_arr['short_name'];
         $order = $app_arr['order'];
-        $groups = isset ($app_arr['group']) ? $app_arr['group'] : array();
+        $groups = isset($app_arr['group']) ? $app_arr['group'] : array();
 
         # Validate the form.
         if (trim($full_name) == '')
@@ -304,10 +304,10 @@ class Admin {
      */
     public function SaveCountry($args, $op = 1)
     {
-        $id = isset ($args['id']) ? $args['id'] : null;
-        $abbr = isset ($args['abbr']) ? substr($args['abbr'], 0, 4) : 'XXX';
-        $name = isset ($args['name']) ? substr($args['name'], 0, 64) : null;
-        $display_order = isset ($args['display_order']) ? (int) $args['display_order'] : null;
+        $id = isset($args['id']) ? $args['id'] : null;
+        $abbr = isset($args['abbr']) ? substr($args['abbr'], 0, 4) : 'XXX';
+        $name = isset($args['name']) ? substr($args['name'], 0, 64) : null;
+        $display_order = isset($args['display_order']) ? (int) $args['display_order'] : null;
 
         ## Find next available id
         if (!is_numeric($id) && $op > 0)
@@ -386,8 +386,8 @@ class Admin {
     public function saveGroup($group_id, $group_arr)
     {
         $name = $group_arr['group_name'];
-        $children = isset ($group_arr['children']) ? $group_arr['children'] : array();
-        $active = isset ($group_arr['active']) ? $group_arr['active'] : 1;
+        $children = isset($group_arr['children']) ? $group_arr['children'] : array();
+        $active = isset($group_arr['active']) ? $group_arr['active'] : 1;
 
         # Validate the form.
         if (trim($name) == '')
@@ -445,9 +445,9 @@ class Admin {
     public function savePermGroup($perm_group, $group_arr)
     {
         $name = $group_arr['group_name'];
-        $role_members = isset ($group_arr['role_members']) ? $group_arr['role_members'] : array();
-        $group_members = isset ($group_arr['group_members']) ? $group_arr['group_members'] : array();
-        $user_members = isset ($group_arr['user_members']) ? $group_arr['user_members'] : array();
+        $role_members = isset($group_arr['role_members']) ? $group_arr['role_members'] : array();
+        $group_members = isset($group_arr['group_members']) ? $group_arr['group_members'] : array();
+        $user_members = isset($group_arr['user_members']) ? $group_arr['user_members'] : array();
 
         # Validate the form.
         if (trim($name) == '')
@@ -668,7 +668,7 @@ class Admin {
         $sth->bindValue(3, $target_role_id, PDO::PARAM_INT);
         $sth->execute();
         $exists = $sth->fetch(PDO::FETCH_OBJ);
-        if (!empty ($exists))
+        if (!empty($exists))
         {
             throw new ValidationException("A Role Relationship with Subject ID: {$subject_role_id}, Location: {$location}, and Target ID: {$target_role_id} already exists.");
         }
@@ -694,10 +694,10 @@ class Admin {
      */
     public function SaveState($args, $op = 1)
     {
-        $code = isset ($args['code']) ? substr($args['code'], 0, 2) : null;
-        $name = isset ($args['name']) ? substr($args['name'], 0, 64) : null;
-        $display_order = isset ($args['display_order']) ? (int) $args['display_order'] : null;
-        $country_id = isset ($args['country_id']) ? (int) $args['country_id'] : 228;
+        $code = isset($args['code']) ? substr($args['code'], 0, 2) : null;
+        $name = isset($args['name']) ? substr($args['name'], 0, 64) : null;
+        $display_order = isset($args['display_order']) ? (int) $args['display_order'] : null;
+        $country_id = isset($args['country_id']) ? (int) $args['country_id'] : 228;
 
         if ($code)
         {
@@ -762,10 +762,10 @@ class Admin {
      */
     public function SaveTConf($args)
     {
-        $orig_name = isset ($args['orig_name']) ? $args['orig_name'] : null;
-        $var_name = isset ($args['var_name']) ? $args['var_name'] : null;
-        $var_val = isset ($args['val']) ? $args['val'] : null;
-        $var_comment = isset ($args['comment']) ? $args['comment'] : null;
+        $orig_name = isset($args['orig_name']) ? $args['orig_name'] : null;
+        $var_name = isset($args['var_name']) ? $args['var_name'] : null;
+        $var_val = isset($args['val']) ? $args['val'] : null;
+        $var_comment = isset($args['comment']) ? $args['comment'] : null;
         $comment_t = ($var_comment) ? PDO::PARAM_STR : PDO::PARAM_NULL;
 
         if ($var_name && !is_null($var_val))
@@ -934,10 +934,10 @@ class Admin {
     {
         $description = $new['description'];
         $display_order = (int) $new['display_order'];
-        $in_asset = isset ($new['in_asset']);
-        $out_asset = isset ($new['out_asset']);
-        $in_return = isset ($new['in_return']);
-        $is_purchase = isset ($new['is_purchase']);
+        $in_asset = isset($new['in_asset']);
+        $out_asset = isset($new['out_asset']);
+        $in_return = isset($new['in_return']);
+        $is_purchase = isset($new['is_purchase']);
 
         # Validate the form.
         if (trim($description) == '')
@@ -990,12 +990,12 @@ class Admin {
 			month = ?,
 			dow = ?,
 			command = ?,
-			last_mod_by = ?,
+			updated_by = ?,
 			comments = ?
 		WHERE id = ?');
 
         $sth_ins = $this->dbh->prepare('
-		INSERT INTO crontab (active,server,minute,hour,day,month,dow,command,last_mod_by,comments)
+		INSERT INTO crontab (active,server,minute,hour,day,month,dow,command,updated_by,comments)
 		VALUES (?,?,?,?,?,?,?,?,?,?)');
 
         foreach ($new['job'] as $i => $job)
@@ -1040,7 +1040,7 @@ class Admin {
                     $sth = $sth_ins;
                 }
 
-                $sth->bindValue(1, isset ($job['active']), PDO::PARAM_BOOL);
+                $sth->bindValue(1, isset($job['active']), PDO::PARAM_BOOL);
                 $sth->bindValue(2, $job['server'], PDO::PARAM_STR);
                 $sth->bindValue(3, $job['minute'], PDO::PARAM_STR);
                 $sth->bindValue(4, $job['hour'], PDO::PARAM_STR);
@@ -1256,7 +1256,7 @@ END;
         $sth_jobs = $this->dbh->query('
 		SELECT
 			id, server, active, minute, hour, day, month, dow,
-			command, last_mod, last_mod_by, comments
+			command, updated_at, updated_by, comments
 		FROM crontab
 		ORDER BY id');
         $i = 0;
@@ -1273,7 +1273,7 @@ END;
                 'month' => '',
                 'dow' => '',
                 'command' => '',
-                'last_mod_by' => null,
+                'updated_by' => null,
                 'comments' => ''
             );
 
@@ -1282,7 +1282,7 @@ END;
                 $user_options = '';
                 foreach ($it_users as $u)
                 {
-                    $selected = ($u['id'] == $job['last_mod_by']) ? 'selected' : '';
+                    $selected = ($u['id'] == $job['updated_by']) ? 'selected' : '';
                     $user_options .= '<option value="' . $u['id'] . '" ' . $selected . '>' . $u['firstname'] . ' ' . $u['lastname'] . '</option>';
                 }
 
@@ -1972,14 +1972,14 @@ END;
 
         $list_name = $prefix . '-' . $which_report . '-' . $suffix;
 
-        if (isset ($list_value) && !empty ($list_value))
+        if (isset($list_value) && !empty($list_value))
         {
             $user_array = array();
 
             # Test type of list value:
             if (is_array($list_value))
                 $user_array = $list_value;
-            elseif (isset ($list_value))
+            elseif (isset($list_value))
                 $user_array = explode(',', $list_value);
 
             # Get emails for the selected user ids:
@@ -2059,7 +2059,7 @@ END;
 
         $user_id_array = array();
 
-        if (!isset ($email_array) || empty ($email_array))
+        if (!isset($email_array) || empty($email_array))
             return ($user_id_array);
 
         $sth = $this->dbh->prepare("SELECT id FROM Users WHERE lower(email) = ?");
@@ -2090,7 +2090,7 @@ END;
 
         $email_array = array();
 
-        if (!isset ($user_id_array) || empty ($user_id_array))
+        if (!isset($user_id_array) || empty($user_id_array))
             return ($email_array);
 
         $sth = $this->dbh->prepare("SELECT email FROM Users WHERE id = ?");
@@ -2323,7 +2323,7 @@ END;
             $next_report = ($row['rpt_name']) ? $row['rpt_name'] : '';
             $email_list = ($row['email_list']) ? $row['email_list'] : '';
 
-            if (!empty ($next_report))
+            if (!empty($next_report))
             {
                 list($prefix, $rpt_name, $suffix) = explode('-', $next_report);
                 $distrib_lists[$rpt_name . '-' . $suffix] = $email_list;
@@ -2339,9 +2339,9 @@ END;
         foreach ($autoreports_list as $report)
         {
 
-            $to = (isset ($distrib_lists[$report . '-TO'])) ? $distrib_lists[$report . '-TO'] : '';
-            $cc = (isset ($distrib_lists[$report . '-CC'])) ? $distrib_lists[$report . '-CC'] : '';
-            $bcc = (isset ($distrib_lists[$report . '-BCC'])) ? $distrib_lists[$report . '-BCC'] : '';
+            $to = (isset($distrib_lists[$report . '-TO'])) ? $distrib_lists[$report . '-TO'] : '';
+            $cc = (isset($distrib_lists[$report . '-CC'])) ? $distrib_lists[$report . '-CC'] : '';
+            $bcc = (isset($distrib_lists[$report . '-BCC'])) ? $distrib_lists[$report . '-BCC'] : '';
 
             #Break up long email strings
             $to = str_replace(',', '<BR>', $to);
@@ -2888,7 +2888,7 @@ END;
      */
     public function showTabs()
     {
-        $target = isset ($_REQUEST['target']) ? strtolower($_REQUEST['target']) : '';
+        $target = isset($_REQUEST['target']) ? strtolower($_REQUEST['target']) : '';
 
         $u_a = ($target == 'user') ? " class='active'" : "";
         $g_a = ($target == 'group') ? " class='active'" : "";
@@ -2955,7 +2955,7 @@ END;
      */
     public function ShowTConfForm($args)
     {
-        $var_name = isset ($args['var']) ? $args['var'] : null;
+        $var_name = isset($args['var']) ? $args['var'] : null;
         $val = "";
         $comment = "";
 
@@ -3013,7 +3013,7 @@ END;
         $rows = "";
         $rc = "on";
         $sth = $this->dbh->prepare("SELECT
-			\"name\", val, \"comment\", last_mod
+			\"name\", val, \"comment\", updated_at
 		FROM config
 		ORDER BY \"name\"");
         $sth->execute();
@@ -3026,7 +3026,7 @@ END;
 				<td class='txal'>{$rec['name']}</td>
 				<td class='txal pwrap'><div>$val</div></td>
 				<td class='txal pwrap'><div>$comment</div></td>
-				<td class='txac'>{$rec['last_mod']}</td>
+				<td class='txac'>{$rec['updated_at']}</td>
 				<td class='txar' nowrap>
 					<form action=\"{$_SERVER['PHP_SELF']}\" method='post'>
                     <input type='hidden' name='target' value='settings' />
@@ -3240,11 +3240,11 @@ END;
      */
     public function showUserList($form = array())
     {
-        if (!isset ($form['active']))
+        if (!isset($form['active']))
             $form['active'] = 2;
 
         // If lastname is not set, set it
-        if (!isset ($form['lastname']))
+        if (!isset($form['lastname']))
             $form['lastname'] = "All";
 
         $page_change_loc = $_SERVER['PHP_SELF'];
@@ -3317,7 +3317,7 @@ END;
 							</tr>";
 
         $be_this_user_button = '';
-        if (isset ($_GET['showbethisuser']))
+        if (isset($_GET['showbethisuser']))
             $be_this_user_button = '<input type="submit" name="action" value="Impersonate User" onClick="return confirm(\'This will log you out. Are you sure you want to be this user?\');">';
 
         while ($user_arr = $sth->fetch(PDO::FETCH_ASSOC))

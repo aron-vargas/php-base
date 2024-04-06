@@ -27,8 +27,8 @@ class WorkOrder {
     protected $bar_code = '';			#string
     protected $open_date = 0;			#int
     protected $open_by = 0;				#int
-    protected $last_mod_date = 0;		#int
-    protected $last_mod_by = 0;			#int
+    protected $updated_at_date = 0;		#int
+    protected $updated_by = 0;			#int
     protected $close_date = 0;			#int
     protected $close_by = 0;			#int
     protected $status = 1;				#int
@@ -71,7 +71,7 @@ class WorkOrder {
     protected $work_time;               #int
 
     # Additional Lookup attributes
-    protected $last_mod_by_name = '';	#string
+    protected $updated_by_name = '';	#string
     protected $model_number = '';		#string
     protected $model_description = '';	#string
     protected $manufacture_date = null;	#string
@@ -133,9 +133,9 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
     {
         global $user;
 
-        if (empty ($action))
+        if (empty($action))
             $action = "--Empty WO Action--";
-        if (empty ($reason))
+        if (empty($reason))
             $action = "--Empty--";
 
         $dbh = DataStor::getHandle();
@@ -363,7 +363,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 
         $asset_id = LeaseAsset::exists($this->model, $this->serial_num);
         $old_model = new EquipmentModel($this->model);
-        if (!isset ($form["model"]))
+        if (!isset($form["model"]))
             $form["model"] = $this->model;
         $new_model = new EquipmentModel($form["model"]);
         $device = ($asset_id > 0) ? new LeaseAsset($asset_id) : null;
@@ -385,7 +385,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 
                 # Check for previous scrap request
                 $log = $this->GetWFLog(self::$WF_SCRAP_ACT);
-                if (isset ($log->id))
+                if (isset($log->id))
                     return;
 
                 $newStatus = new AssetStatus(null, LeaseAssetTransaction::$OUT_OF_SERVICE);
@@ -580,7 +580,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
                 if ($work_order)
                 {
                     $complaints = $work_order->getVar('complaints');
-                    if (isset ($complaints[0]['complaint']))
+                    if (isset($complaints[0]['complaint']))
                         $return_orthotic = in_array($complaints[0]['complaint'], array('00010', '00011'));
                     else
                         $return_orthotic = false;
@@ -791,7 +791,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 				w.*,
 				s.status_text,
 				u_o.firstname || ' ' ||	u_o.lastname AS open_by_name,
-				u_l.firstname || ' ' ||	u_l.lastname AS last_mod_by_name,
+				u_l.firstname || ' ' ||	u_l.lastname AS updated_by_name,
 				u_c.firstname || ' ' ||	u_c.lastname AS close_by_name,
 				e.model AS model_number,
 				e.description AS model_description,
@@ -806,7 +806,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 			FROM work_order w
 			INNER JOIN work_order_status s ON w.status = s.status_id
 			LEFT JOIN users u_o ON w.open_by = u_o.id
-			LEFT JOIN users u_l ON w.last_mod_by = u_l.id
+			LEFT JOIN users u_l ON w.updated_by = u_l.id
 			LEFT JOIN users u_c ON w.close_by = u_c.id
 			LEFT JOIN equipment_models e ON w.model = e.id
 			LEFT JOIN v_customer_entity f ON w.facility_id = f.id
@@ -1003,7 +1003,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 			rq.rma_id,
 			rq.status,
 			rq.created_by,
-			rq.created_on,
+			rq.created_at,
 			rs.status_text,
 	 		rq.po_number,
 	 		rq.sent_epoch
@@ -1068,7 +1068,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         $int_fields = array('w.work_order', 'w.complaint_form');
         $date_fields = array('w.open_date', 'w.close_date');
 
-        $mode = (isset ($args['mode'])) ? $args['mode'] : "wo";
+        $mode = (isset($args['mode'])) ? $args['mode'] : "wo";
 
         # All Valid SM status
         $WHERE = "WHERE true";
@@ -1193,7 +1193,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
     {
         global $dbh;
 
-        $mode = (isset ($args['mode'])) ? $args['mode'] : "wo";
+        $mode = (isset($args['mode'])) ? $args['mode'] : "wo";
 
         $WHERE = "";
 
@@ -1299,14 +1299,14 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
             $this->open_date = $timestamp;
         }
 
-        # Set last_mod on every signed save, except when closed (unless its empty).
-        if (isset ($form['signature']))
+        # Set updated_at on every signed save, except when closed (unless its empty).
+        if (isset($form['signature']))
         {
-            if ($this->status != WO_CLOSED || $this->last_mod_by == 0)
+            if ($this->status != WO_CLOSED || $this->updated_by == 0)
             {
-                $this->last_mod_by = $user->getId();
-                $this->last_mod_by_name = $user->getName();
-                $this->last_mod_date = $timestamp;
+                $this->updated_by = $user->getId();
+                $this->updated_by_name = $user->getName();
+                $this->updated_at_date = $timestamp;
             }
         }
 
@@ -1341,8 +1341,8 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 				bar_code = ?,
 				open_date = ?,
 				open_by = ?,
-				last_mod_date = ?,
-				last_mod_by = ?,
+				updated_at_date = ?,
+				updated_by = ?,
 				close_date = ?,
 				close_by = ?,
 				status = ?,
@@ -1374,7 +1374,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         {
             $insertSQL = "INSERT INTO work_order
 			(model, serial_num, bar_code, open_date,open_by,
-			 last_mod_date, last_mod_by, close_date, close_by, status,
+			 updated_at_date, updated_by, close_date, close_by, status,
 			 location, incident_tag,svc_code_01, swap_requested,swap_model,
 			 swap_serial, rtn_airbill, og_airbill, rcvd_from, bill_to,
 			 complaint_form, po_number, problem, notes,quotation_notes, has_inspection,
@@ -1394,8 +1394,8 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         $sth->bindValue(3, $this->bar_code, PDO::PARAM_STR);
         $sth->bindValue(4, (int) $this->open_date, PDO::PARAM_INT);
         $sth->bindValue(5, (int) $this->open_by, PDO::PARAM_INT);
-        $sth->bindValue(6, (int) $this->last_mod_date, PDO::PARAM_INT);
-        $sth->bindValue(7, (int) $this->last_mod_by, PDO::PARAM_INT);
+        $sth->bindValue(6, (int) $this->updated_at_date, PDO::PARAM_INT);
+        $sth->bindValue(7, (int) $this->updated_by, PDO::PARAM_INT);
         $sth->bindValue(8, (int) $this->close_date, PDO::PARAM_INT);
         $sth->bindValue(9, (int) $this->close_by, PDO::PARAM_INT);
         $sth->bindValue(10, (int) $this->status, PDO::PARAM_INT);
@@ -1458,9 +1458,9 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         foreach ($this->replaced_parts as $i => $part_ary)
         {
             # Do updates on exiting records, remove empty records
-            if (isset ($part_ary['id']) && $part_ary['id'] > 0)
+            if (isset($part_ary['id']) && $part_ary['id'] > 0)
             {
-                if (isset ($part_ary['part_id']) && $part_ary['part_id'] > 0)
+                if (isset($part_ary['part_id']) && $part_ary['part_id'] > 0)
                 {
                     # Update
                     $sth = $this->dbh->prepare("UPDATE work_order_part
@@ -1479,7 +1479,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
                 $sth->execute();
             }
             # Add New Records
-            else if (isset ($part_ary['part_id']) && $part_ary['part_id'] > 0)
+            else if (isset($part_ary['part_id']) && $part_ary['part_id'] > 0)
             {
                 $part_ary['date_added'] = date('Y-m-d');
 
@@ -1509,7 +1509,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         foreach ($this->complaints as $i => $complaint_ary)
         {
             # Do updates on exiting records, remove empty records
-            if (isset ($complaint_ary['id']) && $complaint_ary['id'] > 0)
+            if (isset($complaint_ary['id']) && $complaint_ary['id'] > 0)
             {
                 if ($complaint_ary['complaint'] || $complaint_ary['resolution'])
                 {
@@ -1528,7 +1528,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
                 $sth->execute();
             }
             # Add New Records
-            else if (isset ($complaint_ary['complaint']) || isset ($complaint_ary['resolution']))
+            else if (isset($complaint_ary['complaint']) || isset($complaint_ary['resolution']))
             {
                 $sth = $this->dbh->prepare("INSERT
 				INTO work_order_ext (work_order, complaint, resolution)
@@ -1555,7 +1555,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         $dbh = DataStor::getHandle();
 
         # Get requested page
-        $page = isset ($args['page']) ? (int) $args['page'] : 1;
+        $page = isset($args['page']) ? (int) $args['page'] : 1;
         # Maximum number of results to show on a page.
         $LIMIT = $preferences->get('general', 'results_per_page');
         # This sets the offset for the query results.
@@ -1563,8 +1563,8 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 
         # Maintain valid order by field
         # Switching tabs may carry order from a non existing field
-        $ORDER = (isset ($args['order'])) ? $args['order'] : "";
-        $DIR = (isset ($args['dir'])) ? $args['dir'] : "";
+        $ORDER = (isset($args['order'])) ? $args['order'] : "";
+        $DIR = (isset($args['dir'])) ? $args['dir'] : "";
         if ($ORDER == 'serial_num')
             $ORDER = "w.serial_num";
 
@@ -1575,7 +1575,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         else
             $WHERE = self::ParseAdvanceSearch($args);
 
-        if (!empty ($args['model']))
+        if (!empty($args['model']))
         {
             if ($WHERE)
                 $WHERE .= " AND w.model = " . (int) $args['model'];
@@ -1583,7 +1583,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
                 $WHERE .= " WHERE w.model = " . (int) $args['model'];
         }
 
-        if (!empty ($args['status']) && is_numeric($args['status']))
+        if (!empty($args['status']) && is_numeric($args['status']))
         {
             if ($WHERE)
                 $WHERE .= " AND w.status = " . (int) $args['status'];
@@ -1601,7 +1601,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 		LEFT JOIN facilities f ON w.facility_id = f.id
 		LEFT JOIN rma_quotation rma on w.work_order = rma.work_order
 		LEFT JOIN users u_o ON w.open_by = u_o.id
-		LEFT JOIN users u_s ON w.last_mod_by = u_s.id
+		LEFT JOIN users u_s ON w.updated_by = u_s.id
 		LEFT JOIN users u_c ON w.close_by = u_c.id
 		{$WHERE}";
         $sth = $dbh->query($sql);
@@ -1658,7 +1658,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 		) pm ON w.work_order = pm.work_order
 		LEFT JOIN rma_quotation rma on w.work_order = rma.work_order
 		LEFT JOIN users u_o ON w.open_by = u_o.id
-		LEFT JOIN users u_s ON w.last_mod_by = u_s.id
+		LEFT JOIN users u_s ON w.updated_by = u_s.id
 		LEFT JOIN users u_c ON w.close_by = u_c.id
 		{$WHERE}";
         //echo "<pre>$sql</pre>";
@@ -1812,7 +1812,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         if ($accessory_asset_id > 0)
         {
             // Update the fields for serial_number and barcode
-            if (isset ($form['attached_asset_id']) && ($form['attached_asset_id'] > 0) && $nc == 1)
+            if (isset($form['attached_asset_id']) && ($form['attached_asset_id'] > 0) && $nc == 1)
             {
                 $sth = $this->dbh->prepare("
 					UPDATE work_order_acc set
@@ -1915,8 +1915,8 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         $time = date('g:i a', $this->open_date);
 
         # Last Mod By
-        if ($this->last_mod_by < 1)
-            $this->last_mod_by = $user->getId();
+        if ($this->updated_by < 1)
+            $this->updated_by = $user->getId();
 
         # Close Date
         $c_time = $c_date = '';
@@ -2073,19 +2073,19 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 
 
         # Show last mod by
-        $last_mod_date = date('m/d/Y', $this->last_mod_date);
+        $updated_at_date = date('m/d/Y', $this->updated_at_date);
 
-        if (preg_match('/1969/i', $last_mod_date))
+        if (preg_match('/1969/i', $updated_at_date))
         {
 
-            $last_mod_date = '';
+            $updated_at_date = '';
             $signature_row = '';
 
         }
         else
         {
 
-            $signature_row = "<tr><th class='form' colspan='6'>Signed By: [{$this->last_mod_by_name} - {$last_mod_date}]<br/>
+            $signature_row = "<tr><th class='form' colspan='6'>Signed By: [{$this->updated_by_name} - {$updated_at_date}]<br/>
 			<p style='font-size: 7pt;padding:0;margin: 0; text-align:left;'>
 			This electronic signature identifies the signatory for this document.
 			It provides authorship and indicates the signatory's approval of the information contained within.</p></th></tr>";
@@ -2105,13 +2105,13 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 
             $span = 8;
             $previous = "";
-            if ($this->last_mod_by_name)
+            if ($this->updated_by_name)
             {
                 $span = 2;
                 # Add previous
                 $previous = "
 				<th class='form' colspan='4'>
-					Previous Signature: [{$this->last_mod_by_name} - {$last_mod_date}]
+					Previous Signature: [{$this->updated_by_name} - {$updated_at_date}]
 				</th>";
             }
 
@@ -2136,7 +2136,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         if ($this->dealer_repair)
         {
             $this->loadRma();
-            if (isset ($this->rma_detail) && !empty ($this->rma_detail))
+            if (isset($this->rma_detail) && !empty($this->rma_detail))
             {
                 $rmaStatus = $this->rma_detail[0]['status'];
 
@@ -2149,12 +2149,12 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 		</tr>" : "";
 
         $epochnum = '';
-        if (isset ($this->rma_detail[0]['sent_epoch']))
+        if (isset($this->rma_detail[0]['sent_epoch']))
             $epochnum = $this->rma_detail[0]['sent_epoch'];
 
         $rma_link = "<input class='submit' type='button' name='rma_{$this->work_order}' value='Repair Estimate' ondblclick='return NoAction(event);' onclick='OpenRMAWindow({$this->work_order});'/>";
 
-        if (isset ($this->rma_detail[0]['rma_id']))
+        if (isset($this->rma_detail[0]['rma_id']))
         {
             $rma_id = $this->rma_detail[0]['rma_id'];
             $rma_link .= ' ' . $this->rma_detail[0]['status_text'];
@@ -2165,7 +2165,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
 
         $rmaQuoteRow = '';
 
-        if ((isset ($this->rma_detail[0]['rma_id'])) && (($this->rma_detail[0]['status_text'] != 'Customer Approved') || ($this->rma_detail[0]['status_text'] != 'Customer Denied')))
+        if ((isset($this->rma_detail[0]['rma_id'])) && (($this->rma_detail[0]['status_text'] != 'Customer Approved') || ($this->rma_detail[0]['status_text'] != 'Customer Denied')))
         {
             $rmaQuoteRow = "
 			<tr>
@@ -2192,7 +2192,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         $sth->execute();
         $actualTotal = $sth->fetchColumn();
 
-        if (isset ($rma_id) && ($rma_id > 0))
+        if (isset($rma_id) && ($rma_id > 0))
         {
 
             $sth = $this->dbh->prepare("select sum(quantity) from rma_estimate where rma_id=" . $rma_id);
@@ -2220,12 +2220,12 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
             {
                 $base_asset_id = $asset->getBaseUnit();
 
-                if (isset ($base_asset_id))
+                if (isset($base_asset_id))
                 {
                     $base_asset = new LeaseAsset($base_asset_id);
                     $warranty_type = $base_asset->getWarrantyType();
 
-                    if (isset ($warranty_type))
+                    if (isset($warranty_type))
                     {
                         $serial_num = $base_asset->getSerial();
                         $model = $base_asset->getModel()->getName();
@@ -2331,13 +2331,13 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         }
 
         $ponum = '';
-        if (isset ($this->rma_detail[0]['po_number']))
+        if (isset($this->rma_detail[0]['po_number']))
             $ponum = $this->rma_detail[0]['po_number'];
 
         # Check for previous scrap request
         $log = $this->GetWFLog(self::$WF_SCRAP_ACT);
-        $chk_scrap = (empty ($log->id)) ? "" : "checked readonly";
-        $reason = (isset ($log->reason)) ? htmlentities($log->reason) : "";
+        $chk_scrap = (empty($log->id)) ? "" : "checked readonly";
+        $reason = (isset($log->reason)) ? htmlentities($log->reason) : "";
 
         $attachment = new Attachment(0);
         $attachment->reference_elem = 'WorkOrder';
@@ -2379,7 +2379,7 @@ written authorization from " . Config::$COMPANY_NAME . ".</p>
         }
 
         $p_term = "";
-        if (!isset ($_REQUEST['skip_mas']))
+        if (!isset($_REQUEST['skip_mas']))
         {
             $p_term = $account->GetPaymentTerms(true);
         }
@@ -2636,8 +2636,8 @@ p.note
         $time = date('g:i a', $this->open_date);
 
         # Last Mod By
-        if ($this->last_mod_by < 1)
-            $this->last_mod_by = $user->getId();
+        if ($this->updated_by < 1)
+            $this->updated_by = $user->getId();
 
         # Close Date
         $c_time = $c_date = '';
@@ -2766,16 +2766,16 @@ p.note
         # Add signature input
 
         # Show last mod by
-        $last_mod_date = date('m/d/Y', $this->last_mod_date);
+        $updated_at_date = date('m/d/Y', $this->updated_at_date);
 
-        if (preg_match('/1969/i', $last_mod_date))
+        if (preg_match('/1969/i', $updated_at_date))
         {
-            $last_mod_date = '';
+            $updated_at_date = '';
             $signature_row = '';
         }
         else
         {
-            $signature_row = "<tr><th class='form' colspan='6'>Signed By: [{$this->last_mod_by_name} - $last_mod_date]<br/>
+            $signature_row = "<tr><th class='form' colspan='6'>Signed By: [{$this->updated_by_name} - $updated_at_date]<br/>
 			<p style='font-size: 7pt;padding:0;margin: 0; text-align:left;'>
 			This electronic signature identifies the signatory for this document.
 			It provides authorship and indicates the signatory's approval of the information contained within.</p></th></tr>";
@@ -2808,7 +2808,7 @@ p.note
         {
             $this->loadRma();
 
-            if (isset ($this->rma_detail[0]['po_number']))
+            if (isset($this->rma_detail[0]['po_number']))
                 $ponum = $this->rma_detail[0]['po_number'];
 
             $query = $this->dbh->query("SELECT type_id
@@ -2878,7 +2878,7 @@ p.note
                 }
 
                 $rma_row .= "<tr>";
-                if (isset ($this->rma_detail[0]['rma_id']))
+                if (isset($this->rma_detail[0]['rma_id']))
                 {
                     $rma_row .= "<th class='form'>
 						RMA Quote:<input class='submit' type='button' name='rma_{$this->work_order}' value='Repair Estimate' ondblclick='return NoAction(event);' onclick='OpenRMAWindow({$this->work_order});'/>
@@ -2888,7 +2888,7 @@ p.note
 					</th>";
                 }
 
-                if (isset ($this->rma_detail[0]['sent_epoch']))
+                if (isset($this->rma_detail[0]['sent_epoch']))
                 {
                     $rma_row .= "<th class='form' colspan='4'> Manager Override #{$this->rma_detail[0]['sent_epoch']}</th>";
                 }
@@ -2919,8 +2919,8 @@ p.note
 
         # Check for previous scrap request
         $log = $this->GetWFLog(self::$WF_SCRAP_ACT);
-        $chk_scrap = (empty ($log->id)) ? "" : "checked";
-        $reason = (isset ($log->reason)) ? htmlentities($log->reason) : "";
+        $chk_scrap = (empty($log->id)) ? "" : "checked";
+        $reason = (isset($log->reason)) ? htmlentities($log->reason) : "";
 
         $attachment = new Attachment(0);
         $attachment->reference_elem = 'WorkOrder';
@@ -3004,7 +3004,7 @@ p.note
         }
 
         $p_term = "";
-        if (!isset ($_REQUEST['skip_mas']))
+        if (!isset($_REQUEST['skip_mas']))
         {
             $p_term = $account->GetPaymentTerms(true);
         }
@@ -3319,7 +3319,7 @@ td.buttons
 		{$available_qty}
 </script>";
 
-        if (isset ($_REQUEST['show_band']))
+        if (isset($_REQUEST['show_band']))
         {
             $js .= "
 <script type=\"text/javascript\">
@@ -3341,17 +3341,17 @@ $(function () {
      */
     private function GetPartRow($index)
     {
-        $id_input = isset ($this->replaced_parts[$index]['id']) ? "<input type='hidden' name='replaced_parts[{$index}][id]' value='{$this->replaced_parts[$index]['id']}'/>" : "";
-        $add_more = isset ($this->replaced_parts[$index]) ? '' : "onChange='AddPartRow({$index})';";
-        $serial = isset ($this->replaced_parts[$index]) ? $this->replaced_parts[$index]['serial_number'] : '';
+        $id_input = isset($this->replaced_parts[$index]['id']) ? "<input type='hidden' name='replaced_parts[{$index}][id]' value='{$this->replaced_parts[$index]['id']}'/>" : "";
+        $add_more = isset($this->replaced_parts[$index]) ? '' : "onChange='AddPartRow({$index})';";
+        $serial = isset($this->replaced_parts[$index]) ? $this->replaced_parts[$index]['serial_number'] : '';
 
-        $part_id = isset ($this->replaced_parts[$index]) ? (int) $this->replaced_parts[$index]['part_id'] : 0;
-        $mas_so = isset ($this->replaced_parts[$index]['mas_sales_order']) ? (int) $this->replaced_parts[$index]['mas_sales_order'] : 0;
+        $part_id = isset($this->replaced_parts[$index]) ? (int) $this->replaced_parts[$index]['part_id'] : 0;
+        $mas_so = isset($this->replaced_parts[$index]['mas_sales_order']) ? (int) $this->replaced_parts[$index]['mas_sales_order'] : 0;
         $so_input = "<input type='hidden' name='replaced_parts[{$index}][mas_sales_order]' value='{$mas_so}'/>";
         $so_msg = ($mas_so > 0) ? " SO #: $mas_so " : "";
         $rma_msg = "";
 
-        if (isset ($this->ncmr_id))
+        if (isset($this->ncmr_id))
         {
             $part_string = "";
             if ($part_id)
@@ -3375,7 +3375,7 @@ $(function () {
             $serial_input = "<input type='text' name='replaced_parts[{$index}][serial_number]' value='{$serial}' size='15'/>";
 
             $this->loadRma();
-            if (isset ($this->rma_detail[0]['rma_id']) && $part_id)
+            if (isset($this->rma_detail[0]['rma_id']) && $part_id)
             {
                 $rmaId = $this->rma_detail[0]['rma_id'];
 
@@ -3436,11 +3436,11 @@ $(function () {
      */
     private function GetComplaintRow($index)
     {
-        $id_input = isset ($this->complaints[$index]['id']) ? "<input type='hidden' name='complaints[{$index}][id]' value='{$this->complaints[$index]['id']}'/>" : "";
-        $complaint = isset ($this->complaints[$index]) ? $this->complaints[$index]['complaint'] : '';
-        $description = isset ($this->complaints[$index]['code_description']) ? $this->complaints[$index]['code_description'] : '';
-        $resolution = isset ($this->complaints[$index]) ? $this->complaints[$index]['resolution'] : '';
-        $r_description = isset ($this->complaints[$index]['resolution_description']) ? $this->complaints[$index]['resolution_description'] : '';
+        $id_input = isset($this->complaints[$index]['id']) ? "<input type='hidden' name='complaints[{$index}][id]' value='{$this->complaints[$index]['id']}'/>" : "";
+        $complaint = isset($this->complaints[$index]) ? $this->complaints[$index]['complaint'] : '';
+        $description = isset($this->complaints[$index]['code_description']) ? $this->complaints[$index]['code_description'] : '';
+        $resolution = isset($this->complaints[$index]) ? $this->complaints[$index]['resolution'] : '';
+        $r_description = isset($this->complaints[$index]['resolution_description']) ? $this->complaints[$index]['resolution_description'] : '';
 
         # Closed : Show them only not editable
         if ($this->status == WO_CLOSED)
@@ -3900,9 +3900,9 @@ END;
     {
         global $user;
 
-        if (empty ($action))
+        if (empty($action))
             $action = "--Empty WO Action--";
-        if (empty ($reason))
+        if (empty($reason))
             $reason = "--Empty--";
 
         $dbh = DataStor::getHandle();
@@ -4183,28 +4183,28 @@ END;
         $err_indicator = "";
 
         # Get Posted fields
-        if (!empty ($request['ba_ary']))
+        if (!empty($request['ba_ary']))
         {
             foreach ($request['ba_ary'] as $i => $b_a_ary)
             {
-                if (isset ($b_a_ary['model_id']) && $b_a_ary['model_id'] > 0)
+                if (isset($b_a_ary['model_id']) && $b_a_ary['model_id'] > 0)
                 {
                     # type of accessory - attached or new
                     $acc_type = $b_a_ary['acc_tp'];
 
                     # id of asset that was listed as attached.
-                    $attached_asset_id = isset ($b_a_ary['attached_asset_id']) ? ($b_a_ary['attached_asset_id']) : NULL;
+                    $attached_asset_id = isset($b_a_ary['attached_asset_id']) ? ($b_a_ary['attached_asset_id']) : NULL;
 
                     # id of asset that is, OR is going to be, attached.
                     # This will be the same as the attached asset id OR a new accessory id
-                    $acc_asset_id = isset ($b_a_ary['acc_asset_id']) ? ($b_a_ary['acc_asset_id']) : NULL;
+                    $acc_asset_id = isset($b_a_ary['acc_asset_id']) ? ($b_a_ary['acc_asset_id']) : NULL;
 
-                    $attached_verified = isset ($b_a_ary['attached_verified']) ? ($b_a_ary['attached_verified']) : NULL;
-                    $verified_match = isset ($b_a_ary['verified_match']) ? ($b_a_ary['verified_match']) : NULL;
-                    $acc_action = isset ($b_a_ary['action_to_take']) ? ($b_a_ary['action_to_take']) : NULL;
+                    $attached_verified = isset($b_a_ary['attached_verified']) ? ($b_a_ary['attached_verified']) : NULL;
+                    $verified_match = isset($b_a_ary['verified_match']) ? ($b_a_ary['verified_match']) : NULL;
+                    $acc_action = isset($b_a_ary['action_to_take']) ? ($b_a_ary['action_to_take']) : NULL;
                     $acc_action = ($acc_action != 'attach') ? $acc_action : NULL;
-                    $acc_barcode = isset ($b_a_ary['barcode']) ? trim($b_a_ary['barcode']) : NULL;
-                    $acc_description = isset ($b_a_ary['description']) ? trim($b_a_ary['description']) : NULL;
+                    $acc_barcode = isset($b_a_ary['barcode']) ? trim($b_a_ary['barcode']) : NULL;
+                    $acc_description = isset($b_a_ary['description']) ? trim($b_a_ary['description']) : NULL;
 
 
                     if ($acc_barcode || $acc_action)
@@ -4340,7 +4340,7 @@ END;
                     }
                     else if ($row['pm_column'] == 'SV')
                     {
-                        if (empty ($row['label']))
+                        if (empty($row['label']))
                         {
                             $row['label'] = "SOFT";
                         }
@@ -4386,15 +4386,15 @@ END;
     {
         global $user;
 
-        $rmaId = isset ($_REQUEST['rma_id']) ? $_REQUEST['rma_id'] : 0;
-        $partsCount = isset ($_REQUEST['parts_count']) ? $_REQUEST['parts_count'] : 0;
-        $rmaStatus = isset ($_REQUEST['rma_status']) ? $_REQUEST['rma_status'] : 0;
+        $rmaId = isset($_REQUEST['rma_id']) ? $_REQUEST['rma_id'] : 0;
+        $partsCount = isset($_REQUEST['parts_count']) ? $_REQUEST['parts_count'] : 0;
+        $rmaStatus = isset($_REQUEST['rma_status']) ? $_REQUEST['rma_status'] : 0;
         $mismatchFlag = false;
         $timestamp = time();
 
         for ($i = 0; $i < $partsCount; $i++)
         {
-            if (isset ($_REQUEST['parts_mismatch' . $i]) && $_REQUEST['parts_mismatch' . $i] != '')
+            if (isset($_REQUEST['parts_mismatch' . $i]) && $_REQUEST['parts_mismatch' . $i] != '')
             {
                 $mismatchFlag = true;
             }
@@ -4426,7 +4426,7 @@ END;
                 $this->close_by = 0;
                 $this->editable = true;
 
-                if (isset ($_REQUEST['quote_number']))
+                if (isset($_REQUEST['quote_number']))
                 {
                     $epochSql = "SELECT
 						epoch
@@ -4476,7 +4476,7 @@ END;
         else
         {
             // rma mandatory if no warranty
-            if (isset ($_REQUEST['rma_warranty']) && $_REQUEST['rma_warranty'] == 0)
+            if (isset($_REQUEST['rma_warranty']) && $_REQUEST['rma_warranty'] == 0)
             {
                 $this->close_date = 0;
                 $this->status = 1;
@@ -4613,13 +4613,13 @@ END;
         }
 
         # this fix is for cases where accessories are removed through asset tracking and no new asset was attached after the work order was being edited
-        if (!empty ($tmp_att_acc_arr))
+        if (!empty($tmp_att_acc_arr))
         {
             $mth = $this->dbh->prepare("DELETE FROM work_order_acc WHERE work_order =? AND attached_asset_id !=0 AND model_id NOT IN(" . implode(',', $tmp_att_acc_arr) . ") ");
             $mth->bindValue(1, (int) $this->work_order, PDO::PARAM_INT);
             $mth->execute();
         }
-        if (empty ($tmp_att_acc_arr))
+        if (empty($tmp_att_acc_arr))
         {
             $mth = $this->dbh->prepare("DELETE FROM work_order_acc WHERE work_order =? AND attached_asset_id !=0 ");
             $mth->bindValue(1, (int) $this->work_order, PDO::PARAM_INT);
@@ -4640,7 +4640,7 @@ END;
 
         foreach ($this->ba_ary as $acc)
         {
-            if (isset ($acc['model_id']))
+            if (isset($acc['model_id']))
             {
                 $used_model_array[] = $acc['model_id'];
                 $dylans_replace_notice = '';
@@ -4657,7 +4657,7 @@ END;
                 $model_id = $acc['model_id'];
                 $model = $acc['model'];
                 $accessory_asset_id = $acc['asset_id'];
-                $acctp = (isset ($acc['attached_asset_id']) && $acc['attached_asset_id'] > 0) ? 'attached' : 'new';
+                $acctp = (isset($acc['attached_asset_id']) && $acc['attached_asset_id'] > 0) ? 'attached' : 'new';
                 $serial_n = $acc['serial_number'];
                 $barcode_n = $acc['barcode'];
                 $attached_asset_id = $acc['attached_asset_id'];
@@ -4718,7 +4718,7 @@ END;
                 }
 
 
-                if (isset ($acc['attached_asset_id']) && $acc['attached_asset_id'] > 0)
+                if (isset($acc['attached_asset_id']) && $acc['attached_asset_id'] > 0)
                 {
                     $ckd = 'readonly';
 
@@ -4870,7 +4870,7 @@ END;
     public function BooBooReset($form)
     {
         $err = '';
-        $accpt = (isset ($form['accpt'])) ? $form['accpt'] : "";
+        $accpt = (isset($form['accpt'])) ? $form['accpt'] : "";
         $work_order = $form['work_order'];
         $acc_asset_id = $form['acc_asset_id'];
         $acc_serial_number = $form['acc_serial_number'];

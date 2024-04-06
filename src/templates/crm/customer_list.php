@@ -14,8 +14,8 @@ if ($this->data)
             <td class='text-start'>{$row->customer_status}</td>
             <td class='text-start'>{$row->customer_type}</td>
             <td class='text-start'>{$row->description}</td>
-            <td class='text-center'>{$row->created_on}</td>
-            <td class='text-center'>{$row->last_mod}</td>
+            <td class='text-center'>{$row->created_at}</td>
+            <td class='text-center'>{$row->updated_at}</td>
             <td class='text-end'><a class='btn btn-primary btn-xs' href='/crm/customer/edit/{$row->pkey}'>Edit</a></td>
         </tr>";
     }

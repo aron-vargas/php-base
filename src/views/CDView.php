@@ -111,7 +111,7 @@ class CDView {
             else if ($page == "userprofile")
             {
                 $this->js['ckeditor'] = "<script type='text/javascript' src='//{$this->config->get('base_url')}/js/ckeditor5-custom/build/ckeditor.js'></script>";
-                
+
                 if ($display == "list")
                     $this->template = "src/templates/admin/userprofile_{$display}.php";
                 else
@@ -185,74 +185,6 @@ class CDView {
         return $this->model;
     }
 
-    public function menu()
-    {
-        $user = $this->config->get("session")->user;
-
-        if ($user->pkey)
-        {
-            $buttons = "<div class='float-end'>
-				<span class='pe-2'>
-					<a href='/profile'>
-                        <span class='rounded-circle avatar {$user->avatar}'>&nbsp;</span>
-                    </a>
-					<a href='/profile'>
-                        {$user->first_name} {$user->last_name}
-                    </a>
-				</span>
-				<a class='btn btn-light me-2' href='/logout'>Logout</a>
-			</div>";
-        }
-        else
-        {
-            $buttons = "
-			<div class='float-end'>
-				<a class='btn btn-light me-2' href='/login'>Login</a>
-				<a class='btn btn-warning' href='/register'>Register</a>
-			</div>";
-        }
-
-        $home_class = (strstr($this->template, "home") === false) ? "" : "active";
-        $membership_class = (strstr($this->template, "membership") === false) ? "" : "active";
-        $about_class = (strstr($this->template, "about") === false) ? "" : "active";
-        $calendar_class = (strstr($this->template, "calendar") === false) ? "" : "active";
-
-        # Get the menu from "mega_menu.php"
-        # This uses the pages defined in config.json
-        $pages = $this->config->get('pages');
-        //$active_page = $this->config->get('active_page');
-        $menu = include("src/templates/mega_menu.php");
-
-        echo <<<HEADER
-		<header>
-            <nav class='navbar navbar-default navbar-fixed-top navbar-dark bg-dark'>
-                <span class='navbar-brand ms-5'>
-                    <div class="nav-item dropdown">
-                        <button
-                            id="menu-dd-btn"
-                            class="btn btn-light"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#nav_menu"
-                            aria-expanded="false"
-                            aria-controls="nav_menu">
-                            <i class='fa fa-bars'></i>
-                        </button>
-                        <div id='nav_menu' class="dropdown-menu" aria-labelledby="menu-dd-btn">
-                            {$menu}
-                        </div>
-                    </div>
-                </span>
-                <span class='navbar-brand p2 me-auto'>
-                    <img class='round-logo' src='/images/logo.png' height='40'/>
-                </span>
-                <span class='p2 ms-auto me-5'>
-                    {$buttons}
-                </span>
-			</nav>
-        </header>
-HEADER;
-    }
     static public function OptionsStateList($selected, $name = true, $abv = false)
     {
         $opt_ary = \Freedom\Models\Location::StatesList();
@@ -319,7 +251,6 @@ HEADER;
             $css = $this->css;
             $js = $this->js;
             include($this->header);
-            $this->menu();
         }
         else if ($this->mode == self::$JSON_MODE)
         {
@@ -342,6 +273,8 @@ HEADER;
     {
         if ($this->mode == self::$HTML_MODE)
         {
+            $this->render_menu();
+            $this->render_sidemenu();
             $this->render_message();
 
             if ($this->debug)
@@ -400,6 +333,80 @@ HEADER;
         {
             include($this->footer);
         }
+    }
+
+    public function render_menu()
+    {
+        $user = $this->config->get("session")->user;
+
+        if ($user->pkey)
+        {
+            $buttons = "<div class='float-end'>
+				<span class='pe-2'>
+					<a href='/profile'>
+                        <span class='rounded-circle avatar {$user->avatar}'>&nbsp;</span>
+                    </a>
+					<a href='/profile'>
+                        {$user->first_name} {$user->last_name}
+                    </a>
+				</span>
+				<a class='btn btn-light me-2' href='/logout'>Logout</a>
+			</div>";
+        }
+        else
+        {
+            $buttons = "
+			<div class='float-end'>
+				<a class='btn btn-light me-2' href='/login'>Login</a>
+				<a class='btn btn-warning' href='/register'>Register</a>
+			</div>";
+        }
+
+        # Get the menu from "mega_menu.php"
+        # This uses the pages defined in config.json
+        $pages = $this->config->get('pages');
+        //$active_page = $this->config->get('active_page');
+        $menu = include ("src/templates/mega_menu.php");
+
+        echo <<<HEADER
+		<header>
+            <nav class='navbar navbar-default navbar-fixed-top navbar-dark bg-dark'>
+                <span class='navbar-brand ms-5'>
+                    <div class="nav-item dropdown">
+                        <button
+                            id="menu-dd-btn"
+                            class="btn btn-light"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#nav_menu"
+                            aria-expanded="false"
+                            aria-controls="nav_menu">
+                            <i class='fa fa-bars'></i>
+                        </button>
+                        <div id='nav_menu' class="dropdown-menu" aria-labelledby="menu-dd-btn">
+                            {$menu}
+                        </div>
+                    </div>
+                </span>
+                <span class='navbar-brand p2 me-auto'>
+                    <img class='round-logo' src='/images/logo.png' height='40'/>
+                </span>
+                <span class='p2 ms-auto me-5'>
+                    {$buttons}
+                </span>
+			</nav>
+        </header>
+HEADER;
+    }
+
+    public function render_sidemenu()
+    {
+        $user = $this->config->get("session")->user;
+
+        # Get the menu from "mega_menu.php"
+        # This uses the pages defined in config.json
+        $side_menu = $this->config->get('side_menu');
+        echo include ("src/templates/side_menu.php");
     }
 
     public function SetState($state)

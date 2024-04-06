@@ -3,7 +3,7 @@ $usr = $this->model;
 
 $this->Crumb("/home", "Home");
 $this->Crumb("/admin/user/list", "Users");
-if (isset ($_SERVER['HTTP_REFERER']))
+if (isset($_SERVER['HTTP_REFERER']))
     $this->Crumb($_SERVER['HTTP_REFERER'], " <i class='fa fa-angle-left'></i>Back");
 $this->Crumb(null, "Edit", true);
 
@@ -40,7 +40,7 @@ $user_type_options = \Freedom\Views\CDView::OptionsList($usr->user_type, $user_t
 # Group/Roles
 $default_group_options = "<option value=''>--Select Group/Role--</option>";
 $role_items = "";
-if (!empty ($all_roles))
+if (!empty($all_roles))
 {
     foreach ($all_roles as $role)
     {
@@ -61,7 +61,7 @@ else
 }
 
 $perm_items = "";
-if (!empty ($all_perms))
+if (!empty($all_perms))
 {
     foreach ($all_perms as $perm)
     {
@@ -212,11 +212,11 @@ echo "
                     </div>
                     <div class='row'>
                         <div class='col-4'>Created On:</div>
-                        <div class='col-8'>{$usr->created_on}</div>
+                        <div class='col-8'>{$usr->created_at}</div>
                     </div>
                     <div class='row'>
                         <div class='col-4'>Last Modified:</div>
-                        <div class='col-8'>{$usr->last_mod}</div>
+                        <div class='col-8'>{$usr->updated_at}</div>
                     </div>
                 </div>
             </div>

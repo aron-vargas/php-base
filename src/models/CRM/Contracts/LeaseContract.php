@@ -138,14 +138,14 @@ class LeaseContract extends BaseClass {
     /**
      * Insert history record
      */
-    static public function AddHistory($id, $last_mod_by, $last_mod_date, $change_info, $src)
+    static public function AddHistory($id, $updated_by, $updated_at_date, $change_info, $src)
     {
         global $user;
 
         $dbh = DataStor::GetHandle();
 
-        $last_mod_by = (int) $last_mod_by;
-        $last_mod_date = $dbh->quote($last_mod_date);
+        $updated_by = (int) $updated_by;
+        $updated_at_date = $dbh->quote($updated_at_date);
         $change_info = $dbh->quote($change_info);
         $src = $dbh->quote($src);
 
@@ -176,7 +176,7 @@ class LeaseContract extends BaseClass {
             termination, pricing_method, interest_rate, termination_notice_period_id,
             confidentiality_period_id, non_solicitation_period_id, jurisdiction_state,
             renewal_period,remote_services,original_contract_amount,
-			$last_mod_by, $last_mod_date, $change_info, $src
+			$updated_by, $updated_at_date, $change_info, $src
 		FROM contract
 		WHERE id_contract = ?");
         $sth->bindValue(1, $id, PDO::PARAM_INT);
@@ -276,11 +276,11 @@ class LeaseContract extends BaseClass {
         $termination_type = ($this->termination) ? PDO::PARAM_STR : PDO::PARAM_NULL;
         $pricing_method_type = ($this->pricing_method) ? PDO::PARAM_STR : PDO::PARAM_NULL;
         $lease_agreement_id_type = ($this->lease_agreement_id) ? PDO::PARAM_INT : PDO::PARAM_NULL;
-        $interest_rate_type = (empty ($this->interest_rate)) ? PDO::PARAM_NULL : PDO::PARAM_STR;
+        $interest_rate_type = (empty($this->interest_rate)) ? PDO::PARAM_NULL : PDO::PARAM_STR;
         $termination_notice_period_id_type = ($this->termination_notice_period_id) ? PDO::PARAM_INT : PDO::PARAM_NULL;
         $confidentiality_period_id_type = ($this->confidentiality_period_id) ? PDO::PARAM_INT : PDO::PARAM_NULL;
         $non_solicitation_period_id_type = ($this->non_solicitation_period_id) ? PDO::PARAM_INT : PDO::PARAM_NULL;
-        $jurisdiction_state_type = (empty ($this->jurisdiction_state)) ? PDO::PARAM_NULL : PDO::PARAM_STR;
+        $jurisdiction_state_type = (empty($this->jurisdiction_state)) ? PDO::PARAM_NULL : PDO::PARAM_STR;
 
         $i = 1;
         $sth->bindValue($i++, (int) $this->id_facility, PDO::PARAM_INT);
@@ -586,23 +586,23 @@ class LeaseContract extends BaseClass {
         BaseClass::copyFromArray($form);
         $this->line_items = $copy_array;
 
-        if (isset ($form['contract_received']))
+        if (isset($form['contract_received']))
             $this->contract_received = $this->ParseUnixTime($form['contract_received']);
 
-        if (isset ($form['line_items']) && is_array($form['line_items']))
+        if (isset($form['line_items']) && is_array($form['line_items']))
         {
             foreach ($form['line_items'] as $item_ary)
             {
                 # Determine which item to update
                 #
                 $i = null;
-                if (isset ($item_ary['line_num']) && $item_ary['line_num'] > 0)
+                if (isset($item_ary['line_num']) && $item_ary['line_num'] > 0)
                 {
                     # Locate based on line_num / primary key
                     #
                     $i = $this->FindItemIndex('line_num', $item_ary['line_num']);
                 }
-                else if (isset ($item_ary['asset_id']) && $item_ary['asset_id'] > 0)
+                else if (isset($item_ary['asset_id']) && $item_ary['asset_id'] > 0)
                 {
                     # Locate base on asset_id
                     #
@@ -707,10 +707,10 @@ class LeaseContract extends BaseClass {
     {
         global $user;
 
-        $last_mod_by = ($user) ? $user->getId() : 1;
-        $last_mod_date = date('Y-m-d H:i:s');
-        $src = (isset ($_REQUEST['src'])) ? $_REQUEST['src'] : "LeaseContract";
-        $change_info = (isset ($_REQUEST['change_info'])) ? $_REQUEST['change_info'] : "Update";
+        $updated_by = ($user) ? $user->getId() : 1;
+        $updated_at_date = date('Y-m-d H:i:s');
+        $src = (isset($_REQUEST['src'])) ? $_REQUEST['src'] : "LeaseContract";
+        $change_info = (isset($_REQUEST['change_info'])) ? $_REQUEST['change_info'] : "Update";
 
         $this->copyFromArray($form);
 
@@ -720,7 +720,7 @@ class LeaseContract extends BaseClass {
 
         if ($this->id_contract)
         {
-            self::AddHistory($this->id_contract, $last_mod_by, $last_mod_date, $change_info, $src);
+            self::AddHistory($this->id_contract, $updated_by, $updated_at_date, $change_info, $src);
             $this->DBUpdate();
         }
         else
@@ -731,7 +731,7 @@ class LeaseContract extends BaseClass {
         }
 
         # Update the nfif with this contract id so install can be saved
-        if (isset ($form['nfif_id']))
+        if (isset($form['nfif_id']))
         {
             $sth = $this->dbh->prepare("UPDATE nfif_contract
 			SET contract_id = ?
@@ -823,7 +823,7 @@ class LeaseContract extends BaseClass {
                     }
 
                     # Add property tax if rate is found
-                    $ptax += (isset ($tax_rates[$prod_id])) ? $tax_rates[$prod_id] : 0;
+                    $ptax += (isset($tax_rates[$prod_id])) ? $tax_rates[$prod_id] : 0;
                 }
             }
 
@@ -1232,7 +1232,7 @@ class LeaseContract extends BaseClass {
         $expiration_date = null;
 
         $warranty_option = $this->warranty;
-        if (isset ($device['warranty_option_id']))
+        if (isset($device['warranty_option_id']))
             $warranty_option = $device['warranty_option_id'];
 
         $start_date = $this->date_install;
@@ -1321,10 +1321,10 @@ class LeaseContract extends BaseClass {
     {
         global $user;
 
-        if (isset ($form['ship_install']))
+        if (isset($form['ship_install']))
             $this->ship_install = $form['ship_install'];
 
-        $stage_act = (isset ($form['stage_act'])) ? strtolower($form['stage_act']) : '';
+        $stage_act = (isset($form['stage_act'])) ? strtolower($form['stage_act']) : '';
 
         # Approved
         if ($this->id_contract && $this->ship_install && $stage_act == 'approve')
@@ -1707,7 +1707,7 @@ class LeaseContract extends BaseClass {
      */
     public function showForm($edit = 0, $form = array())
     {
-        if (isset ($form['alt']))
+        if (isset($form['alt']))
         {
             if ($form['alt'] == 'receive')
                 return $this->ShowReceiveForm($form);

@@ -1,5 +1,5 @@
 <?php
-namespace Freedom\Models;
+namespace Freedom\Models\Schedule;
 
 use PDO;
 use Freedom\Components\DBField;
@@ -13,8 +13,8 @@ CREATE TABLE `attendance` (
   `type` varchar(45) DEFAULT NULL,
   `short_name` varchar(45) DEFAULT NULL,
   `description` int DEFAULT NULL,
-  `created_on` datetime DEFAULT NULL,
-  `last_mod` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
   `confirmation` varchar(65) DEFAULT NULL,
   `attendee_id` int DEFAULT NULL,
   PRIMARY KEY (`attendance_id`)
@@ -41,8 +41,8 @@ class Attendace extends CDModel {
         $this->field_array[$i++] = new DBField('type', PDO::PARAM_STR, true, 45);
         $this->field_array[$i++] = new DBField('short_name', PDO::PARAM_STR, true, 45);
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 0);
-        $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, true, 0);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, true, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, true, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, true, 0);
         $this->field_array[$i++] = new DBField('confirmation', PDO::PARAM_STR, true, 65);
         $this->field_array[$i++] = new DBField('attendee_id', PDO::PARAM_INT, false, 0);
     }

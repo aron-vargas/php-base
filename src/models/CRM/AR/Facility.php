@@ -170,136 +170,136 @@ class Facility extends CustomerEntity {
      */
     public function copyFromArray($new = array())
     {
-        if (isset ($new['cpt_id']))
+        if (isset($new['cpt_id']))
             $this->cpt_id = $new['cpt_id'];
 
-        if (isset ($new['facility_name']))
+        if (isset($new['facility_name']))
             $this->name = trim($new['facility_name']);
 
-        if (isset ($new['corporate_parent']))
+        if (isset($new['corporate_parent']))
             $this->corporate_parent = trim($new['corporate_parent']);
 
-        if (isset ($new['parent_office']))
+        if (isset($new['parent_office']))
             $this->parent_office = trim($new['parent_office']);
 
-        if (isset ($new['id_corporate_group']))
+        if (isset($new['id_corporate_group']))
             $this->id_corporate_group = $new['id_corporate_group'];
 
-        if (isset ($new['accounting_id']))
+        if (isset($new['accounting_id']))
             $this->cust_id = trim($new['accounting_id']);
 
-        if (isset ($new['dssi_code']))
+        if (isset($new['dssi_code']))
             $this->dssi_code = trim($new['dssi_code']);
 
-        if (isset ($new['old_custid']))
+        if (isset($new['old_custid']))
             $this->old_custid = trim($new['old_custid']);
 
-        if (isset ($new['parent_custid']))
+        if (isset($new['parent_custid']))
             $this->parent_custid = trim($new['parent_custid']);
 
-        if (isset ($new['phone']))
+        if (isset($new['phone']))
             $this->phone = trim($new['phone']);
 
-        if (isset ($new['address']))
+        if (isset($new['address']))
             $this->addr1 = trim($new['address']);
 
-        if (isset ($new['address2']))
+        if (isset($new['address2']))
             $this->addr2 = trim($new['address2']);
 
-        if (isset ($new['city']))
+        if (isset($new['city']))
             $this->city = trim($new['city']);
 
-        if (isset ($new['state']))
+        if (isset($new['state']))
             $this->state = trim($new['state']);
 
-        if (isset ($new['zip']))
+        if (isset($new['zip']))
             $this->zip = trim($new['zip']);
 
-        if (isset ($new['country_id']))
+        if (isset($new['country_id']))
             $this->country_id = $new['country_id'];
 
-        if (isset ($new['region_id']))
+        if (isset($new['region_id']))
             $this->region_id = $new['region_id'];
 
-        if (isset ($new['comments']))
+        if (isset($new['comments']))
             $this->comments = trim($new['comments']);
 
-        if (isset ($new['fa']))
+        if (isset($new['fa']))
             $this->fa = trim($new['fa']);
 
-        if (isset ($new['fa_email']))
+        if (isset($new['fa_email']))
             $this->fa_email = trim($new['fa_email']);
 
-        if (isset ($new['don']))
+        if (isset($new['don']))
             $this->don = trim($new['don']);
 
-        if (isset ($new['don_email']))
+        if (isset($new['don_email']))
             $this->don_email = trim($new['don_email']);
 
-        if (isset ($new['mds']))
+        if (isset($new['mds']))
             $this->mds = trim($new['mds']);
 
-        if (isset ($new['mds_email']))
+        if (isset($new['mds_email']))
             $this->mds_email = trim($new['mds_email']);
 
-        if (isset ($new['mm']))
+        if (isset($new['mm']))
             $this->mm = trim($new['mm']);
 
-        if (isset ($new['mm_email']))
+        if (isset($new['mm_email']))
             $this->mm_email = trim($new['mm_email']);
 
-        if (isset ($new['frd']))
+        if (isset($new['frd']))
             $this->frd = trim($new['frd']);
 
-        if (isset ($new['frd_email']))
+        if (isset($new['frd_email']))
             $this->frd_email = trim($new['frd_email']);
 
-        if (isset ($new['frd_rm']))
+        if (isset($new['frd_rm']))
             $this->frd_rm = trim($new['frd_rm']);
 
-        if (isset ($new['frd_rm_email']))
+        if (isset($new['frd_rm_email']))
             $this->frd_rm_email = trim($new['frd_rm_email']);
 
-        if (isset ($new['frd_rm_phone']))
+        if (isset($new['frd_rm_phone']))
             $this->frd_rm_phone = trim($new['frd_rm_phone']);
 
-        if (isset ($new['other_fvs_rcpt']))
+        if (isset($new['other_fvs_rcpt']))
             $this->other_fvs_rcpt = trim($new['other_fvs_rcpt']);
 
-        if (isset ($new['med_a_beds']))
+        if (isset($new['med_a_beds']))
             $this->med_a_beds = (trim($new['med_a_beds']) == '') ? null : intval($new['med_a_beds']);
 
-        if (isset ($new['med_b_beds']))
+        if (isset($new['med_b_beds']))
             $this->med_b_beds = (trim($new['med_b_beds']) == '') ? null : intval($new['med_b_beds']);
 
-        if (isset ($new['other_beds']))
+        if (isset($new['other_beds']))
             $this->other_beds = (trim($new['other_beds']) == '') ? null : intval($new['other_beds']);
 
-        if (isset ($new['provnum']))
+        if (isset($new['provnum']))
             $this->provnum = (trim($new['provnum']) == '') ? null : trim($new['provnum']);
 
-        if (isset ($new['operator_type']))
+        if (isset($new['operator_type']))
             $this->operator_type = $new['operator_type'];
 
-        if (isset ($new['rehab_provider']))
+        if (isset($new['rehab_provider']))
             $this->rehab_provider = new RehabProvider($new['rehab_provider']);
-        else if (isset ($new['rehab_provider_name']) && $new['rehab_provider_name'] != "")
+        else if (isset($new['rehab_provider_name']) && $new['rehab_provider_name'] != "")
             $this->rehab_provider = new RehabProvider(null, $new['rehab_provider_name']);
         else if ($this->rehab_provider)
             ;
         else
             $this->rehab_provider = null;
 
-        if (isset ($new['cancelled']))
+        if (isset($new['cancelled']))
             $this->cancelled = (boolean) $new['cancelled'];
 
-        if (isset ($new['contract_hold']))
+        if (isset($new['contract_hold']))
             $this->contract_hold = (boolean) $new['contract_hold'];
 
-        if (isset ($new['visit_frequency']))
+        if (isset($new['visit_frequency']))
             $this->visit_frequency = ($new['visit_frequency']) ? intval($new['visit_frequency']) : null;
 
-        if (isset ($new['visit_frequency_id']))
+        if (isset($new['visit_frequency_id']))
         {
             $this->visit_frequency_id = ($new['visit_frequency_id']) ? intval($new['visit_frequency_id']) : null;
 
@@ -308,37 +308,37 @@ class Facility extends CustomerEntity {
             $this->visit_frequency = self::VFtoVC($visit_count);
         }
 
-        if (isset ($new['rehab_type']))
+        if (isset($new['rehab_type']))
             $this->rehab_type = trim($new['rehab_type']);
 
-        if (isset ($new['fte_count']))
+        if (isset($new['fte_count']))
             $this->fte_count = (float) preg_replace('/[^-\d\.]/', '', ($new['fte_count']));
 
-        if (isset ($new['pm_cpm_id']))
+        if (isset($new['pm_cpm_id']))
             $this->pm_cpm_id = ($new['pm_cpm_id']) ? (int) $new['pm_cpm_id'] : null;
 
-        if (isset ($new['requires_liftgate']))
+        if (isset($new['requires_liftgate']))
             $this->requires_liftgate = (boolean) $new['requires_liftgate'];
         else
             $this->requires_liftgate = false;
 
-        if (isset ($new['requires_inside_delivery']))
+        if (isset($new['requires_inside_delivery']))
             $this->requires_inside_delivery = (boolean) $new['requires_inside_delivery'];
         else
             $this->requires_inside_delivery = false;
 
-        if (isset ($new['has_dock']))
+        if (isset($new['has_dock']))
             $this->has_dock = (boolean) $new['has_dock'];
         else
             $this->has_dock = false;
 
-        if (isset ($new['service_contract_id']))
+        if (isset($new['service_contract_id']))
             $this->service_contract_id = ($new['service_contract_id']) ? (int) $new['service_contract_id'] : null;
 
-        if (isset ($new['install_conversion']))
+        if (isset($new['install_conversion']))
             $this->install_conversion = (boolean) $new['install_conversion'];
 
-        if (isset ($new['cancel_conversion']))
+        if (isset($new['cancel_conversion']))
             $this->cancel_conversion = (boolean) $new['cancel_conversion'];
     }
 
@@ -1389,7 +1389,7 @@ class Facility extends CustomerEntity {
      */
     public function LoadCCF($reload = false)
     {
-        if ($reload || empty ($this->cancellations))
+        if ($reload || empty($this->cancellations))
         {
             $this->cancellations = array();
 
@@ -1422,7 +1422,7 @@ class Facility extends CustomerEntity {
      */
     public function LoadContracts($reload = false)
     {
-        if ($reload || empty ($this->contracts))
+        if ($reload || empty($this->contracts))
         {
             $this->contracts = array();
 
@@ -1452,7 +1452,7 @@ class Facility extends CustomerEntity {
      */
     public function LoadLeases($reload = false)
     {
-        if ($reload || empty ($this->leases))
+        if ($reload || empty($this->leases))
         {
             $this->leases = array();
 
@@ -1493,7 +1493,7 @@ class Facility extends CustomerEntity {
      */
     public function LoadLoaners($reload = false)
     {
-        if ($reload || empty ($this->loaners))
+        if ($reload || empty($this->loaners))
         {
             $this->loaners = array();
 
@@ -1537,7 +1537,7 @@ class Facility extends CustomerEntity {
      */
     public function LoadPurchases($reload = false)
     {
-        if ($reload || empty ($this->purchases))
+        if ($reload || empty($this->purchases))
         {
             $this->purchases = array();
 
@@ -1587,7 +1587,7 @@ class Facility extends CustomerEntity {
      */
     public function LoadTransfers($reload = false)
     {
-        if ($reload || empty ($this->transfers))
+        if ($reload || empty($this->transfers))
         {
             $this->cancellations = array();
 
@@ -1662,7 +1662,7 @@ class Facility extends CustomerEntity {
             foreach ($args['search_fields'] as $idx => $field)
             {
                 $is_int = in_array($field, $int_fields);
-                $is_date = ($field == 'f.last_mod'); ## Future use
+                $is_date = ($field == 'f.updated_at'); ## Future use
 
                 #if ($is_date)
                 #	$field = "to_timestamp($field)";
@@ -1746,7 +1746,7 @@ class Facility extends CustomerEntity {
         $loaner = LeaseContract::$LOANER_TYPE;
 
         # Filter on user / group
-        if (!empty ($params['region']))
+        if (!empty($params['region']))
         {
             # Match group
             if (strpos($params['region'], 'g') === 0)
@@ -1756,7 +1756,7 @@ class Facility extends CustomerEntity {
                 $FILTER .= " AND f.cpt_id = " . (int) substr($params['region'], 1);
         }
 
-        if (isset ($params['op_type']) && !in_array('all', $params['op_type']))
+        if (isset($params['op_type']) && !in_array('all', $params['op_type']))
         {
             // Remove special options
             $k_a = array_search('all', $params['op_type']);
@@ -1848,7 +1848,7 @@ class Facility extends CustomerEntity {
     {
         global $user, $sh;
 
-        if (is_null($this->rehab_provider) && isset ($new['rehab_provider']))
+        if (is_null($this->rehab_provider) && isset($new['rehab_provider']))
             $this->rehab_provider = new RehabProvider($new['rehab_provider']);
 
 
@@ -1900,10 +1900,10 @@ class Facility extends CustomerEntity {
         {
             # New records default to active = true
             $this->active = true;
-            if (empty ($this->cust_id))
+            if (empty($this->cust_id))
                 $this->GenerateCustId();
 
-            if (empty ($this->parent_office))
+            if (empty($this->parent_office))
                 $this->parent_office = $this->corporate_parent;
 
             $facilities_sth = $this->dbh->prepare('
@@ -2083,8 +2083,8 @@ class Facility extends CustomerEntity {
                     $matches = array();
                     $full_name = $this->{$role};
                     preg_match('/^(\S+)\s(.*)/', $full_name, $matches);
-                    $cont->first_name = isset ($matches[1]) ? $matches[1] : $full_name;
-                    $cont->last_name = isset ($matches[2]) ? trim($matches[2]) : "";
+                    $cont->first_name = isset($matches[1]) ? $matches[1] : $full_name;
+                    $cont->last_name = isset($matches[2]) ? trim($matches[2]) : "";
                     $cont->email = $this->{$email};
                     $cont->save();
                 }
@@ -2361,15 +2361,15 @@ END;
     {
         global $dbh, $preferences;
 
-        $search_type = (isset ($params['search_type'])) ? $params['search_type'] : '';
-        $search = (isset ($params['search'])) ? $params['search'] : '';
-        $active = (isset ($params['active'])) ? $params['active'] : 1;
-        $ORDER = (isset ($params['sort'])) ? $params['sort'] : "";
-        $DIR = (isset ($params['dir'])) ? $params['dir'] : "";
+        $search_type = (isset($params['search_type'])) ? $params['search_type'] : '';
+        $search = (isset($params['search'])) ? $params['search'] : '';
+        $active = (isset($params['active'])) ? $params['active'] : 1;
+        $ORDER = (isset($params['sort'])) ? $params['sort'] : "";
+        $DIR = (isset($params['dir'])) ? $params['dir'] : "";
         $page = 0;
-        $LIMIT = (isset ($params['limit'])) ? $params['limit'] : "";
+        $LIMIT = (isset($params['limit'])) ? $params['limit'] : "";
         $OFFSET = 0;
-        if (isset ($params['page']))
+        if (isset($params['page']))
         {
             $LIMIT = $preferences->get('general', 'results_per_page');
             $OFFSET = ($params['page'] - 1) * $LIMIT;
@@ -2400,7 +2400,7 @@ END;
 			f.parent_office,
 			f.facility_name,
 			f.cancelled,
-			f.last_mod,
+			f.updated_at,
 			f.provnum,
 			f.cpt_id,
 			f.address,
@@ -2477,7 +2477,7 @@ END;
     {
         global $user;
 
-        if (!isset ($_POST['email_type']) || trim($_POST['email_type']) == '')
+        if (!isset($_POST['email_type']) || trim($_POST['email_type']) == '')
         {
             ErrorHandler::showError('An error has occurred while trying to send the email.', 'Did not get an email type.', ErrorHandler::$FOOTER, $user);
             exit;
@@ -2485,7 +2485,7 @@ END;
 
         # Setup To and CC arrays
         $to_addresses = array();
-        if (isset ($_POST['email_to']) && trim($_POST['email_to']) != '')
+        if (isset($_POST['email_to']) && trim($_POST['email_to']) != '')
             $to_addresses = array_map('trim', preg_split('/,/', strtr($_POST['email_to'], ";", ","), -1, PREG_SPLIT_NO_EMPTY));
         else
         {
@@ -2493,19 +2493,19 @@ END;
             exit;
         }
 
-        if (!isset ($_POST['subject']) || trim($_POST['subject']) == '')
+        if (!isset($_POST['subject']) || trim($_POST['subject']) == '')
         {
             ErrorHandler::showError("An error has occurred while trying to send the {$_POST['email_type']} email.", 'Did not get a subject.', ErrorHandler::$FOOTER, $user);
             exit;
         }
 
-        if (!isset ($_POST['body']) || trim($_POST['body']) == '')
+        if (!isset($_POST['body']) || trim($_POST['body']) == '')
         {
             ErrorHandler::showError("An error has occurred while trying to send the {$_POST['email_type']} email.", 'Did not get a body.', ErrorHandler::$FOOTER, $user);
             exit;
         }
 
-        if (isset ($_POST['attachment']) && (is_array($_POST['attachment']) || trim($_POST['attachment']) != ''))
+        if (isset($_POST['attachment']) && (is_array($_POST['attachment']) || trim($_POST['attachment']) != ''))
         {
             if (!is_array($_POST['attachment']) && !is_file($_POST['attachment']))
             {
@@ -2609,7 +2609,7 @@ END;
     {
         global $dbh, $preferences;
 
-        $search_type = (isset ($params['search_type'])) ? $params['search_type'] : '';
+        $search_type = (isset($params['search_type'])) ? $params['search_type'] : '';
 
         $FILTER = "";
         if ($search_type == 'simple')
@@ -2868,7 +2868,7 @@ END;
      */
     public function GetContacts($reload = false)
     {
-        if (empty ($this->contacts) || $reload)
+        if (empty($this->contacts) || $reload)
         {
             # Load the contact wich are linked to the facility
             # Using Role as special key since facility details have specific information saved
@@ -3229,7 +3229,7 @@ $(document).ready(function() {
 
         # Default to addon pricing
         $pricing_method = $contract->GetVar('pricing_method');
-        if (empty ($pricing_method))
+        if (empty($pricing_method))
             $contract->SetVar('pricing_method', 'add');
 
         # Only allow Leasing users to modify the Visit Frequency
@@ -3693,7 +3693,7 @@ END;
 
         # Default to addon pricing
         $pricing_method = $contract->GetVar('pricing_method');
-        if (empty ($pricing_method))
+        if (empty($pricing_method))
             $contract->SetVar('pricing_method', 'add');
 
         # Set the text from the contract record
@@ -3744,7 +3744,7 @@ END;
 
         $comments = str_replace("\n", '<br>', $facility->getComments());
         $pay_term = null;
-        if (!isset ($_REQUEST['skip_']))
+        if (!isset($_REQUEST['skip_']))
         {
             $pay_term = $facility->GetPaymentTerms();
         }

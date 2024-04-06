@@ -1,10 +1,22 @@
 <?php
-// Find the user
-if (!isset ($user))
-    $user = $this->config->get("session")->user;
+use Freedom\Models\User;
 
-// Load profile information
-$profile = $user->get('profile', false, false);
+// Set the profile to the view model
+if (isset($this->model) && str_contains(get_class($this->model), 'UserProfile'))
+{
+    $profile = $this->model;
+    $user = new User($profile->pkey);
+}
+
+//
+// Find the user
+if (!isset($profile))
+{
+    $user = $this->config->get("session")->user;
+    // Load profile information
+    $profile = $user->get('profile', false, false);
+}
+
 $theme = $profile->theme;
 $profile_bg_url = $profile->Img('background');
 $verified = ($user->verified) ? "Verified" : "Get Verification";

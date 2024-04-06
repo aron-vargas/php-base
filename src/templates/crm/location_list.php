@@ -24,8 +24,8 @@ if ($this->data)
             <td class='text-start desc'>{$row->description}</td>
             <td class='text-start'>{$row->location_status}</td>
             <td class='hidden text-start'>{$row->location_type}</td>
-            <td class='hidden text-center'>{$row->created_on}</td>
-            <td class='hidden text-center'>{$row->last_mod}</td>
+            <td class='hidden text-center'>{$row->created_at}</td>
+            <td class='hidden text-center'>{$row->updated_at}</td>
             <td class='text-end'><a class='btn btn-primary btn-xs' href='/crm/location/edit/{$row->location_id}'>Edit</a></td>
         </tr>";
     }

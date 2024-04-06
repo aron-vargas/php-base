@@ -13,10 +13,10 @@ CREATE TABLE `company` (
   `primary_address_id` int DEFAULT NULL,
   `shipping_address_id` int DEFAULT NULL,
   `billing_address_id` int DEFAULT NULL,
-  `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` int NOT NULL,
-  `last_mod` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_mod_by` int NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` int NOT NULL,
   `status` varchar(125) NOT NULL,
   `description` mediumtext NOT NULL,
   PRIMARY KEY (`pkey`)
@@ -31,10 +31,10 @@ class Company extends CDModel {
     public $primary_address_id;  #` int DEFAULT NULL,
     public $shipping_address_id; #` int DEFAULT NULL,
     public $billing_address_id;  #` int DEFAULT NULL,
-    public $created_on;          #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $created_at;          #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     public $created_by;          #` int NOT NULL,
-    public $last_mod;            #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    public $last_mod_by;         #` int NOT NULL,
+    public $updated_at;            #` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    public $updated_by;         #` int NOT NULL,
     public $status = "ACTIVE";   # varchar(125) DFAULT ACTIVE
     public $description;            # meduimtext
 
@@ -116,13 +116,13 @@ class Company extends CDModel {
     {
         $user_id = ($this->container) ? $this->container->get("session")->user->pkey : 1;
 
-        if (empty($this->created_on))
-            $this->created_on = date("c");
+        if (empty($this->created_at))
+            $this->created_at = date("c");
         if (empty($this->created_by))
             $this->created_by = $user_id;
 
-        $this->last_mod = date("c");
-        $this->last_mod_by = $user_id;
+        $this->updated_at = date("c");
+        $this->updated_by = $user_id;
 
         if ($this->pkey)
             $this->db_update();
@@ -155,10 +155,10 @@ class Company extends CDModel {
         $this->field_array[$i++] = new DBField('primary_address_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('shipping_address_id', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('billing_address_id', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('created_on', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('created_at', PDO::PARAM_STR, false, 0);
         $this->field_array[$i++] = new DBField('created_by', PDO::PARAM_INT, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod', PDO::PARAM_STR, false, 0);
-        $this->field_array[$i++] = new DBField('last_mod_by', PDO::PARAM_INT, false, 0);
+        $this->field_array[$i++] = new DBField('updated_at', PDO::PARAM_STR, false, 0);
+        $this->field_array[$i++] = new DBField('updated_by', PDO::PARAM_INT, false, 0);
         $this->field_array[$i++] = new DBField('status', PDO::PARAM_STR, false, 125);
         $this->field_array[$i++] = new DBField('description', PDO::PARAM_STR, true, 1025);
     }

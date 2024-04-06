@@ -4,7 +4,8 @@ namespace Freedom\Components;
 use PDO;
 use Freedom\Models\User;
 
-class FreedomSession {
+class FreedomSession
+{
     public $auth;
     public $user;
 
@@ -81,7 +82,7 @@ class FreedomSession {
             }
             else
             {
-                throw new Exception("Session not found or is expired. [$session_id] Please login.", 401);
+                throw new \Exception("Session not found or is expired. [$session_id] Please login.", 401);
             }
         }
 

@@ -23,8 +23,8 @@ class Task extends BaseClass {
     public $closed_date = 0;	// int
     public $phase_id = 0;		// int
     public $customer_id = 0;	// int
-    public $last_mod_by = 0;	// int
-    public $last_mod_date = 0;	// int
+    public $updated_by = 0;	// int
+    public $updated_at_date = 0;	// int
     public $important = 0;		// bool
     public $required = 0;		// bool
     public $opportunity_id;		// int
@@ -62,24 +62,24 @@ class Task extends BaseClass {
     {
         parent::copyFromArray($form);
 
-        if (isset ($form['due_date']))
+        if (isset($form['due_date']))
         {
-            $duehour = isset ($form['duehour']) ? $form['duehour'] : '4';
-            $duemin = isset ($form['duemin']) ? $form['duemin'] : '00';
-            $dueampm = isset ($form['dueampm']) ? $form['dueampm'] : 'pm';
+            $duehour = isset($form['duehour']) ? $form['duehour'] : '4';
+            $duemin = isset($form['duemin']) ? $form['duemin'] : '00';
+            $dueampm = isset($form['dueampm']) ? $form['dueampm'] : 'pm';
 
             $this->due_date = strtotime("{$form['due_date']} {$duehour}:{$duemin} {$dueampm}");
         }
 
-        $this->important = isset ($form['important']) ? 1 : 0;
-        $this->required = isset ($form['required']) ? 1 : 0;
+        $this->important = isset($form['important']) ? 1 : 0;
+        $this->required = isset($form['required']) ? 1 : 0;
 
-        if (isset ($form['completed']) && $this->closed_date == 0)
+        if (isset($form['completed']) && $this->closed_date == 0)
         {
             $this->closed_date = time();
         }
 
-        if (isset ($form['closed_date']))
+        if (isset($form['closed_date']))
         {
             if (is_int($form['closed_date']))
                 $this->closed_date = $form['closed_date'];
@@ -105,7 +105,7 @@ class Task extends BaseClass {
         # For searching
         $this->title = $this->task_action;
 
-        if (!empty ($this->opportunity_id))
+        if (!empty($this->opportunity_id))
         {
             # Load Opportunity Name
             $sth = $this->dbh->query("SELECT
@@ -116,7 +116,7 @@ class Task extends BaseClass {
             $this->opportunity_name = $sth->fetchColumn();
         }
 
-        if (!empty ($this->customer_id))
+        if (!empty($this->customer_id))
         {
             # Load Customer Name
             $sth = $this->dbh->query("SELECT
@@ -207,8 +207,8 @@ class Task extends BaseClass {
 					closed_date = ?,
 					customer_id = ?,
 					phase_id = ?,
-					last_mod_by = ?,
-					last_mod_date = ?,
+					updated_by = ?,
+					updated_at_date = ?,
 					important = ?,
 					required = ?,
 					opportunity_id = ?,
@@ -220,7 +220,7 @@ class Task extends BaseClass {
         {
             $sth = $this->dbh->prepare("
 				INSERT INTO task (task_action,open_by,open_date,due_date,
-					closed_date,customer_id,phase_id,last_mod_by,last_mod_date,
+					closed_date,customer_id,phase_id,updated_by,updated_at_date,
 					important, required, opportunity_id, assigned_to)
 			 	VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
         }
@@ -244,7 +244,7 @@ class Task extends BaseClass {
         }
 
         # Update the reminder if user is task owner
-        if (isset ($_REQUEST['reminder_btn']) && $this->open_by == $user->getId())
+        if (isset($_REQUEST['reminder_btn']) && $this->open_by == $user->getId())
         {
             if ($_REQUEST['reminder_btn'])
             {
@@ -276,10 +276,10 @@ class Task extends BaseClass {
         $form['schedule_date'] = $this->due_date;
 
         # Nesessary fields
-        $recipient_id = isset ($form['recipient_id']) ? $form['recipient_id'] : null;
-        $user_id = isset ($form['recipient_user']) ? $form['recipient_user'] : $user->getId();
-        $tzone = isset ($form['tzone']) ? $form['tzone'] : 'PST';
-        $alert_type = isset ($form['alert_type']) ? $form['alert_type'] : self::$SMS_TYPE;
+        $recipient_id = isset($form['recipient_id']) ? $form['recipient_id'] : null;
+        $user_id = isset($form['recipient_user']) ? $form['recipient_user'] : $user->getId();
+        $tzone = isset($form['tzone']) ? $form['tzone'] : 'PST';
+        $alert_type = isset($form['alert_type']) ? $form['alert_type'] : self::$SMS_TYPE;
 
         # Alert type dictates the "address" to use
         if ($alert_type == Reminder::$EMAIL_TYPE)
@@ -368,7 +368,7 @@ class Task extends BaseClass {
 
         if ($id)
         {
-            $sth = $this->dbh->prepare("UPDATE {$this->db_table} SET {$field} = ?, last_mod_by = ?, last_mod_date = ? WHERE {$this->p_key} = ?");
+            $sth = $this->dbh->prepare("UPDATE {$this->db_table} SET {$field} = ?, updated_by = ?, updated_at_date = ? WHERE {$this->p_key} = ?");
             $sth->bindValue(1, $value);
             $sth->bindValue(2, (int) $user->getId(), PDO::PARAM_INT);
             $sth->bindValue(3, (int) $now, PDO::PARAM_INT);
