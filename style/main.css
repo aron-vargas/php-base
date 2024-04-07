@@ -3,6 +3,21 @@ body
 	font-family: "PT Serif rev=3";
     min-height: 800px;
 }
+
+main
+{
+    display: flex;
+}
+
+main.main .sidebar
+{
+    flex: 1, 1;
+}
+main.main div.body
+{
+    flex: 1, 0;
+}
+
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .card-header, .nav
 {
     /*font-family: "PT Serif rev=3";*/

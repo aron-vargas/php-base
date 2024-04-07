@@ -1,8 +1,10 @@
 <?php
 $user = $this->config->get("session")->user;
+$profile = $user->get('profile', false, false);
+
 # Create a mega menu from the page configuration
 $menu = "
-<div class='d-flex flex-column flex-shrink-0 text-white bg-dark' style='width: 280px;'>
+<div id='side-menu' class='d-flex flex-column flex-shrink-0 text-white bg-dark' style='width: 280px;'>
     <button class='btn btn-toggle ms-1 mb-0 me-auto text-white' data-bs-toggle='collapse' data-bs-target='#sidebar-collapse' aria-expanded='true'>
        <span class='fs-4'>Admin Menu</span>
        <i class='fa fa-caret-down'></i>
@@ -15,8 +17,8 @@ $menu .= "
     <hr>
     <div class='dropdown'>
         <a href='#' class='d-flex align-items-center text-white text-decoration-none dropdown-toggle' id='dropdownUser1' data-bs-toggle='dropdown' aria-expanded='false'>
-            <img src='https://github.com/mdo.png' alt='' width='32' height='32' class='rounded-circle me-2'>
-            <strong>mdo</strong>
+            <img class='headshot rounded-circle me-2' src=\"{$profile->Img('headshot')}\" width='32' height='32'/>
+            <strong>{$user->nick_name}</strong>
         </a>
         <ul class='dropdown-menu dropdown-menu-dark text-small shadow' aria-labelledby='dropdownUser1'>
             <li><a class='dropdown-item' href='#'>New project...</a></li>
@@ -26,7 +28,10 @@ $menu .= "
             <li><a class='dropdown-item' href='/logout'>Sign out</a></li>
         </ul>
     </div>
-</div>";
+</div>
+<script type='text/javascript'>
+$('#side-menu').resizable({handles: 'w'});
+</script>";
 
 return $menu;
 

@@ -273,19 +273,23 @@ class CDView {
     {
         if ($this->mode == self::$HTML_MODE)
         {
-            $this->render_menu();
-            $this->render_sidemenu();
-            $this->render_message();
-
-            if ($this->debug)
-            {
-                echo "<div class='bebug_container'>";
-                include("src/templates/debug.php");
-                echo "</div>\n";
-            }
-
             if (file_exists($this->template))
+            {
+                $this->render_menu();
+                $this->render_message();
+
+                if ($this->debug)
+                {
+                    echo "<div class='bebug_container'>";
+                    include("src/templates/debug.php");
+                    echo "</div>\n";
+                }
+                echo "<main class='main'>";
+                $this->render_sidemenu();
+                echo "<div class='body'>";
                 include($this->template);
+                echo "</div></main>";
+            }
             else
                 throw new \Exception("Could not find Template: {$this->template}");
         }
@@ -402,11 +406,16 @@ HEADER;
     public function render_sidemenu()
     {
         $user = $this->config->get("session")->user;
+        $admin_role = $this->config->get("admin_role_id");
+        $admin_module = $this->config->get("admin_module_id");
 
-        # Get the menu from "mega_menu.php"
-        # This uses the pages defined in config.json
-        $side_menu = $this->config->get('side_menu');
-        echo include ("src/templates/side_menu.php");
+        if (true || $user->HasPermission($admin_role, $admin_module))
+        {
+            # Get the menu from "mega_menu.php"
+            # This uses the pages defined in config.json
+            $side_menu = $this->config->get('side_menu');
+            echo include ("src/templates/side_menu.php");
+        }
     }
 
     public function SetState($state)
